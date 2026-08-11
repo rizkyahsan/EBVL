@@ -1,0 +1,328 @@
+@page "/Examples/Defaults"
+@inherits PageBase
+@using System.Text
+
+<HtmlHead Title="@ExamplesDisplayTextFor.Defaults" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.Defaults" />
+<HorizontalTabs>
+    <MudTabPanel Text="Inputs">
+        <PageSection SectionTitle="TextFieldDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <TextFieldDefault Label="Name" Placeholder="Enter your name" />
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @("""<TextFieldDefault Label="Name" Placeholder="Enter your name" />""")
+                </CodeBlock>
+            </div>
+        </PageSection>
+        <PageSection SectionTitle="NumericFieldDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <NumericFieldDefault Label="Quantity" Min="0" Max="10" />
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @("""<NumericFieldDefault Label="Quantity" Min="0" Max="10" />""")
+                </CodeBlock>
+            </div>
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <NumericFieldDefault Label="Budget" T="decimal"
+                                         Format="@CurrencyFormatFor.NoDecimal"
+                                         Min="1_000" Max="10_000"
+                                         Value="5_000" Step="1_000" />
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @{
+                        var codeBuilder = new StringBuilder();
+                        codeBuilder.AppendLine("<NumericFieldDefault Label=\"Budget\" T=\"decimal\"");
+                        codeBuilder.AppendLine("                     Format=\"@CurrencyFormatFor.NoDecimal\"");
+                        codeBuilder.AppendLine("                     Min=\"1_000\" Max=\"10_000\"");
+                        codeBuilder.AppendLine("                     Value=\"5_000\" Step=\"1_000\" />");
+
+                        <span>
+                            @codeBuilder.ToString()
+                        </span>
+                    }
+                </CodeBlock>
+            </div>
+        </PageSection>
+        <PageSection SectionTitle="DatePickerDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <DatePickerDefault Label="Release Date" />
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @("""<DatePickerDefault Label="Release Date" />""")
+                </CodeBlock>
+            </div>
+        </PageSection>
+        <PageSection SectionTitle="SelectDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <SelectDefault T="Color" Value="Color.Primary">
+                        <MudSelectItem Value="Color.Primary">Primary Color</MudSelectItem>
+                        <MudSelectItem Value="Color.Secondary">Secondary Color</MudSelectItem>
+                        <MudSelectItem Value="Color.Tertiary">Tertiary Color</MudSelectItem>
+                    </SelectDefault>
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @{
+                        var codeBuilder = new StringBuilder();
+                        codeBuilder.AppendLine("<SelectDefault T=\"Color\" Value=\"Color.Primary\">");
+                        codeBuilder.AppendLine("    <MudSelectItem Value=\"Color.Primary\">Primary Color</MudSelectItem>");
+                        codeBuilder.AppendLine("    <MudSelectItem Value=\"Color.Secondary\">Secondary Color</MudSelectItem>");
+                        codeBuilder.AppendLine("    <MudSelectItem Value=\"Color.Tertiary\">Tertiary Color</MudSelectItem>");
+                        codeBuilder.AppendLine("</SelectDefault>");
+
+                        <span>
+                            @codeBuilder.ToString()
+                        </span>
+                    }
+                </CodeBlock>
+            </div>
+        </PageSection>
+        <PageSection SectionTitle="ChipSetDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <ChipSetDefault T="Color">
+                        <MudChip Color="Color.Primary" Value="Color.Primary">Primary Color</MudChip>
+                        <MudChip Color="Color.Secondary" Value="Color.Secondary">Secondary Color</MudChip>
+                        <MudChip Color="Color.Tertiary" Value="Color.Tertiary">Tertiary Color</MudChip>
+                    </ChipSetDefault>
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @{
+                        var codeBuilder = new StringBuilder();
+                        codeBuilder.AppendLine("<ChipSetDefault T=\"Color\">");
+                        codeBuilder.AppendLine("    <MudChip Color=\"Color.Primary\" Value=\"Color.Primary\">Primary Color</MudChip>");
+                        codeBuilder.AppendLine("    <MudChip Color=\"Color.Secondary\" Value=\"Color.Secondary\">Secondary Color</MudChip>");
+                        codeBuilder.AppendLine("    <MudChip Color=\"Color.Tertiary\" Value=\"Color.Tertiary\">Tertiary Color</MudChip>");
+                        codeBuilder.AppendLine("</ChipSetDefault>");
+
+                        <span>
+                            @codeBuilder.ToString()
+                        </span>
+                    }
+                </CodeBlock>
+            </div>
+        </PageSection>
+    </MudTabPanel>
+    <MudTabPanel Text="Controls">
+        <PageSection SectionTitle="FieldDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <FieldDefault Label="Property Name">Property Value</FieldDefault>
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @("""<FieldDefault Label="Property Name">Property Value</FieldDefault>""")
+                </CodeBlock>
+            </div>
+        </PageSection>
+        <PageSection SectionTitle="ButtonDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="text-center pa-5">
+                    <ButtonDefault>Some Action</ButtonDefault>
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @("""<ButtonDefault>Some Action</ButtonDefault>""")
+                </CodeBlock>
+            </div>
+        </PageSection>
+    </MudTabPanel>
+    <MudTabPanel Text="Tables">
+        <PageSection SectionTitle="SimpleTableDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <SimpleTableDefault>
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John</td>
+                                <td>Doe</td>
+                            </tr>
+                            <tr>
+                                <td>Jane</td>
+                                <td>Smith</td>
+                            </tr>
+                        </tbody>
+                    </SimpleTableDefault>
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @{
+                        var codeBuilder = new StringBuilder();
+                        codeBuilder.AppendLine("<SimpleTableDefault>");
+                        codeBuilder.AppendLine("    <thead>");
+                        codeBuilder.AppendLine("        <tr>");
+                        codeBuilder.AppendLine("            <th>First Name</th>");
+                        codeBuilder.AppendLine("            <th>Last Name</th>");
+                        codeBuilder.AppendLine("        </tr>");
+                        codeBuilder.AppendLine("    </thead>");
+                        codeBuilder.AppendLine("    <tbody>");
+                        codeBuilder.AppendLine("        <tr>");
+                        codeBuilder.AppendLine("            <td>John</td>");
+                        codeBuilder.AppendLine("            <td>Doe</td>");
+                        codeBuilder.AppendLine("        </tr>");
+                        codeBuilder.AppendLine("        <tr>");
+                        codeBuilder.AppendLine("            <td>Jane</td>");
+                        codeBuilder.AppendLine("            <td>Smith</td>");
+                        codeBuilder.AppendLine("        </tr>");
+                        codeBuilder.AppendLine("    </tbody>");
+                        codeBuilder.AppendLine("</SimpleTableDefault>");
+
+                        <span>
+                            @codeBuilder.ToString()
+                        </span>
+                    }
+                </CodeBlock>
+            </div>
+        </PageSection>
+        <PageSection SectionTitle="TableDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <TableDefault Items="_products" Filter="FilterItems">
+                        <ToolBarContent>
+                            <MudSpacer />
+                            <TextFieldSearch @bind-Value="_searchKeyword" />
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ProductItem, object>(x => x.Name)"
+                                                   InitialDirection="SortDirection.Ascending">
+                                    Name
+                                </MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ProductItem, object>(x => x.UnitPrice)">
+                                    Unit Price
+                                </MudTableSortLabel>
+                            </MudTh>
+                            <MudTh>
+                                <MudTableSortLabel SortBy="new Func<ProductItem, object>(x => x.Stock)">
+                                    Stock
+                                </MudTableSortLabel>
+                            </MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Name">
+                                <MudHighlighter Text="@context.Name" HighlightedText="@_searchKeyword" />
+                            </MudTd>
+                            <MudTd DataLabel="Unit Price">
+                                <MudHighlighter Text="@context.UnitPrice.ToDisplayText(CurrencyFormatFor.NoDecimal)" HighlightedText="@_searchKeyword" />
+                            </MudTd>
+                            <MudTd DataLabel="Stock">
+                                <MudHighlighter Text="@context.Stock.ToString()" HighlightedText="@_searchKeyword" />
+                            </MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </TableDefault>
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @{
+                        var codeBuilder = new StringBuilder();
+                        codeBuilder.AppendLine("<TableDefault Items=\"_products\" Filter=\"FilterItems\">");
+                        codeBuilder.AppendLine("    <ToolBarContent>");
+                        codeBuilder.AppendLine("        <MudSpacer />");
+                        codeBuilder.AppendLine("        <TextFieldSearch @bind-Value=\"_searchKeyword\" />");
+                        codeBuilder.AppendLine("    </ToolBarContent>");
+                        codeBuilder.AppendLine("    <HeaderContent>");
+                        codeBuilder.AppendLine("        <MudTh>");
+                        codeBuilder.AppendLine("            <MudTableSortLabel SortBy=\"new Func<ProductItem, object>(x => x.Name)\"");
+                        codeBuilder.AppendLine("                               InitialDirection=\"SortDirection.Ascending\">");
+                        codeBuilder.AppendLine("                Name");
+                        codeBuilder.AppendLine("            </MudTableSortLabel>");
+                        codeBuilder.AppendLine("        </MudTh>");
+                        codeBuilder.AppendLine("        <MudTh>");
+                        codeBuilder.AppendLine("            <MudTableSortLabel SortBy=\"new Func<ProductItem, object>(x => x.UnitPrice)\">");
+                        codeBuilder.AppendLine("                Unit Price");
+                        codeBuilder.AppendLine("            </MudTableSortLabel>");
+                        codeBuilder.AppendLine("        </MudTh>");
+                        codeBuilder.AppendLine("        <MudTh>");
+                        codeBuilder.AppendLine("            <MudTableSortLabel SortBy=\"new Func<ProductItem, object>(x => x.Stock)\">");
+                        codeBuilder.AppendLine("                Stock");
+                        codeBuilder.AppendLine("            </MudTableSortLabel>");
+                        codeBuilder.AppendLine("        </MudTh>");
+                        codeBuilder.AppendLine("    </HeaderContent>");
+                        codeBuilder.AppendLine("    <RowTemplate>");
+                        codeBuilder.AppendLine("        <MudTd DataLabel=\"Name\">");
+                        codeBuilder.AppendLine("            <MudHighlighter Text=\"@context.Name\" HighlightedText=\"@_searchKeyword\" />");
+                        codeBuilder.AppendLine("        </MudTd>");
+                        codeBuilder.AppendLine("        <MudTd DataLabel=\"Unit Price\">");
+                        codeBuilder.AppendLine("            <MudHighlighter Text=\"@context.UnitPrice.ToDisplayText(CurrencyFormatFor.NoDecimal)\" HighlightedText=\"@_searchKeyword\" />");
+                        codeBuilder.AppendLine("        </MudTd>");
+                        codeBuilder.AppendLine("        <MudTd DataLabel=\"Stock\">");
+                        codeBuilder.AppendLine("            <MudHighlighter Text=\"@context.Stock.ToString()\" HighlightedText=\"@_searchKeyword\" />");
+                        codeBuilder.AppendLine("        </MudTd>");
+                        codeBuilder.AppendLine("    </RowTemplate>");
+                        codeBuilder.AppendLine("    <PagerContent>");
+                        codeBuilder.AppendLine("        <MudTablePager />");
+                        codeBuilder.AppendLine("    </PagerContent>");
+                        codeBuilder.AppendLine("</TableDefault>");
+
+                        <span>
+                            @codeBuilder.ToString()
+                        </span>
+                    }
+                </CodeBlock>
+            </div>
+        </PageSection>
+    </MudTabPanel>
+    <MudTabPanel Text="Navigation">
+        <PageSection SectionTitle="LinkDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <LinkDefault Href="https://www.pertamina.com" Target="_blank">Visit Pertamina</LinkDefault>
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @{
+                        var codeBuilder = new StringBuilder();
+                        codeBuilder.AppendLine("<LinkDefault Href=\"https://www.pertamina.com\" Target=\"_blank\">Visit Pertamina</LinkDefault>");
+
+                        <span>
+                            @codeBuilder.ToString()
+                        </span>
+                    }
+                </CodeBlock>
+            </div>
+        </PageSection>
+        <PageSection SectionTitle="NavGroupDefault">
+            <div class="border mud-border-lines-default rounded mt-5">
+                <div class="pa-5">
+                    <NavGroupDefault Title="@MainDisplayTextFor.Main" Icon="@MudBlazor.Icons.Material.TwoTone.Business">
+                        <MudNavLink Match="NavLinkMatch.All" Icon="@MudBlazor.Icons.Material.TwoTone.Home">
+                            @CommonDisplayTextFor.Home
+                        </MudNavLink>
+                        <MudNavLink Match="NavLinkMatch.All" Icon="@MudBlazor.Icons.Material.TwoTone.Info">
+                            @MainDisplayTextFor.About
+                        </MudNavLink>
+                    </NavGroupDefault>
+                </div>
+                <CodeBlock RoundedMode="RoundedMode.Bottom">
+                    @{
+                        var codeBuilder = new StringBuilder();
+                        codeBuilder.AppendLine("<NavGroupDefault Title=\"Main\" Icon=\"@MudBlazor.Icons.Material.TwoTone.Business\">");
+                        codeBuilder.AppendLine("    <MudNavLink Match=\"NavLinkMatch.All\" Icon=\"@MudBlazor.Icons.Material.TwoTone.Home\">");
+                        codeBuilder.AppendLine("        @CommonDisplayTextFor.Home");
+                        codeBuilder.AppendLine("    </MudNavLink>");
+                        codeBuilder.AppendLine("    <MudNavLink Match=\"NavLinkMatch.All\" Icon=\"@MudBlazor.Icons.Material.TwoTone.Info\">");
+                        codeBuilder.AppendLine("        @MainDisplayTextFor.About");
+                        codeBuilder.AppendLine("    </MudNavLink>");
+                        codeBuilder.AppendLine("</NavGroupDefault>");
+
+                        <span>
+                            @codeBuilder.ToString()
+                        </span>
+                    }
+                </CodeBlock>
+            </div>
+        </PageSection>
+    </MudTabPanel>
+</HorizontalTabs>

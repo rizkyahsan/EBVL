@@ -1,0 +1,45 @@
+﻿::deep .appbar-main
+{
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+::deep .icon-button-toggle-drawer
+{
+    border-color: var(--mud-palette-lines-default);
+    background-color: var(--mud-palette-drawer-background);
+}
+
+    ::deep .icon-button-toggle-drawer:hover
+    {
+        background-color: var(--mud-palette-background-gray);
+    }
+
+::deep .drawer-main
+{
+    padding: 0px 10px;
+    border-right-width: 1px;
+    border-right-style: solid;
+    border-right-color: var(--mud-palette-lines-default);
+}
+
+::deep .body-container
+{
+    min-height: calc(100vh - 42px);
+    padding-left: 38px;
+    padding-right: 38px;
+    padding-bottom: 38px;
+    padding-top: calc(7px + var(--mud-appbar-height));
+}
+
+.footer
+{
+    height: 41px;
+    line-height: 41px;
+    padding-left: 38px;
+    padding-right: 38px;
+    font-size: 0.750rem;
+    color: var(--mud-palette-text-secondary);
+    background-color: var(--mud-palette-background-paper);
+    border-top: 1px solid var(--mud-palette-lines-default);
+}

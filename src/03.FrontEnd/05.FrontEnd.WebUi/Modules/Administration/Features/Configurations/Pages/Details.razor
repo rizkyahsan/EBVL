@@ -1,0 +1,59 @@
+@page "/Administration/Configurations/Details/{Id:guid}"
+@inherits PageBase
+@attribute [Authorize(Policy = AdministrationPermissions.AdministrationConfigurationsRead)]
+
+<HtmlHead Title="@_pageTitle" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@_pageTitle" EntityType="@ConfigurationsDisplayTextFor.Configuration" />
+<LoadingLinear IsVisible="_isLoading" />
+<ErrorViewer Exception="_exception" />
+@if (_item is not null)
+{
+    <HorizontalTabs>
+        <MudTabPanel Text="@CommonDisplayTextFor.GeneralInfo">
+            <AuthorizeView Policy="@AdministrationPermissions.AdministrationConfigurationsWrite">
+                <Authorized>
+                    <TopButtonPanel>
+                        <ButtonEdit OnClick="() => ShowDialogEdit(_item)" />
+                        <ButtonDelete OnClick="() => ShowDialogDelete(_item)" />
+                    </TopButtonPanel>
+                </Authorized>
+            </AuthorizeView>
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@ConfigurationsDisplayTextFor.Key">
+                        @_item.Key
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@ConfigurationsDisplayTextFor.Value">
+                        @_item.Value
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Created">
+                        @_item.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.CreatedBy">
+                        @_item.CreatedBy
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Modified">
+                        @_item.Modified.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.ModifiedBy">
+                        @_item.ModifiedBy.ToDisplayText()
+                    </FieldDefault>
+                </MudItem>
+            </MudGrid>
+        </MudTabPanel>
+        <MudTabPanel Text="@AuditsDisplayTextFor.AuditLogs" BadgeData="_item.Audits.Count()">
+            <TableAudits Audits="_item.Audits" />
+        </MudTabPanel>
+    </HorizontalTabs>
+}

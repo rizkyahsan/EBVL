@@ -1,0 +1,122 @@
+@page "/Examples/Emojis"
+@using EBVL.FrontEnd.Services.Emoji
+@inherits PageBase
+
+<HtmlHead Title="@ExamplesDisplayTextFor.Emojis" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.Emojis" />
+<HorizontalTabs>
+    <MudTabPanel Text="Random Emoji">
+        <LoadingLinear IsVisible="_isLoading" />
+        <ErrorViewer Exception="_exceptionForGetRandomEmoji" />
+        <ButtonPrimary OnClick="GetRandomEmoji">
+            Get Random Emoji
+        </ButtonPrimary>
+        @if (_randomEmoji is not null)
+        {
+            <PageSection Class="mt-5">
+                <MudText Align="Align.Center" Class="mb-5" Style="font-size: 64px;">
+                    @((MarkupString)_randomEmoji.HtmlCode)
+                </MudText>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <FieldDefault Label="@nameof(EmojiItem.Name)">
+                            @_randomEmoji.Name
+                        </FieldDefault>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <FieldDefault Label="@nameof(EmojiItem.Category)">
+                            @_randomEmoji.Category
+                        </FieldDefault>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <FieldDefault Label="@nameof(EmojiItem.Group)">
+                            @_randomEmoji.Group
+                        </FieldDefault>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <FieldDefault Label="HTML Codes">
+                            @_randomEmoji.HtmlCodesDisplayText
+                        </FieldDefault>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <FieldDefault Label="@nameof(EmojiItem.Unicodes)">
+                            @_randomEmoji.UnicodesDisplayText
+                        </FieldDefault>
+                    </MudItem>
+                </MudGrid>
+            </PageSection>
+        }
+    </MudTabPanel>
+    <MudTabPanel Text="Search Emojis">
+        <MudStack Row="true"
+                  Justify="Justify.FlexStart"
+                  AlignItems="AlignItems.Center"
+                  Wrap="Wrap.Wrap"
+                  Class="mb-5">
+            <TextFieldDefault Label="Keyword" Underline="true"
+                              Margin="Margin.Dense"
+                              @bind-Value="_keyword" />
+            <ButtonPrimary OnClick="SearchEmojis">
+                Search
+            </ButtonPrimary>
+        </MudStack>
+        <LoadingLinear IsVisible="_isLoading" />
+        <ErrorViewer Exception="_exceptionForSearchEmojis" />
+        @if (_emojis.Any())
+        {
+            <TableDefault Items="_emojis">
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<EmojiItem, object>(x => x.Name)"
+                                           InitialDirection="SortDirection.Ascending">
+                            @nameof(EmojiItem.Name)
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh Class="text-center">
+                        Rendered
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<EmojiItem, object>(x => x.Category)">
+                            @nameof(EmojiItem.Category)
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<EmojiItem, object>(x => x.Group)">
+                            @nameof(EmojiItem.Group)
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh Class="text-center">
+                        HTML Codes
+                    </MudTh>
+                    <MudTh Class="text-center">
+                        @nameof(EmojiItem.Unicodes)
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="@nameof(EmojiItem.Name)">
+                        @context.Name
+                    </MudTd>
+                    <MudTd DataLabel="Rendered" Class="text-center" Style="font-size: 28px;">
+                        @((MarkupString)context.HtmlCode)
+                    </MudTd>
+                    <MudTd DataLabel="@nameof(EmojiItem.Category)">
+                        @context.Category
+                    </MudTd>
+                    <MudTd DataLabel="@nameof(EmojiItem.Group)">
+                        @context.Group
+                    </MudTd>
+                    <MudTd DataLabel="HTML Codes" Class="text-center">
+                        @context.HtmlCodesDisplayText
+                    </MudTd>
+                    <MudTd DataLabel="@nameof(EmojiItem.Unicodes)" Class="text-center">
+                        @context.UnicodesDisplayText
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </TableDefault>
+        }
+    </MudTabPanel>
+</HorizontalTabs>

@@ -1,0 +1,210 @@
+@page "/Examples/Typography"
+@inherits PageBase
+@using System.Text
+
+<HtmlHead Title="@ExamplesDisplayTextFor.Typography" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.Typography" />
+<HorizontalTabs>
+    <MudTabPanel Text="Best Practices">
+        <MudText Typo="Typo.body1" Class="my-4">
+            For consistency and accessibility, follow this structure:
+        </MudText>
+        <MudText Typo="Typo.h3">
+            Heading 1 (h1)
+        </MudText>
+        <MudText Typo="Typo.subtitle1">
+            The <code>Title</code> property in PageHeader component will be rendered as h1
+        </MudText>
+        <CodeBlock>
+            @("""<PageHeader Title="The Title of The Page" />""")
+        </CodeBlock>
+        <MudDivider Class="my-6" />
+        <MudText Typo="Typo.h3">
+            Heading 2 (h2)
+        </MudText>
+        <MudText Typo="Typo.subtitle1">
+            The <code>SectionTitle</code> property in PageSection component will be rendered as h2
+        </MudText>
+        <CodeBlock>
+            @{
+                var codeBuilder = new StringBuilder();
+                codeBuilder.AppendLine("<PageSection SectionTitle=\"The Title of The Section\">");
+                codeBuilder.AppendLine("    The content of the section.");
+                codeBuilder.AppendLine("</PageSection>");
+
+                <span>
+                    @codeBuilder.ToString()
+                </span>
+            }
+        </CodeBlock>
+        <MudDivider Class="my-6" />
+        <MudText Typo="Typo.h3">
+            Other Headings (h3-h6)
+        </MudText>
+        <CodeBlock>
+            @{
+                var codeBuilder = new StringBuilder();
+                codeBuilder.AppendLine("<MudText Typo=\"Typo.h3\">");
+                codeBuilder.AppendLine("    Heading Level 3");
+                codeBuilder.AppendLine("</MudText>");
+                codeBuilder.AppendLine("<MudText Typo=\"Typo.h4\">");
+                codeBuilder.AppendLine("    Heading Level 4");
+                codeBuilder.AppendLine("</MudText>");
+                codeBuilder.AppendLine("<MudText Typo=\"Typo.h5\">");
+                codeBuilder.AppendLine("    Heading Level 5");
+                codeBuilder.AppendLine("</MudText>");
+                codeBuilder.AppendLine("<MudText Typo=\"Typo.h6\">");
+                codeBuilder.AppendLine("    Heading Level 6");
+                codeBuilder.AppendLine("</MudText>");
+
+                <span>
+                    @codeBuilder.ToString()
+                </span>
+            }
+        </CodeBlock>
+        <MudDivider Class="my-6" />
+        <MudText Typo="Typo.h3">
+            Paragraph / Default Text
+        </MudText>
+        <CodeBlock>
+            @{
+                var codeBuilder = new StringBuilder();
+                codeBuilder.AppendLine("<MudText>");
+                codeBuilder.AppendLine("    This is a paragraph of text rendered using MudText component.");
+                codeBuilder.AppendLine("</MudText>");
+                codeBuilder.AppendLine("<MudText Typo=\"Typo.body1\">");
+                codeBuilder.AppendLine("    This is also a paragraph of text rendered using MudText component with Typo.body1.");
+                codeBuilder.AppendLine("</MudText>");
+
+                <span>
+                    @codeBuilder.ToString()
+                </span>
+            }
+        </CodeBlock>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
+            If a specific heading level (e.g. h3) is already used elsewhere on the page, consider adjusting the HtmlTag to maintain proper semantic hierarchy.
+        </MudAlert>
+    </MudTabPanel>
+    <MudTabPanel Text="Live Testing">
+        <TextFieldDefault Label="Text"
+                          Immediate="true"
+                          @bind-Value="@_text" />
+        <BottomButtonPanel>
+            <ButtonPrimary OnClick="SetToPangram1"
+                           StartIcon="@MudBlazor.Icons.Material.Filled.LooksOne">
+                Set to Pangram 1
+            </ButtonPrimary>
+            <ButtonSecondary OnClick="SetToPangram2"
+                             StartIcon="@MudBlazor.Icons.Material.Filled.LooksTwo">
+                Set to Pangram 2
+            </ButtonSecondary>
+            <ButtonTertiary OnClick="SetToCurrentDateTime"
+                            StartIcon="@MudBlazor.Icons.Material.Filled.AccessTime">
+                Set to Current Date and Time
+            </ButtonTertiary>
+            <ButtonDark OnClick="UsingBogus"
+                        StartIcon="@MudBlazor.Icons.Material.Filled.AutoFixHigh">
+                Using Bogus
+            </ButtonDark>
+        </BottomButtonPanel>
+        <MudGrid Class="mt-5">
+            <MudItem sm="3">
+                <b>Typo</b>
+            </MudItem>
+            <MudItem sm="9">
+                <b>Text</b>
+            </MudItem>
+            <MudItem sm="3">
+                Without MudText
+            </MudItem>
+            <MudItem sm="9">
+                @_text
+            </MudItem>
+            <MudItem sm="3">
+                Without Typo
+            </MudItem>
+            <MudItem sm="9">
+                <MudText>@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.h1
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.h1">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.h2
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.h2">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.h3
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.h3">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.h4
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.h4">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.h5
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.h5">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.h6
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.h6">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.subtitle1
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.subtitle1">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.subtitle2
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.subtitle2">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.body1
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.body1">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.body2
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.body2">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.caption
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.caption">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.overline
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.overline">@_text</MudText>
+            </MudItem>
+            <MudItem sm="3">
+                Typo.button
+            </MudItem>
+            <MudItem sm="9">
+                <MudText Typo="Typo.button">@_text</MudText>
+            </MudItem>
+        </MudGrid>
+    </MudTabPanel>
+</HorizontalTabs>

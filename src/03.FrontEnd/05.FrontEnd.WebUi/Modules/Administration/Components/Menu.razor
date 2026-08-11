@@ -1,0 +1,39 @@
+<AuthorizeView Policy="@AdministrationPermissions.Administration">
+    <Authorized>
+        <NavGroupDefault Title="@AdministrationDisplayTextFor.Administration"
+                         Icon="@Icons.Material.TwoTone.AdminPanelSettings">
+            <MudNavLink Href="@AdministrationRouteFor.Index"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.Home">
+                @CommonDisplayTextFor.Home
+            </MudNavLink>
+            <AuthorizeView Context="context2" Policy="@AdministrationPermissions.AdministrationAuditsRead">
+                <Authorized>
+                    <MudNavLink Href="@AdministrationAuditsRouteFor.Index"
+                                Match="NavLinkMatch.Prefix"
+                                Icon="@Icons.Material.TwoTone.EventNote">
+                        @AuditsDisplayTextFor.Audits
+                    </MudNavLink>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView Context="context2" Policy="@AdministrationPermissions.AdministrationConfigurationsRead">
+                <Authorized>
+                    <MudNavLink Href="@AdministrationConfigurationsRouteFor.Index"
+                                Match="NavLinkMatch.Prefix"
+                                Icon="@Icons.Material.TwoTone.VpnKey">
+                        @ConfigurationsDisplayTextFor.Configurations
+                    </MudNavLink>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView Context="context2" Policy="@AdministrationPermissions.AdministrationApiCallsRead">
+                <Authorized>
+                    <MudNavLink Href="@AdministrationApiCallsRouteFor.Index"
+                                Match="NavLinkMatch.Prefix"
+                                Icon="@Icons.Material.TwoTone.Api">
+                        @ApiCallsDisplayTextFor.ApiCalls
+                    </MudNavLink>
+                </Authorized>
+            </AuthorizeView>
+        </NavGroupDefault>
+    </Authorized>
+</AuthorizeView>

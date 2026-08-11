@@ -1,0 +1,9 @@
+﻿dotnet tool update --global dotnet-ef
+
+dotnet ef migrations add M001Initial -c DatabaseService -p 03.BackEnd.Infrastructure -s 05.BackEnd.WebApi -o Database/Migrations
+
+dotnet ef migrations remove -c DatabaseService  -p 03.BackEnd.Infrastructure -s 05.BackEnd.WebApi
+
+dotnet ef database update -c DatabaseService -p 03.BackEnd.Infrastructure -s 05.BackEnd.WebApi
+
+dotnet ef database drop --force -c DatabaseService -p 03.BackEnd.Infrastructure -s 05.BackEnd.WebApi

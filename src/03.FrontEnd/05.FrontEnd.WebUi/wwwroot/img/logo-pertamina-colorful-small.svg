@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 53.62 40">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #ed1b2f;
+      }
+
+      .cls-2 {
+        fill: #acc42a;
+      }
+
+      .cls-3 {
+        fill: none;
+      }
+
+      .cls-4 {
+        fill: #006cb8;
+      }
+
+      .cls-5 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <rect class="cls-3" width="53.62" height="40"/>
+    </clipPath>
+  </defs>
+  <g class="cls-5">
+    <g id="Pertamina_Logo" data-name="Pertamina Logo">
+      <g id="Logo">
+        <g id="Icon">
+          <path id="path4265" class="cls-4" d="M.75,40s10.83-17.17,12.59-20.02c1.76-2.85,3.28-3.11,8.16-3.11h10.74c-.63.53-1.72,1.64-2.53,2.94l-10.93,17.53c-1.09,1.96-3.4,2.67-6.18,2.67H.75Z"/>
+          <path id="path4267" class="cls-2" d="M43.53,16.87c-4.87,0-6.4.27-8.26,3.11-1.86,2.85-6.85,10.52-6.85,10.52h12.49c2.18,0,4.3-.95,5.22-2.53l7.38-11.1h-9.99Z"/>
+          <path id="path4308" class="cls-1" d="M38.41,0C43.28,0,44.81.27,46.67,3.11c1.86,2.85,6.85,10.52,6.85,10.52h-12.49c-2.18,0-4.3-.95-5.22-2.53L28.42,0h9.99Z"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

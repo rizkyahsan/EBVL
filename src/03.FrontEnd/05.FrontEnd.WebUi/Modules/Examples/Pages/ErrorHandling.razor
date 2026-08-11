@@ -1,0 +1,73 @@
+@page "/Examples/ErrorHandling"
+@inherits PageBase
+
+<HtmlHead Title="@ExamplesDisplayTextFor.ErrorHandling" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.ErrorHandling" />
+<HorizontalTabs>
+    <MudTabPanel Text="With ErrorViewer">
+        <MudText Typo="Typo.body1">
+            Klik hingga Current Count menjadi <b>@MaximumCount</b>.
+            Setelah itu klik lagi hingga menyebabkan error dan
+            aplikasi akan menampilkan komponen <code>ErrorViewer</code>.
+            <br />
+            Komponen <code>ErrorViewer</code> dideklarasikan di bawah tulisan ini.
+        </MudText>
+        <ErrorViewer Exception="_exception" Class="my-5" />
+        <FieldDefault Label="Current Count" Class="mt-5">
+            @_currentCountWithErrorViewer
+        </FieldDefault>
+        <MudStack Row="true" Class="mt-5">
+            <ButtonPrimary OnClick="IncrementCountWithErrorViewer"
+                           StartIcon="@MudBlazor.Icons.Material.Filled.AdsClick"
+                           Disabled="@(_exception is not null)">
+                Click me
+            </ButtonPrimary>
+            <ButtonReset OnClick="Reset" />
+        </MudStack>
+    </MudTabPanel>
+    <MudTabPanel Text="With ErrorViewer + Snackbar">
+        <MudText Typo="Typo.body1">
+            Klik hingga Current Count menjadi <b>@MaximumCount</b>.
+            Setelah itu klik lagi hingga menyebabkan error dan
+            aplikasi akan menampilkan komponen <code>ErrorViewer</code>.
+            <br />
+            Komponen <code>ErrorViewer</code> dideklarasikan di bawah tulisan ini.
+        </MudText>
+        <ErrorViewer Exception="_anotherException" ShowSnackbar="true" Class="my-5" />
+        <FieldDefault Label="Current Count" Class="mt-5">
+            @_currentCountWithErrorViewerAndSnackbar
+        </FieldDefault>
+        <MudStack Row="true" Class="mt-5">
+            <ButtonPrimary OnClick="IncrementCountWithErrorViewerAndSnackbar"
+                           StartIcon="@MudBlazor.Icons.Material.Filled.AdsClick"
+                           Disabled="@(_anotherException is not null)">
+                Click me
+            </ButtonPrimary>
+            <ButtonReset OnClick="Reset" />
+        </MudStack>
+    </MudTabPanel>
+    <MudTabPanel Text="Without ErrorViewer">
+        <MudText Typo="Typo.body1">
+            Klik hingga Current Count menjadi <b>@MaximumCount</b>.
+            Setelah itu klik lagi hingga menyebabkan error dan
+            aplikasi akan menampilkan komponen <code>BlazorErrorUI</code>.
+            <br />
+            Komponen <code>BlazorErrorUI</code> dideklarasikan pada file App.razor dan
+            kita <strong>tidak dapat</strong> mengganti isi tulisannya dengan pesan yang lebih jelas.
+            <br />
+            Komponen <code>BlazorErrorUI</code> akan mem-<i>block</i> halaman aplikasi
+            sehingga user harus melakukan <i>refresh</i> untuk melanjutkan menggunakan aplikasi.
+        </MudText>
+        <FieldDefault Label="Current Count" Class="mt-5">
+            @_currentCountWithoutErrorViewer
+        </FieldDefault>
+        <MudStack Row="true" Class="mt-5">
+            <ButtonPrimary OnClick="IncrementCountWithoutErrorViewer"
+                           StartIcon="@MudBlazor.Icons.Material.Filled.AdsClick">
+                Click me
+            </ButtonPrimary>
+            <ButtonReset OnClick="Reset" />
+        </MudStack>
+    </MudTabPanel>
+</HorizontalTabs>

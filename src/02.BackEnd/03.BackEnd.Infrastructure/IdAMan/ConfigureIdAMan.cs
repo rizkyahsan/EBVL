@@ -1,0 +1,72 @@
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Pertamina.Extensions.Polly;
+using Pertamina.Services.IdAMan;
+using Pertamina.Services.PersonalRoles;
+using Pertamina.Services.PersonalRoles.IdAMan;
+using Pertamina.Services.PositionRoles;
+using Pertamina.Services.PositionRoles.IdAMan;
+using Pertamina.Services.UserPositions;
+using Pertamina.Services.UserPositions.IdAMan;
+using Pertamina.Services.UserProfile;
+using Pertamina.Services.UserProfile.IdAMan;
+
+namespace EBVL.BackEnd.Infrastructure.IdAMan;
+
+public static class ConfigureIdAMan
+{
+    private static readonly TimeSpan _handlerLifetime = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan _durationOfBreak = TimeSpan.FromSeconds(30);
+    private const int RetryCount = 5;
+    private const int AllowedHandledEvents = 5;
+
+    public static IdAManOptions AddIdAManService(this IServiceCollection services, IConfiguration configuration, string clientId, string clientSecret, string objectId, IHealthChecksBuilder healthChecksBuilder)
+    {
+        var idAManOptionsFromConfiguration = configuration.GetRequiredSection(IdAManOptions.SectionKey).Get<IdAManOptions>()
+            ?? throw new ConfigurationBindingFailedException(IdAManOptions.SectionKey, typeof(IdAManOptions));
+
+        var idAManOptions = new IdAManOptions
+        {
+            Authentication = idAManOptionsFromConfiguration.Authentication,
+            RestApi = idAManOptionsFromConfiguration.RestApi,
+            ClientId = clientId,
+            ClientSecret = clientSecret,
+            ObjectId = objectId
+        };
+
+        var apiBaseUri = new Uri($"{idAManOptions.RestApi.BaseUrl}{idAManOptions.RestApi.PathBase}");
+
+        _ = services.AddSingleton(Options.Create(idAManOptions));
+        _ = services.AddHttpClient<IdAManServiceProvider>()
+            .SetDefaultPollyPolicy(_handlerLifetime, RetryCount, AllowedHandledEvents, _durationOfBreak);
+
+        _ = healthChecksBuilder.Add(new HealthCheckRegistration(
+            name: "IdAMan Authentication Service",
+            instance: new IdAManAuthenticationServiceHealthCheck($"{idAManOptions.Authentication.AuthorityUrl}{idAManOptions.Authentication.HealthCheckEndpoint}"),
+            failureStatus: HealthStatus.Unhealthy,
+            tags: ["IdAMan", "Authentication"]));
+
+        _ = healthChecksBuilder.Add(new HealthCheckRegistration(
+            name: "IdAMan REST API Service",
+            instance: new IdAManRestApiServiceHealthCheck($"{idAManOptions.RestApi.BaseUrl}{idAManOptions.Authentication.HealthCheckEndpoint}"),
+            failureStatus: HealthStatus.Unhealthy,
+            tags: ["IdAMan", "REST API"]));
+
+        _ = services.Configure<IdAManPersonalRolesOptions>(configuration.GetRequiredSection(IdAManPersonalRolesOptions.SectionKey));
+        _ = services.AddHttpClient<IPersonalRolesService, IdAManPersonalRolesService>(client => client.BaseAddress = apiBaseUri)
+            .SetDefaultPollyPolicy(_handlerLifetime, RetryCount, AllowedHandledEvents, _durationOfBreak);
+
+        _ = services.Configure<IdAManPositionRolesOptions>(configuration.GetRequiredSection(IdAManPositionRolesOptions.SectionKey));
+        _ = services.AddHttpClient<IPositionRolesService, IdAManPositionRolesService>(client => client.BaseAddress = apiBaseUri)
+            .SetDefaultPollyPolicy(_handlerLifetime, RetryCount, AllowedHandledEvents, _durationOfBreak);
+
+        _ = services.Configure<IdAManUserPositionsOptions>(configuration.GetRequiredSection(IdAManUserPositionsOptions.SectionKey));
+        _ = services.AddHttpClient<IUserPositionsService, IdAManUserPositionsService>(client => client.BaseAddress = apiBaseUri)
+            .SetDefaultPollyPolicy(_handlerLifetime, RetryCount, AllowedHandledEvents, _durationOfBreak);
+
+        _ = services.Configure<IdAManUserProfileOptions>(configuration.GetRequiredSection(IdAManUserProfileOptions.SectionKey));
+        _ = services.AddHttpClient<IUserProfileService, IdAManUserProfileService>(client => client.BaseAddress = apiBaseUri)
+            .SetDefaultPollyPolicy(_handlerLifetime, RetryCount, AllowedHandledEvents, _durationOfBreak);
+
+        return idAManOptions;
+    }
+}

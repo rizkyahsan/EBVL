@@ -1,0 +1,67 @@
+@page "/Examples/Documents"
+@inherits PageBase
+@using EBVL.Shared.Dto.Modules.Examples.Documents.GetDocuments
+
+<HtmlHead Title="@DocumentsDisplayTextFor.Documents" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@DocumentsDisplayTextFor.Documents" />
+<ErrorViewer Exception="_exception" />
+<TopButtonPanel>
+    <ButtonAdd EntityType="@DocumentsDisplayTextFor.Document" OnClick="ShowDialogAdd" />
+</TopButtonPanel>
+<TableDefault Items="_items"
+              Loading="_isLoading"
+              Filter="FilterItems">
+    <ToolBarContent>
+        <MudSpacer />
+        <TextFieldSearch @bind-Value="_searchKeyword" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DocumentItem, object>(x => x.FileName)"
+                               InitialDirection="SortDirection.Ascending">
+                @CommonDisplayTextFor.FileName
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DocumentItem, object>(x => x.FileSize)">
+                File Size
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DocumentItem, object>(x => x.Created)">
+                @CommonDisplayTextFor.Created
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<DocumentItem, object>(x => x.CreatedBy)">
+                @CommonDisplayTextFor.CreatedBy
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh Class="text-center">
+            @CommonDisplayTextFor.Action
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@CommonDisplayTextFor.FileName">
+            <LinkDefault Href="@ExamplesDocumentsRouteFor.Details(context.Id)">
+                <MudHighlighter Text="@context.FileName" HighlightedText="@_searchKeyword" />
+            </LinkDefault>
+        </MudTd>
+        <MudTd DataLabel="File Size">
+            <MudHighlighter Text="@context.FileSize.ToReadableFileSize()" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.Created">
+            <MudHighlighter Text="@context.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.CreatedBy">
+            <MudHighlighter Text="@context.CreatedBy" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+            <ButtonDetails Href="@ExamplesDocumentsRouteFor.Details(context.Id)" />
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</TableDefault>

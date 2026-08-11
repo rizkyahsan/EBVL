@@ -1,0 +1,80 @@
+mark
+{
+    padding: 0px;
+    background-color: yellow;
+}
+
+code
+{
+    font-family: 'Cascadia Code', Consolas, Courier, monospace;
+    color: var(--mud-palette-primary);
+    background-color: var(--mud-palette-primary-hover);
+    border-radius: 2px;
+    padding: 2px 5px;
+}
+
+pre
+{
+    font-family: 'Cascadia Code', Consolas, Courier, monospace;
+    line-height: 1.4;
+    text-wrap: pretty;
+}
+
+ul, ol
+{
+    list-style-position: inside !important;
+    margin: 10px 0px;
+}
+
+.text-center
+{
+    text-align: center !important;
+}
+
+.text-right
+{
+    text-align: right !important;
+}
+
+.text-multiline
+{
+    white-space: pre-wrap !important;
+}
+
+.hover-shadow:hover
+{
+    box-shadow: 0 0 16px rgba(0,0,0,0.2);
+}
+
+/* ErrorBoundary component */
+
+.blazor-error-boundary
+{
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9IiNmNDQzMzYiIGNsYXNzPSJtdWQtaWNvbi1yb290IG11ZC1zdmctaWNvbiBtdWQtaWNvbi1zaXplLW1lZGl1bSIgZm9jdXNhYmxlPSJmYWxzZSIgdmlld0JveD0iMCAwIDI0IDI0IiBhcmlhLWhpZGRlbj0idHJ1ZSIgcm9sZT0iaW1nIj48IS0tIS0tPjxwYXRoIGQ9Ik0wIDBoMjR2MjRIMFYweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMSAxNWgydjJoLTJ6bTAtOGgydjZoLTJ6bS45OS01QzYuNDcgMiAyIDYuNDggMiAxMnM0LjQ3IDEwIDkuOTkgMTBDMTcuNTIgMjIgMjIgMTcuNTIgMjIgMTJTMTcuNTIgMiAxMS45OSAyek0xMiAyMGMtNC40MiAwLTgtMy41OC04LThzMy41OC04IDgtOCA4IDMuNTggOCA4LTMuNTggOC04IDh6Ii8+PC9zdmc+);
+    background-repeat: no-repeat;
+    background-size: 50px;
+    background-position: center 20px;
+    color: var(--mud-palette-error-darken);
+    background-color: var(--mud-palette-error-hover);
+    border-radius: var(--mud-default-borderradius);
+    padding: 70px 32px 32px;
+    transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+    .blazor-error-boundary::before
+    {
+        display: block;
+        content: "Oops! Something went wrong.";
+        font-size: var(--mud-typography-h4-size);
+        font-weight: var(--mud-typography-h4-weight);
+    }
+
+    .blazor-error-boundary::after
+    {
+        display: block;
+        content: "Please try again or contact support if the problem persists.";
+        color: var(--mud-palette-text-primary);
+    }

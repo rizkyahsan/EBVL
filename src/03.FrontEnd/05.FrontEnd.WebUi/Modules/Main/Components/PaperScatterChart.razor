@@ -1,0 +1,42 @@
+@using ApexCharts
+@using EBVL.Shared.Dto.Modules.Examples.Orders.GetOrders
+
+@inherits CommonComponentBase
+
+<Paper25 Style="min-height: 416px;">
+    <MudText Typo="Typo.h5">Scattered Order Gross</MudText>
+    @if (_isLoading)
+    {
+        <MudStack Class="text-center"
+                  Style="height: 400px;"
+                  Justify="Justify.Center"
+                  AlignItems="AlignItems.Center">
+            <MudProgressCircular Color="MudBlazor.Color.Primary"
+                                 Indeterminate="true"
+                                 Size="MudBlazor.Size.Large" />
+        </MudStack>
+    }
+    else
+    {
+        <ApexChart TItem="OrderItem"
+                   Height="400"
+                   Options="_options"
+                   XAxisType="XAxisType.Numeric">
+            <ApexPointSeries TItem="OrderItem"
+                             Items="_orders"
+                             Name="% Gross"
+                             SeriesType="SeriesType.Scatter"
+                             XValue="@(e => e.DiscountPercentage)"
+                             YValue="@(e => e.GrossValue)"
+                             OrderByDescending="e => e.X"
+                             PointColor="GetColor" />
+            <ApexPointSeries TItem="OrderItem"
+                             Items="_trendOrders"
+                             SeriesType="SeriesType.Line"
+                             Name="Trend"
+                             XValue="@(e => e.DiscountPercentage)"
+                             YValue="@(e => e.GrossValue)"
+                             OrderByDescending="e => e.X" />
+        </ApexChart>
+    }
+</Paper25>

@@ -1,0 +1,15 @@
+@page "/AccessDenied"
+
+@attribute [AllowAnonymous]
+
+<HtmlHead Title="@CommonDisplayTextFor.AccessDenied" />
+<MudStack AlignItems="AlignItems.Center">
+    <div class="text-center">
+        <MudText Typo="Typo.h1">@CommonDisplayTextFor.AccessDenied</MudText>
+        <MudText Typo="Typo.subtitle1">You are not authorized to access this page.</MudText>
+    </div>
+    <div>
+        <img src="img/access-denied.png" alt="@CommonDisplayTextFor.AccessDenied" style="max-width: 400px;" />
+    </div>
+    <DivHistoryBack />
+</MudStack>

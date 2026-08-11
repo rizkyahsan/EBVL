@@ -1,0 +1,19 @@
+﻿::deep .mud-card
+{
+    width: 200px !important;
+}
+
+::deep .border-right-red
+{
+    border-right: 4px solid red !important;
+}
+
+::deep .border-right-blue
+{
+    border-right: 4px solid blue !important;
+}
+
+::deep .hover-shadow
+{
+    border-right: 4px solid;
+}

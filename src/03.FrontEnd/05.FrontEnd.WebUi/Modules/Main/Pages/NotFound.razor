@@ -1,0 +1,15 @@
+@page "/NotFound"
+
+@attribute [AllowAnonymous]
+
+<HtmlHead Title="@CommonDisplayTextFor.NotFound" />
+<MudStack AlignItems="AlignItems.Center">
+    <div class="text-center">
+        <MudText Typo="Typo.h1">@CommonDisplayTextFor.NotFound</MudText>
+        <MudText Typo="Typo.subtitle1">The page you are looking for could not be found.</MudText>
+    </div>
+    <div>
+        <img src="img/not-found.png" alt="@CommonDisplayTextFor.NotFound" style="max-width: 400px;" />
+    </div>
+    <DivHistoryBack />
+</MudStack>

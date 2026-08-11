@@ -1,0 +1,160 @@
+@page "/Examples/Buttons"
+@inherits PageBase
+
+<HtmlHead Title="@ExamplesDisplayTextFor.Buttons" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.Buttons" />
+<PageSection SectionTitle="Filled">
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Default">Default</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Primary">Primary</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Secondary">Secondary</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Tertiary">Tertiary</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Info">Info</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Success">Success</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Warning">Warning</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Error">Error</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Dark">Dark</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Transparent">Transparent</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Inherit">Inherit</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Color="Color.Surface">Surface</MudButton>
+        <MudButton Variant="Variant.Filled" DropShadow="false" Disabled="true">Disabled</MudButton>
+    </MudStack>
+</PageSection>
+<PageSection SectionTitle="Outlined">
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Default">Default</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Primary">Primary</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Secondary">Secondary</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Tertiary">Tertiary</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Info">Info</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Success">Success</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Warning">Warning</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Error">Error</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Dark">Dark</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Transparent">Transparent</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Inherit">Inherit</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Color="Color.Surface">Surface</MudButton>
+        <MudButton Variant="Variant.Outlined" DropShadow="false" Disabled="true">Disabled</MudButton>
+    </MudStack>
+</PageSection>
+<PageSection SectionTitle="Text">
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Default">Default</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Primary">Primary</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Secondary">Secondary</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Tertiary">Tertiary</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Info">Info</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Success">Success</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Warning">Warning</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Error">Error</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Dark">Dark</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Transparent">Transparent</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Inherit">Inherit</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Color="Color.Surface">Surface</MudButton>
+        <MudButton Variant="Variant.Text" DropShadow="false" Disabled="true">Disabled</MudButton>
+    </MudStack>
+</PageSection>
+<PageSection SectionTitle="Built-In with Color">
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonPrimary>ButtonPrimary</ButtonPrimary>
+        <ButtonSecondary>ButtonSecondary</ButtonSecondary>
+        <ButtonTertiary>ButtonTertiary</ButtonTertiary>
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonInfo>ButtonInfo</ButtonInfo>
+        <ButtonSuccess>ButtonSuccess</ButtonSuccess>
+        <ButtonWarning>ButtonWarning</ButtonWarning>
+        <ButtonError>ButtonError</ButtonError>
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonDefault>ButtonDefault</ButtonDefault>
+        <ButtonDark>ButtonDark</ButtonDark>
+    </MudStack>
+</PageSection>
+<PageSection SectionTitle="Built-In with Action">
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonAdd />
+        <ButtonAdd EntityType="Entity" />
+        <ButtonCreate />
+        <ButtonCreate EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonSend />
+        <ButtonSend EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonPublish />
+        <ButtonPublish EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonEdit />
+        <ButtonEdit EntityType="Entity" />
+        <ButtonUpdate />
+        <ButtonUpdate EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonDelete />
+        <ButtonDelete EntityType="Entity" />
+        <ButtonRemove />
+        <ButtonRemove EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonSave />
+        <ButtonSubmit />
+        <ButtonConfirm />
+        <ButtonApply />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonVerify />
+        <ButtonVerify EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonCancel />
+        <ButtonClose />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonDetails />
+        <ButtonView />
+        <ButtonOpen />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonDownload />
+        <ButtonDownload EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonUpload />
+        <ButtonUpload EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonCopy />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonReload />
+        <ButtonReset />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonYes />
+        <ButtonNo />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonApprove />
+        <ButtonApprove EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonReturn />
+        <ButtonReturn EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonRetract />
+        <ButtonRetract EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonReject />
+        <ButtonReject EntityType="Entity" />
+    </MudStack>
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mt-10">
+        <ButtonLogin />
+        <ButtonLogout />
+    </MudStack>
+</PageSection>

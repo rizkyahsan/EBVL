@@ -1,0 +1,10 @@
+@inherits LayoutBase
+
+<MudThemeProvider Theme="_theme"
+                  @ref="_mudThemeProvider"
+                  @bind-IsDarkMode="DisplayInfo.IsDarkMode" />
+<MudLayout>
+    <MudMainContent @ondblclick="ToggleDarkMode">
+        @Body
+    </MudMainContent>
+</MudLayout>

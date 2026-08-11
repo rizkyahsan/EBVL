@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>EBVL.BackEnd.Domain</RootNamespace>
+    <AssemblyName>EBVL.BackEnd.Domain</AssemblyName>
+    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
+    <FileVersion>1.0.3</FileVersion>
+    <InformationalVersion>1.0.3</InformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\01.Shared\01.Shared.Enums\01.Shared.Enums.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Pertamina.Common.Domain" Version="1.0.3" />
+  </ItemGroup>
+</Project>

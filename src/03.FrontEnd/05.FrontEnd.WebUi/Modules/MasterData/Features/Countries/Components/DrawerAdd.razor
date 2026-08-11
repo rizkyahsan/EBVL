@@ -1,0 +1,45 @@
+@inherits DrawerBase
+
+<MudDrawer Variant="DrawerVariant.Temporary"
+           Anchor="Anchor.Right"
+           Width="500px"
+           OverlayAutoClose="false"
+           @bind-Open="IsOpen">
+    <MudDrawerHeader>
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center"
+                  Class="mud-width-full">
+            <MudText Typo="Typo.h3">
+                @CommonDisplayTextFor.Add @CountriesDisplayTextFor.Country
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDrawer" />
+        </MudStack>
+    </MudDrawerHeader>
+    <div class="pa-5">
+        <ErrorViewer Exception="_exception" />
+        <LoadingLinear IsVisible="_isLoading" />
+        <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue">
+            <MudGrid>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@CommonDisplayTextFor.Code"
+                                      @bind-Value="_model.Code"
+                                      For="@(() => _model.Code)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.Code)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@CommonDisplayTextFor.Name"
+                                      @bind-Value="_model.Name"
+                                      For="@(() => _model.Name)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.Name)" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+        <BottomButtonPanel>
+            <ButtonCancel OnClick="CloseDrawer" />
+            <ButtonSubmit OnClick="Submit" Disabled="_isLoading" />
+        </BottomButtonPanel>
+    </div>
+</MudDrawer>

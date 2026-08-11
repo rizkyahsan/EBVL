@@ -1,0 +1,11 @@
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override void OnInitialized()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var loginRoute = AuthenticationRouteFor.Login(uri.AbsolutePath);
+
+        NavigationManager.NavigateTo(loginRoute, true);
+    }
+}

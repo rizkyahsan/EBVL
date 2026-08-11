@@ -1,0 +1,64 @@
+@page "/Administration/Configurations"
+@inherits PageBase
+@using EBVL.Shared.Dto.Modules.Administration.Configurations.GetConfigurations
+@attribute [Authorize(Policy = AdministrationPermissions.AdministrationConfigurationsRead)]
+
+<HtmlHead Title="@ConfigurationsDisplayTextFor.Configurations" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ConfigurationsDisplayTextFor.Configurations" />
+<ErrorViewer Exception="_exception" />
+<AuthorizeView Policy="@AdministrationPermissions.AdministrationConfigurationsWrite">
+    <Authorized>
+        <TopButtonPanel>
+            <ButtonAdd EntityType="@ConfigurationsDisplayTextFor.Configuration" OnClick="ShowDialogAdd" />
+        </TopButtonPanel>
+    </Authorized>
+</AuthorizeView>
+<TableDefault Items="_items"
+              Loading="_isLoading"
+              Filter="FilterItems">
+    <ToolBarContent>
+        <MudSpacer />
+        <TextFieldSearch @bind-Value="_searchKeyword" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<ConfigurationItem, object>(x => x.Key)"
+                               InitialDirection="SortDirection.Ascending">
+                @ConfigurationsDisplayTextFor.Key
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<ConfigurationItem, object>(x => x.Value)">
+                @ConfigurationsDisplayTextFor.Value
+            </MudTableSortLabel>
+        </MudTh>
+        <AuthorizeView Policy="@AdministrationPermissions.AdministrationConfigurationsWrite">
+            <Authorized>
+                <MudTh Class="text-center">
+                    @CommonDisplayTextFor.Action
+                </MudTh>
+            </Authorized>
+        </AuthorizeView>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@ConfigurationsDisplayTextFor.Key">
+            <MudHighlighter Text="@context.Key" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@ConfigurationsDisplayTextFor.Value">
+            <MudHighlighter Text="@context.Value" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <AuthorizeView Policy="@AdministrationPermissions.AdministrationConfigurationsWrite" Context="authorizedContext">
+            <Authorized>
+                <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+                    <ButtonDetails Href="@AdministrationConfigurationsRouteFor.Details(context.Id)" />
+                    <ButtonEdit OnClick="() => ShowDialogEdit(context)" />
+                    <ButtonDelete OnClick="() => ShowDialogDelete(context)" />
+                </MudTd>
+            </Authorized>
+        </AuthorizeView>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</TableDefault>

@@ -1,0 +1,26 @@
+@inherits DialogBase
+
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
+    <DialogContent>
+        <ErrorViewer Exception="_exception" />
+        <MudGrid>
+            <MudItem xs="12" sm="4">
+                <NumericFieldDefault Label="@PublicHolidaysDisplayTextFor.Year"
+                                  For="@(() => _command.Year)"
+                                  @bind-Value="_command.Year"
+                                  Required="true"
+                                  RequiredError="@ErrorMessageFor.FieldIsRequired(PublicHolidaysDisplayTextFor.Year)" />
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <TextFieldDefault Label="@PublicHolidaysDisplayTextFor.CountryCode"
+                                  For="@(() => _command.CountryCode)"
+                                  @bind-Value="_command.CountryCode"
+                                  Required="true"
+                                  RequiredError="@ErrorMessageFor.FieldIsRequired(PublicHolidaysDisplayTextFor.CountryCode)" />
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <ButtonSubmit OnClick="Submit" Disabled="_isLoading" />
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+</MudDialog>

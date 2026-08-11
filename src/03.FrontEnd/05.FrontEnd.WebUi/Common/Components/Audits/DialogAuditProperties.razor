@@ -1,0 +1,68 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <div class="pb-4">
+            @if (Audit.ActionType is AuditActionType.Add)
+            {
+                <TableDefault Items="Audit.Properties">
+                    <HeaderContent>
+                        <MudTh>
+                            @AuditsDisplayTextFor.Property
+                        </MudTh>
+                        <MudTh>
+                            @AuditsDisplayTextFor.Value
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="@AuditsDisplayTextFor.Property">
+                            @context.Name
+                        </MudTd>
+                        <MudTd DataLabel="@AuditsDisplayTextFor.Value">
+                            @context.NewValue
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        @if (Audit.Properties.Count() > 10)
+                        {
+                            <MudTablePager />
+                        }
+                    </PagerContent>
+                </TableDefault>
+            }
+            else
+            {
+                <TableDefault Items="Audit.Properties">
+                    <HeaderContent>
+                        <MudTh>
+                            @AuditsDisplayTextFor.Property
+                        </MudTh>
+                        <MudTh>
+                            @AuditsDisplayTextFor.OldValue
+                        </MudTh>
+                        <MudTh>
+                            @AuditsDisplayTextFor.NewValue
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="@AuditsDisplayTextFor.Property">
+                            @context.Name
+                        </MudTd>
+                        <MudTd DataLabel="@AuditsDisplayTextFor.Value">
+                            @context.OldValue
+                        </MudTd>
+                        <MudTd DataLabel="@AuditsDisplayTextFor.Value">
+                            @context.NewValue
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        @if (Audit.Properties.Count() > 10) 
+                        {
+                            <MudTablePager />
+                        }
+                    </PagerContent>
+                </TableDefault>
+            }
+        </div>
+    </DialogContent>
+</MudDialog>

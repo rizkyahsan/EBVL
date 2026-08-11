@@ -1,0 +1,7 @@
+﻿.breadcrumb-separator
+{
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--mud-palette-text-disabled);
+}

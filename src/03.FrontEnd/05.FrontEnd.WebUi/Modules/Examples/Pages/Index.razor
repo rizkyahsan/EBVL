@@ -1,0 +1,275 @@
+@page "/Examples"
+@inherits PageBase
+
+<HtmlHead Title="@ExamplesDisplayTextFor.Examples" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<MudText Typo="Typo.h1">
+    <span class="blue-text">
+        Explore
+    </span>
+    <span class="red-text">
+        Examples
+    </span>
+</MudText>
+<div>
+    <MudText Typo="Typo.h2" Class="mt-15 mb-5">
+        @WebUiDisplayTextFor.Miscellaneous
+    </MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.Elevations">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Red.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 red-text">
+                        @ExamplesDisplayTextFor.Elevations
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        The usage of @ExamplesDisplayTextFor.Elevations
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.Palette">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Pink.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 pink-text">
+                        @ExamplesDisplayTextFor.Palette
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        The usage of @ExamplesDisplayTextFor.Palette
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.Buttons">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Purple.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 purple-text">
+                        @ExamplesDisplayTextFor.Buttons
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        The usage of @ExamplesDisplayTextFor.Buttons
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.ButtonPanels">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.DeepPurple.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 deep-purple-text">
+                        @ExamplesDisplayTextFor.ButtonPanels
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        The usage of @ExamplesDisplayTextFor.ButtonPanels
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.Typography">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Indigo.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 indigo-text">
+                        @ExamplesDisplayTextFor.Typography
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        The usage of @ExamplesDisplayTextFor.Typography
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.Defaults">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Blue.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 blue-text">
+                        @ExamplesDisplayTextFor.Defaults
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Components with default property values
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.TextFields">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.LightBlue.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 light-blue-text">
+                        @ExamplesDisplayTextFor.TextFields
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Various examples of @ExamplesDisplayTextFor.TextFields
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.Icons">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Cyan.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 cyan-text">
+                        @ExamplesDisplayTextFor.Icons
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        The usage of @ExamplesDisplayTextFor.Icons
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.Masking">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Teal.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 teal-text">
+                        @ExamplesDisplayTextFor.Masking
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        The usage of <code>Mask</code> component
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.DisplayingInformation">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Green.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 green-text">
+                        @ExamplesDisplayTextFor.DisplayingInformation
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        How to display important information after some action
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.ErrorHandling">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.LightGreen.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 light-green-text">
+                        @ExamplesDisplayTextFor.ErrorHandling
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        How to handle errors
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesRouteFor.Emojis">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Lime.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 lime-text text-darken-2">
+                        @ExamplesDisplayTextFor.Emojis
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Using the Emoji service to get random and search emojis
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesDocumentsRouteFor.Index">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Yellow.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 yellow-text text-darken-3">
+                        @DocumentsDisplayTextFor.Documents
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        How to list, view, add, edit, and delete @DocumentsDisplayTextFor.Documents
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesPublicHolidaysRouteFor.Index">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Amber.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 amber-text text-darken-2">
+                        @PublicHolidaysDisplayTextFor.PublicHolidays
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Consuming external Public Holidays API
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+    </MudGrid>
+    <MudText Typo="Typo.h2" Class="mt-15 mb-5">
+        @ExamplesLoadingsDisplayTextFor.Loadings
+    </MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesLoadingsRouteFor.LoadingLinear">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Orange.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 orange-text">
+                        @ExamplesLoadingsDisplayTextFor.LoadingLinear
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        The usage of <code>LoadingLinear</code> component
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesLoadingsRouteFor.LoadingOverlay">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.DeepOrange.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 deep-orange-text">
+                        @ExamplesLoadingsDisplayTextFor.LoadingOverlay
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        The usage of <code>LoadingOverlay</code> component
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+    </MudGrid>
+    <MudText Typo="Typo.h2" Class="mt-15 mb-5">
+        @ExamplesEmailsDisplayTextFor.Emails
+    </MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesEmailsRouteFor.SendEmail">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Brown.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 brown-text">
+                        @ExamplesEmailsDisplayTextFor.SendEmail
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        How to send e-mail without template
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesEmailsRouteFor.SendEmailWithTemplate">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.BlueGray.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 blue-gray-text text-darken-2">
+                        @ExamplesEmailsDisplayTextFor.SendEmailWithTemplate
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        How to send e-mail with template
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+    </MudGrid>
+    <MudText Typo="Typo.h2" Class="mt-15 mb-5">
+        @ExamplesDummiesDisplayTextFor.Dummies
+    </MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesDummiesRouteFor.Index">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Gray.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 gray-text">
+                        @ExamplesDummiesDisplayTextFor.GetDummies
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Dummy operation with GET HTTP method
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesDummiesRouteFor.Post">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Shades.Black};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 shades-text text-black">
+                        @ExamplesDummiesDisplayTextFor.PostDummy
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Dummy operation with POST HTTP method
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+    </MudGrid>
+</div>

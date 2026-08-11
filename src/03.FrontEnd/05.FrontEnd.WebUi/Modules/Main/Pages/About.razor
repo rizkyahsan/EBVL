@@ -1,0 +1,51 @@
+@page "/About"
+@using Pertamina.Common.Statics
+@inherits PageBase
+
+<HtmlHead Title="@MainDisplayTextFor.About" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@MainDisplayTextFor.About" />
+
+<PageSection SectionTitle="Overview">
+    <MudText Typo="Typo.body1">
+        The description of this application.
+    </MudText>
+</PageSection>
+<PageSection SectionTitle="System Information">
+    <SimpleTableDefault>
+        <tbody>
+            <tr>
+                <td class="text-bold">Application Nick Name</td>
+                <td>@AppConfigFrontEndOptions.Value.AppNickName</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Application Full Name</td>
+                <td>@AppConfigFrontEndOptions.Value.AppFullName</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Application Version</td>
+                <td>@SystemInformationFor.EntryAssemblyInformationalVersion</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Application Last Build</td>
+                <td>@SystemInformationFor.EntryAssemblyLastBuild.ToDisplayText(DateTimeFormatFor.LongDateTime)</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Environment Name</td>
+                <td>@SystemInformationFor.EnvironmentName</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Operating System</td>
+                <td>@SystemInformationFor.OperatingSystemDescription</td>
+            </tr>
+            <tr>
+                <td class="text-bold">ASP.NET Version</td>
+                <td>@SystemInformationFor.EntryAssemblyFrameworkName</td>
+            </tr>
+            <tr>
+                <td class="text-bold">Time Zone</td>
+                <td>@TimeZoneInfo.Local.DisplayName</td>
+            </tr>
+        </tbody>
+    </SimpleTableDefault>
+</PageSection>

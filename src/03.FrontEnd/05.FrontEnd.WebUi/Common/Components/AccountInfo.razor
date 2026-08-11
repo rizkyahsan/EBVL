@@ -1,0 +1,94 @@
+<AuthorizeView>
+    <Authorized>
+        <div>
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      Class="cursor-pointer"
+                      @onclick="ShowProfile">
+                <MudHidden Breakpoint="Breakpoint.SmAndUp" Invert="true">
+                    <MudText Typo="Typo.body1">
+                        @context.User.GetDisplayName()
+                    </MudText>
+                </MudHidden>
+                <MudAvatar>
+                    <MudImage Src="@context.User.GetPhotoUrl()" />
+                </MudAvatar>
+            </MudStack>
+            <div class="profile-drawer">
+                <MudDrawer @bind-Open="@_isProfileOpen"
+                           Anchor="Anchor.End"
+                           Elevation="25"
+                           Variant="@DrawerVariant.Temporary"
+                           OverlayAutoClose="true">
+                    <div class="mt-3 mr-3 text-right">
+                        <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="HideProfile" />
+                    </div>
+                    <MudStack Spacing="4" Class="flex-grow-1">
+                        <MudDrawerHeader>
+                            <MudStack Row="true"
+                                      Justify="Justify.Center"
+                                      Class="mud-width-full">
+                                <MudAvatar Style="height:100px; width:100px;">
+                                    <MudImage Src="@context.User.GetPhotoUrl()" />
+                                </MudAvatar>
+                            </MudStack>
+                        </MudDrawerHeader>
+                        <MudStack AlignItems="AlignItems.Center" Spacing="1">
+                            <MudText Typo="Typo.body1">
+                                @context.User.GetDisplayName()
+                            </MudText>
+                            <MudText Typo="Typo.body2" Class="gray-text text-darken-2">
+                                @context.User.GetUsername()
+                            </MudText>
+                            <MudText Typo="Typo.body2" Class="gray-text text-darken-2">
+                                @context.User.GetEmployeeId()
+                            </MudText>
+                            <MudChip T="string"
+                                     Variant="Variant.Text"
+                                     Color="Color.Primary"
+                                     Size="Size.Small">
+                                @{
+                                    var positionName = context.User.GetPositionName();
+
+                                    if (string.IsNullOrWhiteSpace(positionName))
+                                    {
+                                        <span>@CommonDefaultValueFor.NotAvailable</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@positionName</span>
+                                    }
+                                }
+                            </MudChip>
+                        </MudStack>
+                        <MudDivider Class="flex-grow-0" />
+                        <MudList T="string" Dense="true">
+                            <MudListItem Icon="@Icons.Material.Filled.Badge"
+                                         Text="@MainDisplayTextFor.MySession"
+                                         SecondaryText="@($"{CommonDisplayTextFor.View} {MainDisplayTextFor.MySession.ToLower()}")"
+                                         Href="@MainRouteFor.MySession"
+                                         OnClick="GoToMyProfile" />
+                            <MudListItem Icon="@Icons.Material.Filled.SwitchAccount"
+                                         Text="@($"Switch {CommonDisplayTextFor.Position}")"
+                                         SecondaryText="@($"Switch to your other {CommonDisplayTextFor.Position.ToLower()}")"
+                                         OnClick="ShowDialogSwitchPosition" />
+                            <MudListItem Icon="@Icons.Material.Filled.Login"
+                                         Href="@_loginRoute"
+                                         Text="Relogin"
+                                         SecondaryText="@($"{CommonDisplayTextFor.Login} again to {CommonDisplayTextFor.IdAMan}")" />
+                        </MudList>
+                        <MudSpacer />
+                        <div class="pa-4">
+                            <ButtonLogout Size="Size.Large"
+                                          FullWidth="true"
+                                          Href="@_logoutRoute" />
+                        </div>
+                    </MudStack>
+                </MudDrawer>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <ButtonLogin Href="@_loginRoute" />
+    </NotAuthorized>
+</AuthorizeView>

@@ -1,0 +1,23 @@
+<PageTitle>@_title</PageTitle>
+
+@code {
+    [Inject]
+    public required IOptions<AppConfigFrontEndOptions> AppConfigFrontEndOptions { get; init; }
+
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+
+    private string _title = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrWhiteSpace(Title))
+        {
+            _title = AppConfigFrontEndOptions.Value.AppNickName;
+        }
+        else
+        {
+            _title = $"{Title} | {AppConfigFrontEndOptions.Value.AppNickName}";
+        }
+    }
+}

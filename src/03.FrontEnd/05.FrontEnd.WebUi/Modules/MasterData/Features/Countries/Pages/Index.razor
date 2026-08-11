@@ -1,0 +1,62 @@
+@page "/MasterData/Countries"
+@using EBVL.Shared.Dto.Modules.MasterData.Countries.GetCountries
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Countries.Components
+@inherits PageBase
+@attribute [Authorize(Policy = MasterDataPermissions.MasterDataCountriesRead)]
+
+<HtmlHead Title="@CountriesDisplayTextFor.Countries" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@CountriesDisplayTextFor.Countries" />
+<ErrorViewer Exception="_exception" />
+<AuthorizeView Policy="@MasterDataPermissions.MasterDataCountriesWrite">
+    <Authorized>
+        <TopButtonPanel>
+            <ButtonAdd EntityType="@CountriesDisplayTextFor.Country" OnClick="ShowDrawerAdd" />
+        </TopButtonPanel>
+    </Authorized>
+</AuthorizeView>
+<TableDefault Items="_items"
+              Loading="_isLoading"
+              Filter="FilterItems">
+    <ToolBarContent>
+        <MudSpacer />
+        <TextFieldSearch @bind-Value="_searchKeyword" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CountryItem, object>(x => x.Name)"
+                               InitialDirection="SortDirection.Ascending">
+                @CommonDisplayTextFor.Name
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<CountryItem, object>(x => x.Code)">
+                @CommonDisplayTextFor.Code
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh Class="text-center">
+            @CommonDisplayTextFor.Action
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@CommonDisplayTextFor.Name">
+            <LinkDefault Href="@MasterDataCountriesRouteFor.Details(context.Id)">
+                <MudHighlighter Text="@context.Name" HighlightedText="@_searchKeyword" />
+            </LinkDefault>
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.Code">
+            <MudHighlighter Text="@context.Code" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+            <ButtonDetails OnClick="@(() => ShowDrawerDetails(context.Id))" />
+            <ButtonEdit OnClick="@(() => ShowDrawerEdit(context))" />
+            <ButtonDelete OnClick="@(() => ShowDialogDelete(context))" />
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</TableDefault>
+<DrawerAdd @bind-IsOpen="_isDrawerAddOpen" OnReload="LoadItems" />
+<DrawerDetails @bind-IsOpen="_isDrawerDetailsOpen" Country="_selectedCountry" />
+<DrawerEdit @bind-IsOpen="_isDrawerEditOpen" Model="_model" OnReload="LoadItems" />

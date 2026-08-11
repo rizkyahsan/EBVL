@@ -1,0 +1,83 @@
+@page "/Examples/ButtonPanels"
+@inherits PageBase
+@using System.Text
+
+<HtmlHead Title="@ExamplesDisplayTextFor.ButtonPanels" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.ButtonPanels" />
+<PageSection>
+    <MudText Typo="Typo.h4">
+        TopButtonPanel
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mt-5">
+        <code>MudStack</code> with default values:
+        <ul>
+            <li>Row="true"</li>
+            <li>Justify="Justify.FlexEnd"</li>
+            <li>AlignItems="AlignItems.Center"</li>
+            <li>Class="<b>mb-5</b>"</li>
+        </ul>
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="pa-5">
+            <TopButtonPanel>
+                <ButtonAdd />
+                <ButtonCancel />
+                <ButtonCopy />
+            </TopButtonPanel>
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @{
+                var codeBuilder = new StringBuilder();
+                codeBuilder.AppendLine("<TopButtonPanel>");
+                codeBuilder.AppendLine("    <ButtonAdd />");
+                codeBuilder.AppendLine("    <ButtonCancel />");
+                codeBuilder.AppendLine("    <ButtonCopy />");
+                codeBuilder.AppendLine("</TopButtonPanel>");
+
+                <span>
+                    @codeBuilder.ToString()
+                </span>
+            }
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection>
+    <MudText Typo="Typo.h4">
+        BottomButtonPanel
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mt-5">
+        <code>MudStack</code> with default values:
+        <ul>
+            <li>Row="true"</li>
+            <li>Justify="Justify.FlexEnd"</li>
+            <li>AlignItems="AlignItems.Center"</li>
+            <li>Class="<b>mt-5</b>"</li>
+        </ul>
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="pa-5">
+            <BottomButtonPanel>
+                <ButtonDownload />
+                <ButtonApprove />
+                <ButtonReturn />
+                <ButtonDelete />
+            </BottomButtonPanel>
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @{
+                var codeBuilder = new StringBuilder();
+                codeBuilder.AppendLine("<BottomButtonPanel>");
+                codeBuilder.AppendLine("    <ButtonDownload />");
+                codeBuilder.AppendLine("    <ButtonApprove />");
+                codeBuilder.AppendLine("    <ButtonReturn />");
+                codeBuilder.AppendLine("    <ButtonDelete />");
+                codeBuilder.AppendLine("</BottomButtonPanel>");
+
+                <span>
+                    @codeBuilder.ToString()
+                </span>
+            }
+        </CodeBlock>
+    </div>
+</PageSection>

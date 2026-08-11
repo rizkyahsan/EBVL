@@ -1,0 +1,26 @@
+<Solution>
+  <Folder Name="/_etc/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/01.Shared/">
+    <Project Path="src/01.Shared/01.Shared.Enums/01.Shared.Enums.csproj" />
+    <Project Path="src/01.Shared/02.Shared.Statics/02.Shared.Statics.csproj" />
+    <Project Path="src/01.Shared/03.Shared.Dto/03.Shared.Dto.csproj" />
+  </Folder>
+  <Folder Name="/src/02.BackEnd/">
+    <Project Path="src/02.BackEnd/01.BackEnd.Domain/01.BackEnd.Domain.csproj" />
+    <Project Path="src/02.BackEnd/02.BackEnd.Services/02.BackEnd.Services.csproj" />
+    <Project Path="src/02.BackEnd/03.BackEnd.Infrastructure/03.BackEnd.Infrastructure.csproj" />
+    <Project Path="src/02.BackEnd/04.BackEnd.Logics/04.BackEnd.Logics.csproj" />
+    <Project Path="src/02.BackEnd/05.BackEnd.WebApi/05.BackEnd.WebApi.csproj" />
+  </Folder>
+  <Folder Name="/src/03.FrontEnd/">
+    <Project Path="src/03.FrontEnd/02.FrontEnd.Services/02.FrontEnd.Services.csproj" />
+    <Project Path="src/03.FrontEnd/03.FrontEnd.Infrastructure/03.FrontEnd.Infrastructure.csproj" />
+    <Project Path="src/03.FrontEnd/04.FrontEnd.Logics/04.FrontEnd.Logics.csproj" />
+    <Project Path="src/03.FrontEnd/05.FrontEnd.WebUi/05.FrontEnd.WebUi.csproj" />
+  </Folder>
+</Solution>

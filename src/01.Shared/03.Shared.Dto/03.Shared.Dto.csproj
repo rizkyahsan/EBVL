@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>EBVL.Shared.Dto</RootNamespace>
+    <AssemblyName>EBVL.Shared.Dto</AssemblyName>
+    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
+    <FileVersion>1.0.3</FileVersion>
+    <InformationalVersion>1.0.3</InformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\01.Shared.Enums\01.Shared.Enums.csproj" />
+    <ProjectReference Include="..\02.Shared.Statics\02.Shared.Statics.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Pertamina.Common.Dto" Version="1.0.3" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,51 @@
+﻿.mud-breadcrumbs
+{
+    margin-top: 7px;
+    padding: 10px 0px;
+}
+
+.mud-dialog-actions
+{
+    padding: 16px 25px !important;
+}
+
+.mud-divider
+{
+    border-top: 1px dashed var(--mud-palette-divider);
+}
+
+.mud-nav-link
+{
+    padding: 10px 16px;
+}
+
+    .mud-nav-link .mud-nav-link-expand-icon.mud-transform
+    {
+        transform: rotate(90deg) !important;
+    }
+
+.mud-nav-link-expand-icon
+{
+    width: 18px;
+    height: 18px;
+}
+
+.mud-overlay
+{
+    z-index: 2000;
+}
+
+.mud-nav-link.active:not(.mud-nav-link-disabled) .mud-nav-link-text
+{
+    color: var(--mud-palette-text-primary) !important;
+}
+
+.mud-table th, .mud-simple-table th
+{
+    background-color: var(--mud-palette-background-gray);
+}
+
+.mud-table tr:not(:last-child) td, .mud-simple-table tr:not(:last-child) td
+{
+    border-bottom-style: dashed !important;
+}

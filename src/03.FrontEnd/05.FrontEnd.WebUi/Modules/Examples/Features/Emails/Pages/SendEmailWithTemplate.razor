@@ -1,0 +1,56 @@
+@page "/Examples/Emails/SendEmailWithTemplate"
+@inherits PageBase
+
+<HtmlHead Title="@_pageTitle" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@_pageTitle" />
+<LoadingLinear IsVisible="_isLoading" />
+<ErrorViewer Exception="_exception" ShowSnackbar="true" />
+<Paper25>
+    @if (_model is not null)
+    {
+        <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue">
+            <MudFocusTrap>
+                <MudGrid>
+                    <MudItem xs="12">
+                        <TextFieldDefault @bind-Value="_model.Tos"
+                                          AutoFocus="true"
+                                          For="@(() => _model.Tos)"
+                                          HelperText="Separate with comma. Example: target1@email.com, target2@email.com"
+                                          Required="true" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <TextFieldDefault @bind-Value="_model.Ccs"
+                                          For="@(() => _model.Ccs)"
+                                          HelperText="Separate with comma. Example: target3@email.com, target4@email.com" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <TextFieldDefault @bind-Value="_model.Bccs"
+                                          For="@(() => _model.Bccs)"
+                                          HelperText="Separate with comma. Example: target4@email.com, target4@email.com" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <NumericFieldDefault @bind-Value="_model.ItemsCount"
+                                             For="@(() => _model.ItemsCount)"
+                                             HelperText="Number of items to include in the email body."
+                                             Required="true"
+                                             Min="2" Max="5" Step="1" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.h3" Class="mb-3">
+                            @nameof(SendEmailModel.Attachments)
+                        </MudText>
+                        <FileUploadMultipleComplete Accept="*.*" OnFilesUpdated="FilesUpdated" />
+                    </MudItem>
+                </MudGrid>
+            </MudFocusTrap>
+        </MudForm>
+        <BottomButtonPanel>
+            <ButtonSend OnClick="Send" />
+        </BottomButtonPanel>
+    }
+</Paper25>
+<div class="mt-3">
+    <LoadingLinear IsVisible="_isLoading" />
+    <ErrorViewer Exception="_exception" />
+</div>

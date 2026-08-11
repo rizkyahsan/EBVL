@@ -1,0 +1,41 @@
+@page "/Landing"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+
+<HtmlHead Title="Login" />
+<div class="landing-container">
+    <div class="pa-8 rounded text-center">
+        <div class="d-flex flex-column justify-center gap-3 mud-height-full">
+            <div class="d-flex flex-column align-center gap-1">
+                <MudText Typo="Typo.h1">
+                    Welcome to @AppConfigFrontEndOptions.Value.AppNickName
+                </MudText>
+                <MudText Typo="Typo.subtitle1" Class="mb-20">
+                    Application subtitle.
+                </MudText>
+                <MudText Typo="Typo.body1" Class="mb-4">
+                    Please <b>log in</b> with your @CommonDisplayTextFor.IdAMan account to get started.
+                </MudText>
+                <a href="@_loginRoute" class="rounded border px-5 py-4 mud-border-lines-default button-login">
+                    <div class="d-flex align-center gap-2">
+                        <img src="img/logo-p.jpg" alt="@CommonDisplayTextFor.IdAMan" width="24" height="24" />
+                        <span>
+                            @CommonDisplayTextFor.Login with @CommonDisplayTextFor.IdAMan
+                        </span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="pa-4">
+        <Paper25 class="mud-height-full">
+            <div class="illus-container rounded">
+                <div class="d-flex flex-column mud-height-full justify-start pa-8">
+                    <p class="landing-title">
+                        Application Description.
+                    </p>
+                </div>
+            </div>
+        </Paper25>
+    </div>
+</div>

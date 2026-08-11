@@ -1,0 +1,114 @@
+@page "/Administration/Audits"
+@using EBVL.Shared.Dto.Modules.Administration.Audits.GetAudits
+@inherits PageBase
+@attribute [Authorize(Policy = AdministrationPermissions.AdministrationAuditsRead)]
+
+<HtmlHead Title="@_pageTitle" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@_pageTitle" />
+<ErrorViewer Exception="_exception" />
+
+<ExpansionPanelsFilters>
+    <MudGrid Class="mb-8">
+        <MudItem xs="12" sm="6">
+            <MudDatePicker Label="From Date"
+                           Required="true"
+                           ShowToolbar="false"
+                           Editable="true"
+                           DateFormat="dd/MM/yyyy"
+                           TitleDateFormat="d MMMM yyyy"
+                           @bind-Date="_searchFilterModel.FromDate" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTimePicker Label="From Time"
+                           Required="true"
+                           Editable="true"
+                           @bind-Time="_searchFilterModel.FromTime" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudDatePicker Label="To Date"
+                           Required="true"
+                           ShowToolbar="false"
+                           Editable="true"
+                           DateFormat="dd/MM/yyyy"
+                           TitleDateFormat="d MMMM yyyy"
+                           @bind-Date="_searchFilterModel.ToDate" />
+        </MudItem>
+        <MudItem xs="12" sm="6">
+            <MudTimePicker Label="To Time"
+                           Required="true"
+                           Editable="true"
+                           @bind-Time="_searchFilterModel.ToTime" />
+        </MudItem>
+    </MudGrid>
+    <BottomButtonPanel>
+        <ButtonApply OnClick="Search" />
+    </BottomButtonPanel>
+</ExpansionPanelsFilters>
+<TableDefault ServerData="ReloadTable" @ref="_table">
+    <ToolBarContent>
+        <MudSpacer />
+        <TextFieldSearch ValueChanged="@(keyword => OnSearch(keyword))" Class="mt-0" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel T="AuditItem" SortLabel="@nameof(AuditItem.Created)">
+                @CommonDisplayTextFor.Created
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="AuditItem" SortLabel="@nameof(AuditItem.CreatedBy)">
+                @CommonDisplayTextFor.CreatedBy
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="AuditItem" SortLabel="@nameof(AuditItem.ActionName)">
+                @AuditsDisplayTextFor.ActionName
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            @AuditsDisplayTextFor.ActionType
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="AuditItem" SortLabel="@nameof(AuditItem.EntityName)">
+                @AuditsDisplayTextFor.EntityName
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="AuditItem" SortLabel="@nameof(AuditItem.EntityId)">
+                @AuditsDisplayTextFor.EntityId
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@CommonDisplayTextFor.Created">
+            <MudLink Href="@AdministrationAuditsRouteFor.Details(context.Id)">
+                @context.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)
+            </MudLink>
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.CreatedBy">
+            <MudHighlighter Text="@context.CreatedBy" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@AuditsDisplayTextFor.ActionName">
+            <MudHighlighter Text="@context.ActionName" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@AuditsDisplayTextFor.ActionType">
+            @context.ActionType.GetDisplayText()
+        </MudTd>
+        <MudTd DataLabel="@AuditsDisplayTextFor.EntityName">
+            <MudHighlighter Text="@context.EntityName" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@AuditsDisplayTextFor.EntityId">
+            <MudHighlighter Text="@context.EntityId.ToString()" HighlightedText="@_searchKeyword" />
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@CommonDisplayTextFor.Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</TableDefault>

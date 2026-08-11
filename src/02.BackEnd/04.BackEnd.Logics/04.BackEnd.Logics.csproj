@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <RootNamespace>EBVL.BackEnd.Logics</RootNamespace>
+    <AssemblyName>EBVL.BackEnd.Logics</AssemblyName>
+    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
+    <FileVersion>1.0.3</FileVersion>
+    <InformationalVersion>1.0.3</InformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\01.Shared\02.Shared.Statics\02.Shared.Statics.csproj" />
+    <ProjectReference Include="..\..\01.Shared\03.Shared.Dto\03.Shared.Dto.csproj" />
+    <ProjectReference Include="..\02.BackEnd.Services\02.BackEnd.Services.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Pertamina.Extensions.DataUri" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Extensions.DisplayText" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Extensions.Json" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Extensions.MediatR" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Extensions.Text" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Services.Authorization" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Services.Cryptography.Abstractions" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Services.DateAndTime.Abstractions" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Services.Email.Abstractions" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Services.FileStorage.Abstractions" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Services.Otp.Abstractions" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Services.UserProfile.Abstractions" Version="1.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.2" />
+  </ItemGroup>
+</Project>

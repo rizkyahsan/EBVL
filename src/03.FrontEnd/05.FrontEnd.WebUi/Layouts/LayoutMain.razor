@@ -1,0 +1,57 @@
+@using EBVL.FrontEnd.WebUi.Layouts.Components
+@inherits LayoutBase
+
+<MudThemeProvider Theme="Statics.ThemeFor.Default"
+                  @ref="_mudThemeProvider"
+                  @bind-IsDarkMode="DisplayInfo.IsDarkMode" />
+<MudPopoverProvider />
+<MudSnackbarProvider />
+<MudDialogProvider BackdropClick="false"
+                   FullWidth="true"
+                   MaxWidth="MaxWidth.Medium"
+                   CloseOnEscapeKey="true"
+                   CloseButton="true" />
+<MudLayout>
+    <div>
+        <MudAppBar Elevation="0" Class="appbar-main">
+            <MudIconButton Size="Size.Small"
+                           Variant="Variant.Outlined"
+                           Icon="@DisplayInfo.IconForDrawer"
+                           Edge="Edge.Start"
+                           Color="Color.Default"
+                           Class="rounded-circle ml-n10 icon-button-toggle-drawer"
+                           OnClick="ToggleDrawer" />
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      Spacing="2"
+                      Class="ml-6">
+                <MudText Typo="Typo.h4">
+                    @AppConfigFrontEndOptions.Value.AppNickName
+                </MudText>
+            </MudStack>
+            <MudSpacer />
+            <MudIconButton Color="Color.Inherit"
+                           Icon="@DisplayInfo.IconForDarkMode"
+                           Size="Size.Small"
+                           Class="mr-5"
+                           OnClick="ToggleDarkMode" />
+            <AccountInfo />
+        </MudAppBar>
+        <MudDrawer Elevation="0"
+                   Variant="DrawerVariant.Mini"
+                   Class="drawer-main"
+                   @bind-Open="@DisplayInfo.IsDrawerOpen">
+            <MudImage Src="@DisplayInfo.SrcLogo"
+                      Alt="Logo Pertamina"
+                      Class="mb-2 pa-4"
+                      Style="height: var(--mud-appbar-height);" />
+            <NavMenu />
+        </MudDrawer>
+        <MudMainContent Class="body-container">
+            @Body
+        </MudMainContent>
+        <div class="footer">
+            Copyright &copy; @DateTime.Now.Year - PT Pertamina (Persero). All rights reserved.
+        </div>
+    </div>
+</MudLayout>

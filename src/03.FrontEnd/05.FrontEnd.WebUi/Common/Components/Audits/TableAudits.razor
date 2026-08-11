@@ -1,0 +1,55 @@
+@using EBVL.Shared.Dto.Common.Audits
+
+@inherits CommonComponentBase
+
+<TableDefault Items="_audits" Filter="FilterItems">
+    <ToolBarContent>
+        <MudSpacer />
+        <TextFieldSearch @bind-Value="_searchKeyword" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AuditItemBase, object>(x => x.Created)">
+                @CommonDisplayTextFor.Created
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AuditItemBase, object>(x => x.CreatedBy)">
+                @CommonDisplayTextFor.CreatedBy
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AuditItemBase, object>(x => x.ActionType.GetDisplayText())">
+                @AuditsDisplayTextFor.ActionType
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AuditItemBase, object>(x => x.ActionName)">
+                @AuditsDisplayTextFor.ActionName
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh Class="text-center">
+            @AuditsDisplayTextFor.UpdatedProperties
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@CommonDisplayTextFor.Created">
+            <MudHighlighter Text="@context.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.CreatedBy">
+            <MudHighlighter Text="@context.CreatedBy" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@AuditsDisplayTextFor.ActionType">
+            <MudHighlighter Text="@context.ActionType.GetDisplayText()" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@AuditsDisplayTextFor.ActionName">
+            <MudHighlighter Text="@context.ActionName" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd Class="text-center">
+            <MudIconButton Icon="@Icons.Material.Filled.ManageSearch" OnClick="() => ShowDialogAuditProperties(context)" />
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</TableDefault>

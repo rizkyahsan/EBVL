@@ -1,0 +1,60 @@
+@inherits DrawerBase
+
+<MudDrawer Variant="DrawerVariant.Temporary"
+           Anchor="Anchor.Right"
+           Width="500px"
+           OverlayAutoClose="false"
+           @bind-Open="IsOpen">
+    <MudDrawerHeader>
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center"
+                  Class="mud-width-full">
+            <MudText Typo="Typo.h3">
+                @CountriesDisplayTextFor.Country @CommonDisplayTextFor.Details
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDrawer" />
+        </MudStack>
+    </MudDrawerHeader>
+    <div class="pa-5">
+        <LoadingLinear IsVisible="_isLoading" />
+        @if (Country is not null)
+        {
+            <MudGrid>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.Name">
+                        @Country.Name
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.Code">
+                        @Country.Code
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.Created">
+                        @Country.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.CreatedBy">
+                        @Country.CreatedBy
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.Modified">
+                        @Country.Modified.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.ModifiedBy">
+                        @Country.ModifiedBy.ToDisplayText()
+                    </FieldDefault>
+                </MudItem>
+            </MudGrid>
+        }
+        <BottomButtonPanel>
+            <ButtonClose OnClick="CloseDrawer" />
+        </BottomButtonPanel>
+    </div>
+</MudDrawer>

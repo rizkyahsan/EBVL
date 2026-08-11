@@ -1,0 +1,30 @@
+using EBVL.BackEnd.Infrastructure;
+using EBVL.BackEnd.Infrastructure.AppConfigBackEnd;
+using EBVL.BackEnd.Infrastructure.BackgroundJob;
+using EBVL.BackEnd.Infrastructure.Database;
+using EBVL.BackEnd.Infrastructure.HealthCheck;
+using EBVL.BackEnd.Infrastructure.PathBase;
+using EBVL.BackEnd.Infrastructure.Secret;
+using EBVL.BackEnd.Logics;
+using Scalar.AspNetCore;
+
+var builder = WebApplication.CreateBuilder(args);
+var appConfigBackEndOptions = builder.GetAppConfigBackEndOptions();
+var secrets = await builder.GetSecretsAsync();
+builder.AddInfrastructure(appConfigBackEndOptions, secrets);
+builder.Services.AddLogics(builder.Configuration);
+
+var app = builder.Build();
+await app.InitializeDatabase(appConfigBackEndOptions.IsDataSeedingEnabled);
+app.UseExceptionHandler();
+app.UseAndCheckPathBase(appConfigBackEndOptions.PathBase);
+app.UseHttpsRedirection();
+app.UseHealthCheckService(appConfigBackEndOptions.PathBase);
+app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseBackgroundJobService(appConfigBackEndOptions.PathBase, secrets[SecretKeyFor.BackgroundJobDashboardUsername], secrets[SecretKeyFor.BackgroundJobDashboardKataKunci]);
+app.MapOpenApi();
+app.MapScalarApiReference();
+app.RegisterEndpoints(typeof(Program).Assembly);
+await app.RunAsync();

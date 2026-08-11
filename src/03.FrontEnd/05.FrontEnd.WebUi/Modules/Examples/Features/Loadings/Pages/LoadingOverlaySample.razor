@@ -1,0 +1,14 @@
+@page "/Examples/Loadings/LoadingOverlay"
+@inherits PageBase
+
+<HtmlHead Title="@ExamplesLoadingsDisplayTextFor.LoadingOverlay" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesLoadingsDisplayTextFor.LoadingOverlay" />
+<LoadingOverlay IsVisible="@_isLoading" />
+<Paper25>
+    <ButtonPrimary OnClick="ShowLoading"
+                   StartIcon="@Icons.Material.Filled.Slideshow"
+                   Disabled="_isLoading">
+        @CommonDisplayTextFor.Show @ExamplesLoadingsDisplayTextFor.LoadingOverlay
+    </ButtonPrimary>
+</Paper25>

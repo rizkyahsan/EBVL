@@ -1,0 +1,93 @@
+@page "/Administration/Audits/Details/{Id:guid}"
+@inherits PageBase
+@attribute [Authorize(Policy = AdministrationPermissions.AdministrationAuditsRead)]
+
+<HtmlHead Title="@_pageTitle" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@_pageTitle" EntityType="@AuditsDisplayTextFor.Audit" />
+<LoadingLinear IsVisible="_isLoading" />
+<ErrorViewer Exception="_exception" />
+
+@if (_audit is not null)
+{
+    <PageSection SectionTitle="@CommonDisplayTextFor.GeneralInfo">
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@AuditsDisplayTextFor.ActionType">
+                    @_audit.ActionType.GetDisplayText()
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@AuditsDisplayTextFor.EntityName">
+                    @_audit.EntityName
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@AuditsDisplayTextFor.ActionName">
+                    @_audit.ActionName
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@AuditsDisplayTextFor.EntityId">
+                    @_audit.EntityId
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@CommonDisplayTextFor.Created">
+                    @_audit.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@CommonDisplayTextFor.CreatedBy">
+                    @_audit.CreatedBy
+                </FieldDefault>
+            </MudItem>
+        </MudGrid>
+    </PageSection>
+    @if (_audit.ActionType is AuditActionType.Add)
+    {
+        <PageSection SectionTitle="@AuditsDisplayTextFor.Properties">
+            <SimpleTableDefault>
+                <thead>
+                    <tr>
+                        <th>@AuditsDisplayTextFor.Property</th>
+                        <th>@AuditsDisplayTextFor.Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var property in _audit.Properties)
+                    {
+                        <tr>
+                            <td>@property.Name</td>
+                            <td>@property.NewValue</td>
+                        </tr>
+                    }
+                </tbody>
+            </SimpleTableDefault>
+        </PageSection>
+    }
+    else
+    {
+        <PageSection SectionTitle="@AuditsDisplayTextFor.UpdatedProperties">
+            <SimpleTableDefault>
+                <thead>
+                    <tr>
+                        <th>@AuditsDisplayTextFor.Property</th>
+                        <th>@AuditsDisplayTextFor.OldValue</th>
+                        <th>@AuditsDisplayTextFor.NewValue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var property in _audit.Properties)
+                    {
+                        <tr>
+                            <td>@property.Name</td>
+                            <td>@property.OldValue</td>
+                            <td>@property.NewValue</td>
+                        </tr>
+                    }
+                </tbody>
+            </SimpleTableDefault>
+        </PageSection>
+    }
+}

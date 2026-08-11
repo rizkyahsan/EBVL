@@ -1,0 +1,23 @@
+@page "/"
+@inherits PageBase
+
+@using EBVL.FrontEnd.WebUi.Modules.Main.Components
+
+<HtmlHead Title="@CommonDisplayTextFor.Home" />
+<PageHeader Title="@_pageTitle" />
+<LoadingLinear IsVisible="_isLoading" />
+<ErrorViewer Exception="_exception" />
+<MudGrid>
+    <MudItem xs="12" sm="6">
+        <PaperDonutChart />
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <PaperLineChart />
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <PaperBarChart />
+    </MudItem>
+    <MudItem xs="12" sm="6">
+        <PaperScatterChart />
+    </MudItem>
+</MudGrid>

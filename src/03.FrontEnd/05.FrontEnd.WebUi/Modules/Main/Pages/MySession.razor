@@ -1,0 +1,155 @@
+@page "/MySession"
+@inherits PageBase
+
+<HtmlHead Title="@MainDisplayTextFor.MySession" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@MainDisplayTextFor.MySession" />
+
+@if (_user is not null)
+{
+    <HorizontalTabs>
+        <MudTabPanel Text="@CommonDisplayTextFor.PersonalInfo">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Name">
+                        @_user.GetDisplayName()
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.AuthenticationTime">
+                        @_user.GetAuthenticationTime().ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Username">
+                        @_user.GetUsername()
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.EmployeeId">
+                        @_user.GetEmployeeId()
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.EmailAddress">
+                        @_user.GetEmailAddress()
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.PhoneNumber">
+                        <Mask Text="@_user.GetPhoneNumber()" MaskDirection="MaskDirection.Start" Count="10" DisplayShowIcon="true" />
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Company"
+                                  HelperText="@($"{CommonDisplayTextFor.CompanyCode}: {_user.GetCompanyCode()}")">
+                        @_user.GetCompanyName()
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Position"
+                                  HelperText="@($"{CommonDisplayTextFor.PositionId}: {_user.GetPositionId()}")">
+                        @_user.GetPositionName()
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Kbo">
+                        @_user.GetKbo()
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.EmployeeNumber">
+                        @_user.GetEmployeeNumber()
+                    </FieldDefault>
+                </MudItem>
+            </MudGrid>
+        </MudTabPanel>
+        <MudTabPanel Text="@CommonDisplayTextFor.MyRoles" BadgeData="_roles.Count()">
+            <SimpleTableDefault>
+                <tbody>
+                    @foreach (var role in _roles)
+                    {
+                        <tr>
+                            <td>@role</td>
+                        </tr>
+                    }
+                </tbody>
+            </SimpleTableDefault>
+        </MudTabPanel>
+        <MudTabPanel Text="@CommonDisplayTextFor.MyPermissions" BadgeData="_permissions.Count()">
+            <SimpleTableDefault>
+                <tbody>
+                    @foreach (var permission in _permissions)
+                    {
+                        <tr>
+                            <td>@permission</td>
+                        </tr>
+                    }
+                </tbody>
+            </SimpleTableDefault>
+        </MudTabPanel>
+        <AuthorizeView Policy="@MainPermissions.ClaimsRead">
+            <Authorized>
+                <MudTabPanel Text="@CommonDisplayTextFor.MyClaims" BadgeData="_user.Claims.Count()">
+                    <SimpleTableDefault>
+                        <thead>
+                            <tr>
+                                <th>Claim Type</th>
+                                <th>Claim Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in _user.Claims.OrderBy(x => x.Type))
+                            {
+                                <tr>
+                                    <td>@claim.Type</td>
+                                    <td>@claim.Value</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </SimpleTableDefault>
+                </MudTabPanel>
+                @if (!string.IsNullOrWhiteSpace(_accessToken) || !string.IsNullOrWhiteSpace(_refreshToken))
+                {
+                    <MudTabPanel Text="My Tokens">
+                        @if (!string.IsNullOrWhiteSpace(_accessToken))
+                        {
+                            <Paper25>
+                                <TextFieldAutoGrow Label="Access Token"
+                                                   ReadOnly="true"
+                                                   Class="mt-8"
+                                                   Style="font-size: 13px;"
+                                                   Text="@_accessToken" />
+
+                                <BottomButtonPanel>
+                                    <ButtonCopy OnClick="@(() => CopyToClipBoard(_accessToken))" />
+                                    <ButtonTertiary EndIcon="@Icons.Material.Filled.ArrowOutward"
+                                                   Href="https://jwt.ms"
+                                                   Target="_blank">
+                                        Check in jwt.ms
+                                    </ButtonTertiary>
+                                </BottomButtonPanel>
+                            </Paper25>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(_refreshToken))
+                        {
+                            <MudDivider Class="my-5" />
+                            <Paper25>
+                                <TextFieldAutoGrow Label="Refresh Token"
+                                                   ReadOnly="true"
+                                                   Class="mt-8"
+                                                   Style="font-size: 13px;"
+                                                   Text="@_refreshToken" />
+
+                                <BottomButtonPanel>
+                                    <ButtonCopy OnClick="@(() => CopyToClipBoard(_refreshToken))" />
+                                </BottomButtonPanel>
+                            </Paper25>
+                        }
+                    </MudTabPanel>
+                }
+            </Authorized>
+        </AuthorizeView>
+    </HorizontalTabs>
+}

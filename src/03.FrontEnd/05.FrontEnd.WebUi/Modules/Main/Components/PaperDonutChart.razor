@@ -1,0 +1,31 @@
+@using ApexCharts
+@using EBVL.Shared.Dto.Modules.Examples.Orders.GetOrders
+
+@inherits CommonComponentBase
+
+<Paper25 Style="min-height: 416px;">
+    <MudText Typo="Typo.h5">Order Gross Value</MudText>
+    @if (_isLoading)
+    {
+        <MudStack Class="text-center"
+                  Style="height: 400px;"
+                  Justify="Justify.Center"
+                  AlignItems="AlignItems.Center">
+            <MudSkeleton SkeletonType="SkeletonType.Circle" Height="350px" Width="350px" Animation="Animation.Wave" />
+        </MudStack>
+    }
+    else
+    {
+        <ApexChart TItem="OrderItem"
+                   Height="400"
+                   Options="_options">
+            <ApexPointSeries TItem="OrderItem"
+                             Items="_orders"
+                             SeriesType="SeriesType.Donut"
+                             Name="Gross Value"
+                             XValue="@(e => e.Country)"
+                             YAggregate="@(e => e.Sum(e => e.GrossValue))"
+                             OrderByDescending="e => e.Y" />
+        </ApexChart>
+    }
+</Paper25>

@@ -1,0 +1,84 @@
+@page "/Examples/Masking"
+@inherits PageBase
+
+<HtmlHead Title="@ExamplesDisplayTextFor.Masking" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.Masking" />
+<PageSection>
+    <MudText Typo="Typo.h4">
+        Default usage, without any property. Masking all characters.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="text-center pa-5">
+            <Mask Text="Ini adalah kalimat rahasia" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<Mask Text="Ini adalah kalimat rahasia" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection>
+    <MudText Typo="Typo.h4">
+        Masking 10 characters, starting from the start.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="text-center pa-5">
+            <Mask Text="Ini adalah kalimat rahasia" Count="10" MaskDirection="MaskDirection.Start" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<Mask Text="Ini adalah kalimat rahasia" Count="10" MaskDirection="MaskDirection.Start" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection>
+    <MudText Typo="Typo.h4">
+        Masking 10 characters, starting from the end.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="text-center pa-5">
+            <Mask Text="Ini adalah kalimat rahasia" Count="10" MaskDirection="MaskDirection.End" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<Mask Text="Ini adalah kalimat rahasia" Count="10" MaskDirection="MaskDirection.End" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection>
+    <MudText Typo="Typo.h4">
+        Masking all characters. With display show/hide button.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="text-center pa-5">
+            <Mask Text="Ini adalah kalimat rahasia" DisplayShowIcon="true" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<Mask Text="Ini adalah kalimat rahasia" DisplayShowIcon="true" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection>
+    <MudText Typo="Typo.h4">
+        Masking 10 characters, starting from the start. With display show/hide button.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="text-center pa-5">
+            <Mask Text="Ini adalah kalimat rahasia" DisplayShowIcon="true" Count="10" MaskDirection="MaskDirection.Start" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<Mask Text="Ini adalah kalimat rahasia" DisplayShowIcon="true" Count="10" MaskDirection="MaskDirection.Start" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection>
+    <MudText Typo="Typo.h4">
+        Masking 10 characters, starting from the end. With display show/hide button.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="text-center pa-5">
+            <Mask Text="Ini adalah kalimat rahasia" DisplayShowIcon="true" Count="10" MaskDirection="MaskDirection.End" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<Mask Text="Ini adalah kalimat rahasia" DisplayShowIcon="true" Count="10" MaskDirection="MaskDirection.End" />""")
+        </CodeBlock>
+    </div>
+</PageSection>

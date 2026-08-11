@@ -1,0 +1,21 @@
+<AuthorizeView Policy="@MasterDataPermissions.MasterData">
+    <Authorized>
+        <NavGroupDefault Title="@MasterDataDisplayTextFor.MasterData"
+                         Icon="@Icons.Material.TwoTone.Dataset">
+            <MudNavLink Href="@MasterDataRouteFor.Index"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.Home">
+                @CommonDisplayTextFor.Home
+            </MudNavLink>
+            <AuthorizeView Context="context2" Policy="@MasterDataPermissions.MasterDataCountriesRead">
+                <Authorized>
+                    <MudNavLink Href="@MasterDataCountriesRouteFor.Index"
+                                Match="NavLinkMatch.Prefix"
+                                Icon="@Icons.Material.TwoTone.Flag">
+                        @CountriesDisplayTextFor.Countries
+                    </MudNavLink>
+                </Authorized>
+            </AuthorizeView>
+        </NavGroupDefault>
+    </Authorized>
+</AuthorizeView>

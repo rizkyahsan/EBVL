@@ -1,0 +1,31 @@
+@page "/ErrorWithCode/{StatusCode:int}"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+
+@* TODO: Rapihkan halaman Error with Status Code *@
+
+<HtmlHead Title="@($"Error {StatusCode}")" />
+
+@if (StatusCode is 404)
+{
+    <NotFound />
+}
+@if (StatusCode is 403)
+{
+    <AccessDenied />
+}
+else
+{
+    <h1 class="mb-5">An error occurred while processing your request.</h1>
+    <p>
+        The server returned a status code of @StatusCode.
+    </p>
+    <p>
+        Please try again later or contact support if the issue persists.
+    </p>
+}
+
+@code {
+    [Parameter]
+    public int StatusCode { get; set; } = 404;
+}

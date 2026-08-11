@@ -1,0 +1,42 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <LoadingLinear IsVisible="_isLoading" />
+        <ErrorViewer Exception="_exception" />
+        <MudForm @ref="_form" Model="Model" Validation="_validator.ValidateValue">
+            <MudGrid>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@CommonDisplayTextFor.Name"
+                                      @bind-Value="Model.Name"
+                                      For="@(() => Model.Name)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.Name)" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <TextFieldDefault Label="@CommonDisplayTextFor.EmailAddress"
+                                      @bind-Value="Model.EmailAddress"
+                                      For="@(() => Model.EmailAddress)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.EmailAddress)" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <TextFieldDefault Label="@CommonDisplayTextFor.PhoneNumber"
+                                      @bind-Value="Model.PhoneNumber"
+                                      For="@(() => Model.PhoneNumber)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@CommonDisplayTextFor.VerificationCode"
+                                      @bind-Value="Model.VerificationCode"
+                                      For="@(() => Model.VerificationCode)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.VerificationCode)" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <ButtonCancel OnClick="Cancel" />
+        <ButtonSubmit OnClick="Submit" Disabled="_isLoading" />
+    </DialogActions>
+</MudDialog>

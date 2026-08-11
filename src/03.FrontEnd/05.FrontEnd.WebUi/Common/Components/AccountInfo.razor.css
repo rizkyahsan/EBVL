@@ -1,0 +1,10 @@
+﻿::deep .profile-drawer .mud-drawer
+{
+    height: 100vh !important;
+}
+
+::deep .profile-drawer .mud-overlay
+{
+    height: 100vh !important;
+    left: calc(-1 * var(--mud-drawer-width-left));
+}

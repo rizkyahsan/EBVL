@@ -1,0 +1,7 @@
+@page "/Administration"
+@inherits PageBase
+@attribute [Authorize(Policy = AdministrationPermissions.Administration)]
+
+<HtmlHead Title="@AdministrationDisplayTextFor.Administration" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@AdministrationDisplayTextFor.Administration" />

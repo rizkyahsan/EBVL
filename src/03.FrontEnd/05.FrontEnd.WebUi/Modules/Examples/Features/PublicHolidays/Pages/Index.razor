@@ -1,0 +1,61 @@
+@page "/Examples/PublicHolidays"
+@inherits PageBase
+@using EBVL.Shared.Dto.Modules.Examples.PublicHolidays.GetPublicHolidays
+
+<HtmlHead Title="@PublicHolidaysDisplayTextFor.PublicHolidays" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@PublicHolidaysDisplayTextFor.PublicHolidays" />
+<ErrorViewer Exception="_exception" />
+<TopButtonPanel>
+    <ButtonDark OnClick="ShowDialogLoadPublicHolidays">
+        @CommonDisplayTextFor.Load @PublicHolidaysDisplayTextFor.PublicHolidays
+    </ButtonDark>
+</TopButtonPanel>
+<TableDefault Items="_items"
+              Loading="_isLoading"
+              Filter="FilterItems">
+    <ToolBarContent>
+        <MudSpacer />
+        <TextFieldSearch @bind-Value="_searchKeyword" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<PublicHolidayItem, object>(x => x.Date)"
+                               InitialDirection="SortDirection.Ascending">
+                @CommonDisplayTextFor.Date
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<PublicHolidayItem, object>(x => x.CountryCode)">
+                @PublicHolidaysDisplayTextFor.CountryCode
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<PublicHolidayItem, object>(x => x.Name)">
+                @CommonDisplayTextFor.Name
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<PublicHolidayItem, object>(x => x.LocalName)">
+                @PublicHolidaysDisplayTextFor.LocalName
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@CommonDisplayTextFor.Date">
+            <MudHighlighter Text="@context.Date.ToDisplayText(DateFormatFor.LongDate)" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@PublicHolidaysDisplayTextFor.CountryCode">
+            <MudHighlighter Text="@context.CountryCode" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.Name">
+            <MudHighlighter Text="@context.Name" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@PublicHolidaysDisplayTextFor.LocalName">
+            <MudHighlighter Text="@context.LocalName" HighlightedText="@_searchKeyword" />
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</TableDefault>

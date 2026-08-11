@@ -1,0 +1,25 @@
+@inherits DialogBase
+
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
+    <DialogContent>
+        <ErrorViewer Exception="_exception" />
+        <MudGrid>
+            <MudItem xs="12">
+                <TextFieldDefault Label="@CommonDisplayTextFor.Description"
+                                  For="@(() => Model.Description)"
+                                  @bind-Value="Model.Description"
+                                  Required="true"
+                                  RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.Description)" />
+            </MudItem>
+            <MudItem xs="12">
+                <FieldDefault Label="@CommonDisplayTextFor.FileName">
+                    @Model.FileName
+                </FieldDefault>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <ButtonCancel OnClick="Cancel" />
+        <ButtonSubmit OnClick="Submit" Disabled="_isLoading" />
+    </DialogActions>
+</MudDialog>

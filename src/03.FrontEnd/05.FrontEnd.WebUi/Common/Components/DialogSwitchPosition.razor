@@ -1,0 +1,56 @@
+@inherits DialogBase
+
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
+    <DialogContent>
+        <ErrorViewer Exception="_exception" />
+        <LoadingLinear IsVisible="_isLoading" />
+        @if (_positions.Count() > 1)
+        {
+            <MudGrid>
+                @if (_currentPosition is not null)
+                {
+
+                    <MudItem xs="12">
+                        <FieldDefault Label="@($"Current {CommonDisplayTextFor.Position}")">
+                            @_currentPosition.Name
+                        </FieldDefault>
+                    </MudItem>
+                }
+                <MudItem xs="12">
+                    <SelectDefault Label="@($"Switch to {CommonDisplayTextFor.Position}")"
+                                   @bind-Value="_selectedPosition"
+                                   For="@(() => _selectedPosition)">
+                        @foreach (var position in _positions)
+                        {
+                            <MudSelectItem Value="position">@position.Name</MudSelectItem>
+                        }
+                    </SelectDefault>
+                </MudItem>
+            </MudGrid>
+        }
+        else if (!_isLoading)
+        {
+            if (_selectedPosition is not null)
+            {
+                <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
+                    Your only position is <b>@_selectedPosition.Name</b>. You don't have any other positions to switch.
+                </MudAlert>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">
+                    You don't have any positions.
+                </MudAlert>
+                
+            }
+        }
+    </DialogContent>
+    <DialogActions>
+        <ButtonCancel OnClick="Cancel" />
+
+        @if (_positions.Count() > 1 && _selectedPosition is not null)
+        {
+            <ButtonConfirm OnClick="Submit" Disabled="@(_selectedPosition == _currentPosition || _isLoading)" />
+        }
+    </DialogActions>
+</MudDialog>

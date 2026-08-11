@@ -1,0 +1,119 @@
+@page "/Administration/ApiCalls/Details/{Id:guid}"
+@inherits PageBase
+@attribute [Authorize(Policy = AdministrationPermissions.AdministrationApiCallsRead)]
+
+<HtmlHead Title="@_pageTitle" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@_pageTitle" EntityType="@ApiCallsDisplayTextFor.ApiCall" />
+<LoadingLinear IsVisible="_isLoading" />
+<ErrorViewer Exception="_exception" />
+@if (_item is not null)
+{
+    <HorizontalTabs>
+        <MudTabPanel Text="@CommonDisplayTextFor.GeneralInfo">
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@ApiCallsDisplayTextFor.ServiceName">
+                        @_item.ServiceName
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@ApiCallsDisplayTextFor.ServiceProvider">
+                        @_item.ServiceProvider
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@ApiCallsDisplayTextFor.ServiceCategory">
+                        @_item.ServiceCategory
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@ApiCallsDisplayTextFor.RequestMethod">
+                        @_item.RequestMethod
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@ApiCallsDisplayTextFor.RequestUrl">
+                        @_item.RequestUrl
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Created">
+                        @_item.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.CreatedBy">
+                        @_item.CreatedBy
+                    </FieldDefault>
+                </MudItem>
+            </MudGrid>
+        </MudTabPanel>
+        <MudTabPanel Text="@ApiCallsDisplayTextFor.RequestParameters">
+            <TableDefault Items="_item.RequestParameters">
+                <HeaderContent>
+                    <MudTh>
+                        @CommonDisplayTextFor.Name
+                    </MudTh>
+                    <MudTh>
+                        @CommonDisplayTextFor.Value
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="@CommonDisplayTextFor.Name">
+                        @context.Key
+                    </MudTd>
+                    <MudTd DataLabel="@CommonDisplayTextFor.Value">
+                        @context.Value
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    @if (_item.RequestParameters.Count() > 10)
+                    {
+                        <MudTablePager />
+                    }
+                </PagerContent>
+            </TableDefault>
+        </MudTabPanel>
+        <MudTabPanel Text="@ApiCallsDisplayTextFor.ResponseHeaders">
+            <TableDefault Items="_item.ResponseHeaders">
+                <HeaderContent>
+                    <MudTh>
+                        @CommonDisplayTextFor.Name
+                    </MudTh>
+                    <MudTh>
+                        @CommonDisplayTextFor.Value
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="@CommonDisplayTextFor.Name">
+                        @context.Key
+                    </MudTd>
+                    <MudTd DataLabel="@CommonDisplayTextFor.Value">
+                        @context.Value
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    @if (_item.ResponseHeaders.Count() > 10)
+                    {
+                        <MudTablePager />
+                    }
+                </PagerContent>
+            </TableDefault>
+        </MudTabPanel>
+        <MudTabPanel Text="@ApiCallsDisplayTextFor.ResponseContent">
+            <Paper25>
+                <TextFieldAutoGrow ReadOnly="true"
+                                   Style="font-size: 13px;"
+                                   Text="@_prettyResponseContent" />
+
+                @if (!string.IsNullOrWhiteSpace(_prettyResponseContent))
+                {
+                    <BottomButtonPanel>
+                        <ButtonCopy OnClick="@(() => CopyToClipBoard(_prettyResponseContent))" />
+                    </BottomButtonPanel>
+                }
+            </Paper25>
+        </MudTabPanel>
+    </HorizontalTabs>
+}

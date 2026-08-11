@@ -1,0 +1,14 @@
+<MudNavLink Href="@MainRouteFor.Index"
+            Match="NavLinkMatch.All"
+            Icon="@Icons.Material.TwoTone.Home">
+    @CommonDisplayTextFor.Home
+</MudNavLink>
+<AuthorizeView>
+    <Authorized>
+        <MudNavLink Href="@MainMyProfileRouteFor.Index"
+                    Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.TwoTone.AccountBox">
+            @UsersDisplayTextFor.MyProfile
+        </MudNavLink>
+    </Authorized>
+</AuthorizeView>

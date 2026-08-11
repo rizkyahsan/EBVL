@@ -1,0 +1,15 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <LoadingLinear IsVisible="_isLoading" />
+        <ErrorViewer Exception="_exception" />
+        <FieldDefault>
+            <MudCheckBox @bind-Value="_confirm" Label="@_labelConfirm" />
+        </FieldDefault>
+    </DialogContent>
+    <DialogActions>
+        <ButtonCancel OnClick="Cancel" />
+        <ButtonSubmit OnClick="Submit" Disabled="@(!_confirm || _isLoading)" />
+    </DialogActions>
+</MudDialog>

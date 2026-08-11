@@ -1,0 +1,75 @@
+@page "/Administration/ApiCalls"
+@inherits PageBase
+@using EBVL.Shared.Dto.Modules.Administration.ApiCalls.GetApiCalls
+@attribute [Authorize(Policy = AdministrationPermissions.AdministrationApiCallsRead)]
+
+<HtmlHead Title="@ApiCallsDisplayTextFor.ApiCalls" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ApiCallsDisplayTextFor.ApiCalls" />
+<ErrorViewer Exception="_exception" />
+<TableDefault Items="_items"
+              Loading="_isLoading"
+              Filter="FilterItems">
+    <ToolBarContent>
+        <MudSpacer />
+        <TextFieldSearch @bind-Value="_searchKeyword" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<ApiCallItem, object>(x => x.Created)"
+                               InitialDirection="SortDirection.Descending">
+                @CommonDisplayTextFor.Created
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<ApiCallItem, object>(x => x.ServiceName)">
+                @ApiCallsDisplayTextFor.ServiceName
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<ApiCallItem, object>(x => x.ServiceProvider)">
+                @ApiCallsDisplayTextFor.ServiceProvider
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<ApiCallItem, object>(x => x.ServiceCategory)">
+                @ApiCallsDisplayTextFor.ServiceCategory
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<ApiCallItem, object>(x => x.RequestMethod)">
+                @ApiCallsDisplayTextFor.RequestMethod
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<ApiCallItem, object>(x => x.ResponseStatusCode)">
+                @ApiCallsDisplayTextFor.StatusCode
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@CommonDisplayTextFor.Created">
+            <LinkDefault Href="@AdministrationApiCallsRouteFor.Details(context.Id)">
+                @context.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)
+            </LinkDefault>
+        </MudTd>
+        <MudTd DataLabel="@ApiCallsDisplayTextFor.ServiceName">
+            <MudHighlighter Text="@context.ServiceName" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@ApiCallsDisplayTextFor.ServiceProvider">
+            <MudHighlighter Text="@context.ServiceProvider" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@ApiCallsDisplayTextFor.ServiceCategory">
+            <MudHighlighter Text="@context.ServiceCategory" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@ApiCallsDisplayTextFor.RequestMethod">
+            <MudHighlighter Text="@context.RequestMethod" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@ApiCallsDisplayTextFor.StatusCode">
+            <MudHighlighter Text="@context.ResponseStatusCode.ToString()" HighlightedText="@_searchKeyword" />
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</TableDefault>

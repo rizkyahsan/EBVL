@@ -1,0 +1,37 @@
+@using EBVL.FrontEnd.WebUi.Layouts.Models
+@using Pertamina.Services.DateAndTime
+
+<MudStack Row="true"
+          Justify="Justify.SpaceBetween"
+          AlignItems="AlignItems.Center"
+          Class="mb-5">
+    @if (Items.Any())
+    {
+        <MudBreadcrumbs Items="Items">
+            <SeparatorTemplate>
+                <span class="breadcrumb-separator"></span>
+            </SeparatorTemplate>
+        </MudBreadcrumbs>
+    }
+    else
+    {
+        <MudSpacer />
+    }
+    <MudChip T="string"
+             Label="true"
+             Color="DisplayInfo.CalendarColor"
+             Size="Size.Small">
+        @DateAndTimeService.Now.ToDisplayText(DateFormatFor.LongDate)
+    </MudChip>
+</MudStack>
+
+@code {
+    [Inject]
+    public required IDateAndTimeService DateAndTimeService { get; init; }
+
+    [CascadingParameter]
+    public DisplayInfo DisplayInfo { get; set; } = default!;
+
+    [Parameter]
+    public List<BreadcrumbItem> Items { get; set; } = [];
+}

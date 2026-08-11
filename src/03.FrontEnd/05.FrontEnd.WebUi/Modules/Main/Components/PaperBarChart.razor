@@ -1,0 +1,37 @@
+@using ApexCharts
+@using EBVL.Shared.Dto.Modules.Examples.Orders.GetOrders
+
+@inherits CommonComponentBase
+
+<Paper25 Style="min-height: 416px;">
+    <MudText Typo="Typo.h5">Order Net by Country</MudText>
+    @if (_isLoading)
+    {
+        <MudStack Class="text-center"
+                  Style="height: 400px;"
+                  Justify="Justify.Center"
+                  AlignItems="AlignItems.Center">
+            <LoadingLinear IsVisible="true" />
+        </MudStack>
+    }
+    else
+    {
+        <ApexChart TItem="OrderItem"
+                   Height="400">
+            <ApexPointSeries TItem="OrderItem"
+                             Items="_orders"
+                             Name="Gross Value"
+                             XValue="@(e => e.Country)"
+                             YAggregate="@(e => e.Sum(e => e.GrossValue))"
+                             OrderByDescending="e => e.Y"
+                             SeriesType="SeriesType.Bar" />
+            <ApexPointSeries TItem="OrderItem"
+                             Items="_orders"
+                             Name="Net Value"
+                             XValue="@(e => e.Country)"
+                             YAggregate="@(e => e.Sum(e => e.NetValue))"
+                             OrderByDescending="e => e.Y"
+                             SeriesType="SeriesType.Bar" />
+        </ApexChart>
+    }
+</Paper25>

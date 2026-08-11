@@ -1,0 +1,34 @@
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var pathBase = HttpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
+    var baseHref = pathBase.HasValue ? pathBase.ToUriComponent().TrimEnd('/') + "/" : "/";
+    var interactiveServerRenderMode = new InteractiveServerRenderMode(false);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="@baseHref" />
+    <link rel="stylesheet" href="@Assets["fonts/FontAwesome/font-face.css"]" />
+    <link rel="stylesheet" href="@Assets["fonts/MaterialSymbolsOutlined/font-face.css"]" />
+    <link rel="stylesheet" href="@Assets["fonts/PublicSans/font-face.css"]" />
+    <link rel="stylesheet" href="_content/MudBlazor/MudBlazor.min.css" />
+    <link rel="stylesheet" href="_content/Pertamina.Common.Components/css/styles.css" />
+    <link rel="stylesheet" href="@Assets["css/override-mudblazor.css"]" />
+    <link rel="stylesheet" href="@Assets["css/app.css"]" />
+    <link rel="stylesheet" href="@Assets["EBVL.FrontEnd.WebUi.styles.css"]" />
+    <ImportMap />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <HeadOutlet @rendermode="@interactiveServerRenderMode" />
+</head>
+<body>
+    <AppContainer @rendermode="@interactiveServerRenderMode" />
+    <BlazorErrorUI @rendermode="@interactiveServerRenderMode" Mode="BlazorErrorUI.DisplayMode.Dialog" />
+    <script src="_framework/blazor.web.js"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="@Assets["js/downloadFile.js"]"></script>
+</body>
+</html>

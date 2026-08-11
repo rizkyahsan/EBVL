@@ -1,0 +1,67 @@
+@page "/Examples/TextFields"
+@inherits PageBase
+
+<HtmlHead Title="@ExamplesDisplayTextFor.TextFields" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.TextFields" />
+<PageSection>
+    <MudText Typo="Typo.h4">
+        TextFieldDefault
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="pa-5">
+            <TextFieldDefault Label="Name" Placeholder="Enter your name" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<TextFieldDefault Label="Name" Placeholder="Enter your name" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection>
+    <MudText Typo="Typo.h4">
+        TextFieldAutoGrow
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mt-5">
+        Press [Enter] to grow the text field height.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="pa-5">
+            <TextFieldAutoGrow Label="Address" Placeholder="Enter your address" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<TextFieldAutoGrow Label="Address" Placeholder="Enter your address" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection>
+    <MudText Typo="Typo.h4">
+        TextFieldMultiline
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mt-5">
+        Same with TextFieldAutoGrow but with Lines="5" and MaxLines="10" as the default value.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="pa-5">
+            <TextFieldMultiline Label="Description" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<TextFieldMultiline Label="Description" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection>
+    <MudText Typo="Typo.h4">
+        TextFieldSearch
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mt-5">
+        Text field with search icon and placeholder.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="pa-5">
+            <TextFieldSearch />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<TextFieldSearch />""")
+        </CodeBlock>
+    </div>
+</PageSection>

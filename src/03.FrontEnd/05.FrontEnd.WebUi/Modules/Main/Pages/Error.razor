@@ -1,0 +1,34 @@
+@page "/Error"
+@attribute [AllowAnonymous]
+
+@using System.Diagnostics
+
+@* TODO: Rapihkan halaman Error *@
+
+<HtmlHead Title="@CommonDisplayTextFor.Error" />
+<PageHeader Title="@CommonDisplayTextFor.Error" />
+<MudAlert Severity="Severity.Error" Variant="Variant.Filled">
+    <MudText Typo="Typo.body1">An error occurred while processing your request.</MudText>
+</MudAlert>
+
+@if (ShowRequestId)
+{
+    <MudAlert Severity="Severity.Info" Variant="Variant.Filled">
+        <p>
+            <b>Request ID:</b> <code>@RequestId</code>
+        </p>
+    </MudAlert>
+}
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrWhiteSpace(RequestId);
+
+    protected override void OnInitialized()
+    {
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+    }
+}

@@ -1,0 +1,107 @@
+@page "/MyProfile"
+@inherits PageBase
+
+<HtmlHead Title="@UsersDisplayTextFor.MyProfile" />
+<Breadcrumbs Items="_breadcrumbItems" />
+@if (_model is not null)
+{
+    <MudStack Row="true">
+        <PageHeader Title="@UsersDisplayTextFor.MyProfile" />
+        @if (_model.User is not null)
+        {
+            if (_model.User.IsVerified)
+            {
+                <MudChip T="string"
+                         Icon="@Icons.Material.Filled.VerifiedUser"
+                         Color="Color.Success"
+                         Size="Size.Small">
+                    @CommonDisplayTextFor.Verified
+                </MudChip>
+            }
+            else
+            {
+                <MudChip T="string"
+                         Icon="@Icons.Material.Filled.NewReleases"
+                         Color="Color.Error"
+                         Size="Size.Small">
+                    @CommonDisplayTextFor.NotVerified
+                </MudChip>
+            }
+        }
+    </MudStack>
+}
+<ErrorViewer Exception="_exception" />
+<LoadingLinear IsVisible="_isLoading" />
+@if (_model is not null)
+{
+    <PageSection>
+        @if (_model.User is null)
+        {
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      StretchItems="StretchItems.Start">
+                <MudAlert Severity="Severity.Warning">
+                    You haven't created a @UsersDisplayTextFor.Profile in this application. Please @CommonDisplayTextFor.Create.ToLower() a @UsersDisplayTextFor.Profile first.
+                </MudAlert>
+                <MudPaper Elevation="0" Class="pa-3 gray lighten-5">
+                    <MudStack Row="true">
+                        <ButtonCreate EntityType="@UsersDisplayTextFor.Profile" OnClick="ShowDialogCreate" />
+                    </MudStack>
+                </MudPaper>
+            </MudStack>
+        }
+        else
+        {
+            if (!_model.User.IsVerified)
+            {
+                <MudStack Row="true"
+                          Class="mb-5"
+                          AlignItems="AlignItems.Center"
+                          StretchItems="StretchItems.Start">
+                    <MudAlert Severity="Severity.Warning">
+                        Your @UsersDisplayTextFor.Profile is not verified yet. Please @CommonDisplayTextFor.Verify your @UsersDisplayTextFor.Profile.
+                    </MudAlert>
+                    <MudPaper Elevation="0" Class="pa-3 gray lighten-5">
+                        <MudStack Row="true">
+                            <ButtonSend EntityType="@CommonDisplayTextFor.VerificationCode" OnClick="SendMyVerificationCode" />
+                            <ButtonVerify EntityType="@UsersDisplayTextFor.Profile" OnClick="ShowDialogVerify" />
+                            <ButtonView EntityType="@CommonDisplayTextFor.QrCode" OnClick="ShowDialogViewQrCode" StartIcon="@Icons.Material.Filled.QrCode" />
+                        </MudStack>
+                    </MudPaper>
+                </MudStack>
+            }
+            else
+            {
+                <TopButtonPanel>
+                    <ButtonEdit OnClick="ShowDialogEdit" />
+                    <ButtonSend EntityType="@CommonDisplayTextFor.VerificationCode" OnClick="SendMyVerificationCode" />
+                    <ButtonReload EntityType="@UsersDisplayTextFor.MyProfile" OnClick="ShowDialogReload" />
+                    <ButtonView EntityType="@CommonDisplayTextFor.QrCode" OnClick="ShowDialogViewQrCode" StartIcon="@Icons.Material.Filled.QrCode" />
+                </TopButtonPanel>
+            }
+
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Username">
+                        @_model.User.Username
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.EmailAddress">
+                        @_model.User.EmailAddress
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.Name">
+                        @_model.User.Name
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CommonDisplayTextFor.PhoneNumber">
+                        <Mask Text="@_model.User.PhoneNumber.ToDisplayText()" DisplayShowIcon="true" />
+                    </FieldDefault>
+                </MudItem>
+            </MudGrid>
+        }
+    </PageSection>
+}

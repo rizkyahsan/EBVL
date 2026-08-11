@@ -1,0 +1,22 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <LoadingLinear IsVisible="_isLoading" />
+        <ErrorViewer Exception="_exception" />
+        <MudText Typo="Typo.body1" Class="mb-6">
+            @CommonDisplayTextFor.Reload @CommonDisplayTextFor.Your.ToLower() @UsersDisplayTextFor.Profile from the @UsersDisplayTextFor.UserProfile Provider.
+        </MudText>
+        <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue">
+            <TextFieldDefault Label="@CommonDisplayTextFor.VerificationCode"
+                              @bind-Value="_model.VerificationCode"
+                              For="@(() => _model.VerificationCode)"
+                              Required="true"
+                              RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.VerificationCode)" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <ButtonCancel OnClick="Cancel" />
+        <ButtonSubmit OnClick="Submit" Disabled="_isLoading" />
+    </DialogActions>
+</MudDialog>

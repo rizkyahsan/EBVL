@@ -1,0 +1,7 @@
+@page "/MasterData"
+@inherits PageBase
+@attribute [Authorize(Policy = MasterDataPermissions.MasterData)]
+
+<HtmlHead Title="@MasterDataDisplayTextFor.MasterData" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@MasterDataDisplayTextFor.MasterData" />

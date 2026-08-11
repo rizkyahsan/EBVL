@@ -1,0 +1,104 @@
+@page "/Examples/Icons"
+@inherits PageBase
+@using System.Text
+
+<HtmlHead Title="@ExamplesDisplayTextFor.Icons" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.Icons" />
+<PageSection SectionTitle="Using Material Icons">
+    <MudText>
+        The default way to use icons in MudBlazor is via the built-in Material Icons set.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="text-center pa-5">
+            <MudIcon Icon="@MudBlazor.Icons.Material.Filled.Favorite" Title="Favorite" Size="Size.Large" Color="Color.Secondary" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<MudIcon Icon="@Icons.Material.Filled.Favorite" Title="Favorite" Size="Size.Large" Color="Color.Secondary" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection SectionTitle="Using a Custom SVG">
+    <MudText>
+        You can create a reusable Razor component using inline SVG to serve as a custom icon.
+        For example, in this repository, take a look at the following file:
+    </MudText>
+    <CodeBlock>Common/Components/SvgIcons/BellActiveAlt.razor</CodeBlock>
+    <MudText>
+        This file contains standard SVG markup wrapped inside a Razor component.
+        By following this approach, you can build your own custom icon components and reuse them consistently
+        throughout
+        your application.
+    </MudText>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="text-center pa-5">
+            <BellActiveAlt />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<BellActiveAlt />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection SectionTitle="Using Font Awesome">
+    <MudText>
+        You can use Font Awesome icons by setting the <code>Icon</code> property to the appropriate class name.
+        Ensure that Font Awesome is properly included in your project. In this repository, the CSS file can be found at:
+    </MudText>
+    <CodeBlock>wwwroot/fonts/FontAwesome/font-face.css</CodeBlock>
+    <MudText>
+        and the related font files are located in:
+    </MudText>
+    <CodeBlock>wwwroot/fonts/FontAwesome</CodeBlock>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <div class="text-center pa-5">
+            <MudIcon Icon="fas fa-database" Color="Color.Primary" Size="Size.Large" />
+        </div>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @("""<MudIcon Icon="fas fa-database" Color="Color.Primary" Size="Size.Large" />""")
+        </CodeBlock>
+    </div>
+</PageSection>
+<PageSection SectionTitle="Using Material Symbols Outlined">
+    <MudText>
+        Some icon libraries such as Material Symbols use the inner text of an HTML element to determine which icon to display.
+        <code>MudIcon</code> supports these also via the syntax
+        <code class="docs-code docs-code-secondary">icon-font-class/icon-name</code>.
+        Ensure that Material Symbols Outlined css classes and font are properly included in your project. In this repository,
+        the CSS class that references the font can be found at:
+    </MudText>
+    <CodeBlock>wwwroot/fonts/MaterialSymbolsOutlined/font-face.css</CodeBlock>
+    <MudText>
+        and the Material Symbols Outlined font file is located in:
+    </MudText>
+    <CodeBlock>wwwroot/fonts/MaterialSymbolsOutlined</CodeBlock>
+    <div class="border mud-border-lines-default rounded mt-5">
+        <MudStack Row="true"
+                  Justify="Justify.Center"
+                  AlignItems="AlignItems.Center"
+                  Class="pa-5">
+            <MudIcon Icon="material-symbols-outlined/view_kanban" Color="Color.Primary" />
+            <MudIcon Icon="material-symbols-outlined/database" Color="Color.Secondary" />
+            <MudIcon Icon="material-symbols-outlined/home" Color="Color.Tertiary" />
+            <MudIcon Icon="material-symbols-outlined/search" Color="Color.Dark" />
+            <MudIcon Icon="material-symbols-outlined/deployed_code" Color="Color.Info" />
+            <MudIconButton Icon="material-symbols-outlined/refresh" aria-label="refresh" />
+            <MudButton StartIcon="material-symbols-outlined/send" Color="Color.Info" Variant="Variant.Filled">Send</MudButton>
+        </MudStack>
+        <CodeBlock RoundedMode="RoundedMode.Bottom">
+            @{
+                var codeBuilder = new StringBuilder();
+                codeBuilder.AppendLine("<MudIcon Icon=\"material-symbols-outlined/view_kanban\" Color=\"Color.Primary\" />");
+                codeBuilder.AppendLine("<MudIcon Icon=\"material-symbols-outlined/database\" Color=\"Color.Secondary\" />");
+                codeBuilder.AppendLine("<MudIcon Icon=\"material-symbols-outlined/home\" Color=\"Color.Tertiary\" />");
+                codeBuilder.AppendLine("<MudIcon Icon=\"material-symbols-outlined/search\" Color=\"Color.Dark\" />");
+                codeBuilder.AppendLine("<MudIcon Icon=\"material-symbols-outlined/deployed_code\" Color=\"Color.Info\" />");
+                codeBuilder.AppendLine("<MudIconButton Icon=\"material-symbols-outlined/refresh\" aria-label=\"refresh\" />");
+                codeBuilder.AppendLine("<MudButton StartIcon=\"material-symbols-outlined/send\" Color=\"Color.Info\" Variant=\"Variant.Filled\">Send</MudButton>");
+
+                <span>
+                    @codeBuilder.ToString()
+                </span>
+            }
+        </CodeBlock>
+    </div>
+</PageSection>

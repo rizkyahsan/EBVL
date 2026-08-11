@@ -1,0 +1,635 @@
+@page "/Examples/Palette"
+@inherits PageBase
+@using MudBlazor.Utilities
+@using EBVL.FrontEnd.WebUi.Layouts.Statics
+
+<HtmlHead Title="@ExamplesDisplayTextFor.Palette" />
+<Breadcrumbs Items="_breadcrumbItems" />
+<PageHeader Title="@ExamplesDisplayTextFor.Palette" />
+<MudText>
+    The palette is the colors the theme uses for all the components and main layout.
+</MudText>
+<PageSection SectionTitle="Built-In Colors" Class="mt-5">
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Class="mud-theme-primary">
+                <MudText Align="Align.Center" Class="py-6">
+                    Primary
+                    @if (!DisplayInfo.IsDarkMode)
+                    {
+                        <div>@ThemeFor.Default.PaletteLight.Primary.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteLight.Primary.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                    else
+                    {
+                        <div>@ThemeFor.Default.PaletteDark.Primary.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteDark.Primary.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                </MudText>
+                <div class="d-flex">
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-bl white-text"
+                              Style="background-color: var(--mud-palette-primary-lighten);">
+                        <MudText Align="Align.Center" Class="py-6">
+                            Lighten
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.PrimaryLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.PrimaryLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.PrimaryLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.PrimaryLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-br white-text"
+                              Style="background-color: var(--mud-palette-primary-darken);">
+                        <MudText Align="Align.Center" Class="py-6">
+                            Darken
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.PrimaryDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.PrimaryDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.PrimaryDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.PrimaryDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Class="mud-theme-secondary">
+                <MudText Align="Align.Center" Class="py-6">
+                    Secondary
+                    @if (!DisplayInfo.IsDarkMode)
+                    {
+                        <div>@ThemeFor.Default.PaletteLight.Secondary.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteLight.Secondary.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                    else
+                    {
+                        <div>@ThemeFor.Default.PaletteDark.Secondary.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteDark.Secondary.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                </MudText>
+                <div class="d-flex">
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-bl white-text"
+                              Style="background-color: var(--mud-palette-secondary-lighten);">
+                        <MudText Align="Align.Center" Class="py-6">
+                            Lighten
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.SecondaryLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.SecondaryLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.SecondaryLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.SecondaryLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-br white-text"
+                              Style="background-color: var(--mud-palette-secondary-darken);">
+                        <MudText Align="Align.Center" Class="py-6">
+                            Darken
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.SecondaryDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.SecondaryDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.SecondaryDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.SecondaryDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="4">
+            <MudPaper Class="mud-theme-tertiary">
+                <MudText Align="Align.Center" Class="py-6">
+                    Tertiary
+                    @if (!DisplayInfo.IsDarkMode)
+                    {
+                        <div>@ThemeFor.Default.PaletteLight.Tertiary.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteLight.Tertiary.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                    else
+                    {
+                        <div>@ThemeFor.Default.PaletteDark.Tertiary.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteDark.Tertiary.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                </MudText>
+                <div class="d-flex">
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-bl white-text"
+                              Style="background-color: var(--mud-palette-tertiary-lighten);">
+                        <MudText Align="Align.Center" Class="py-6">
+                            Lighten
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.TertiaryLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.TertiaryLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.TertiaryLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.TertiaryLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-br white-text"
+                              Style="background-color: var(--mud-palette-tertiary-darken);">
+                        <MudText Align="Align.Center" Class="py-6">
+                            Darken
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.TertiaryDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.TertiaryDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.TertiaryDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.TertiaryDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="mud-theme-info">
+                <MudText Align="Align.Center" Class="py-6">
+                    Info
+                    @if (!DisplayInfo.IsDarkMode)
+                    {
+                        <div>@ThemeFor.Default.PaletteLight.Info.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteLight.Info.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                    else
+                    {
+                        <div>@ThemeFor.Default.PaletteDark.Info.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteDark.Info.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                </MudText>
+                <div class="d-flex">
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-bl white-text"
+                              Style="background-color: var(--mud-palette-info-lighten);">
+                        <MudText Align="Align.Center" Class="py-4">
+                            Lighten
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.InfoLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.InfoLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.InfoLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.InfoLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-br white-text"
+                              Style="background-color: var(--mud-palette-info-darken);">
+                        <MudText Align="Align.Center" Class="py-4">
+                            Darken
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.InfoDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.InfoDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.InfoDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.InfoDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="mud-theme-success">
+                <MudText Align="Align.Center" Class="py-6">
+                    Success
+                    @if (!DisplayInfo.IsDarkMode)
+                    {
+                        <div>@ThemeFor.Default.PaletteLight.Success.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteLight.Success.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                    else
+                    {
+                        <div>@ThemeFor.Default.PaletteDark.Success.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteDark.Success.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                </MudText>
+                <div class="d-flex">
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-bl white-text"
+                              Style="background-color: var(--mud-palette-success-lighten);">
+                        <MudText Align="Align.Center" Class="py-4">
+                            Lighten
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.SuccessLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.SuccessLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.SuccessLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.SuccessLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                    <MudPaper Elevation="0" Class="flex-grow-1 rounded-0 rounded-br white-text"
+                              Style="background-color: var(--mud-palette-success-darken);">
+                        <MudText Align="Align.Center" Class="py-4">
+                            Darken
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.SuccessDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.SuccessDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.SuccessDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.SuccessDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="mud-theme-warning">
+                <MudText Align="Align.Center" Class="py-6">
+                    Warning
+                    @if (!DisplayInfo.IsDarkMode)
+                    {
+                        <div>@ThemeFor.Default.PaletteLight.Warning.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteLight.Warning.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                    else
+                    {
+                        <div>@ThemeFor.Default.PaletteDark.Warning.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteDark.Warning.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                </MudText>
+                <div class="d-flex">
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-bl white-text"
+                              Style="background-color: var(--mud-palette-warning-lighten);">
+                        <MudText Align="Align.Center" Class="py-4">
+                            Lighten
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.WarningLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.WarningLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.WarningLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.WarningLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-br white-text"
+                              Style="background-color: var(--mud-palette-warning-darken);">
+                        <MudText Align="Align.Center" Class="py-4">
+                            Darken
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.WarningDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.WarningDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.WarningDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.WarningDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="mud-theme-error">
+                <MudText Align="Align.Center" Class="py-6">
+                    Error
+                    @if (!DisplayInfo.IsDarkMode)
+                    {
+                        <div>@ThemeFor.Default.PaletteLight.Error.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteLight.Error.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                    else
+                    {
+                        <div>@ThemeFor.Default.PaletteDark.Error.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteDark.Error.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                </MudText>
+                <div class="d-flex">
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-bl white-text"
+                              Style="background-color: var(--mud-palette-error-lighten);">
+                        <MudText Align="Align.Center" Class="py-4">
+                            Lighten
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.ErrorLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.ErrorLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.ErrorLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.ErrorLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-br white-text"
+                              Style="background-color: var(--mud-palette-error-darken);">
+                        <MudText Align="Align.Center" Class="py-4">
+                            Darken
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.ErrorDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.ErrorDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.ErrorDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.ErrorDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="12">
+            <MudPaper Class="mud-theme-dark">
+                <MudText Align="Align.Center" Class="py-6">
+                    Dark
+                    @if (!DisplayInfo.IsDarkMode)
+                    {
+                        <div>@ThemeFor.Default.PaletteLight.Dark.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteLight.Dark.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                    else
+                    {
+                        <div>@ThemeFor.Default.PaletteDark.Dark.ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteDark.Dark.ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                    }
+                </MudText>
+                <div class="d-flex">
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-bl"
+                              Style="background-color: var(--mud-palette-dark-lighten); color: var(--mud-palette-dark-text);">
+                        <MudText Align="Align.Center" Class="py-3">
+                            Lighten
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.DarkLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.DarkLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.DarkLighten).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.DarkLighten).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                    <MudPaper Elevation="0"
+                              Class="flex-grow-1 rounded-0 rounded-br"
+                              Style="background-color: var(--mud-palette-dark-darken); color: var(--mud-palette-dark-text);">
+                        <MudText Align="Align.Center" Class="py-3">
+                            Darken
+                            @if (!DisplayInfo.IsDarkMode)
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.DarkDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.DarkDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                            else
+                            {
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.DarkDarken).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                                <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.DarkDarken).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                            }
+                        </MudText>
+                    </MudPaper>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="12">
+            <MudPaper Style="background-color: var(--mud-palette-action-default-hover);">
+                <MudText Align="Align.Center" Class="py-6">
+                    Default
+                    @if (!DisplayInfo.IsDarkMode)
+                    {
+                        <div>@ThemeFor.Default.PaletteLight.ActionDefault.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteLight.ActionDefault.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                    }
+                    else
+                    {
+                        <div>@ThemeFor.Default.PaletteDark.ActionDefault.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                        <div>@ThemeFor.Default.PaletteDark.ActionDefault.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                    }
+                </MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="12" md="12">
+            <MudPaper Elevation="10">
+                <MudPaper Elevation="0"
+                          Class="rounded-0 rounded-t black-text"
+                          Style="background-color: var(--mud-palette-white);">
+                    <MudText Align="Align.Center" Class="py-4">
+                        White
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@ThemeFor.Default.PaletteLight.White.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteLight.White.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@ThemeFor.Default.PaletteDark.White.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteDark.White.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+                <MudPaper Elevation="0"
+                          Class="rounded-0 black-text"
+                          Style="background-color: var(--mud-palette-gray-lighter);">
+                    <MudText Align="Align.Center" Class="py-4">
+                        Gray Lighter
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayLighter).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayLighter).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayLighter).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayLighter).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+                <MudPaper Elevation="0"
+                          Class="rounded-0 black-text"
+                          Style="background-color: var(--mud-palette-gray-light);">
+                    <MudText Align="Align.Center" Class="py-4">
+                        Gray Light
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayLight).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayLight).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayLight).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayLight).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+                <MudPaper Elevation="0"
+                          Class="rounded-0 white-text"
+                          Style="background-color: var(--mud-palette-gray-default);">
+                    <MudText Align="Align.Center" Class="py-4">
+                        Gray Default
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayDefault).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayDefault).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayDefault).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayDefault).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+                <MudPaper Elevation="0"
+                          Class="rounded-0 white-text"
+                          Style="background-color: var(--mud-palette-gray-dark);">
+                    <MudText Align="Align.Center" Class="py-4">
+                        Gray Dark
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayDark).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayDark).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayDark).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayDark).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+                <MudPaper Elevation="0"
+                          Class="rounded-0 white-text"
+                          Style="background-color: var(--mud-palette-gray-darker);">
+                    <MudText Align="Align.Center" Class="py-4">
+                        Gray Darker
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayDarker).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteLight.GrayDarker).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayDarker).ToString(MudColorOutputFormats.Hex).ToUpper()</div>
+                            <div>@MudColor.Parse(ThemeFor.Default.PaletteDark.GrayDarker).ToString(MudColorOutputFormats.RGB).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+                <MudPaper Elevation="0"
+                          Class="rounded-0 rounded-b white-text"
+                          Style="background-color: var(--mud-palette-black);">
+                    <MudText Align="Align.Center" Class="py-4">
+                        Black
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@ThemeFor.Default.PaletteLight.Black.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteLight.Black.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@ThemeFor.Default.PaletteDark.Black.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteDark.Black.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</PageSection>
+<PageSection SectionTitle="Texts" Class="mt-5">
+    <MudPaper Class="pa-10 mud-background-gray">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="4">
+                <MudPaper Class="pa-2">
+                    <MudText Align="Align.Center" Class="py-6 mud-text-primary">
+                        Text Primary
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@ThemeFor.Default.PaletteLight.TextPrimary.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteLight.TextPrimary.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@ThemeFor.Default.PaletteDark.TextPrimary.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteDark.TextPrimary.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="4">
+                <MudPaper Class="pa-2">
+                    <MudText Align="Align.Center" Class="py-6 mud-text-secondary">
+                        Text Secondary
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@ThemeFor.Default.PaletteLight.TextSecondary.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteLight.TextSecondary.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@ThemeFor.Default.PaletteDark.TextSecondary.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteDark.TextSecondary.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="4">
+                <MudPaper Class="pa-2">
+                    <MudText Align="Align.Center" Class="py-6 mud-text-disabled">
+                        Text Disabled
+                        @if (!DisplayInfo.IsDarkMode)
+                        {
+                            <div>@ThemeFor.Default.PaletteLight.TextDisabled.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteLight.TextDisabled.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                        else
+                        {
+                            <div>@ThemeFor.Default.PaletteDark.TextDisabled.ToString(MudColorOutputFormats.HexA).ToUpper()</div>
+                            <div>@ThemeFor.Default.PaletteDark.TextDisabled.ToString(MudColorOutputFormats.RGBA).ToUpper()</div>
+                        }
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+</PageSection>

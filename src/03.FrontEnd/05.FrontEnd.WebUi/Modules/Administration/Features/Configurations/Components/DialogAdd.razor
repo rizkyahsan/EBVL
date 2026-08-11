@@ -1,0 +1,30 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <ErrorViewer Exception="_exception" />
+        <LoadingLinear IsVisible="_isLoading" />
+        <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue">
+            <MudGrid>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@ConfigurationsDisplayTextFor.Key"
+                                      @bind-Value="_model.Key"
+                                      For="@(() => _model.Key)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(ConfigurationsDisplayTextFor.Key)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@ConfigurationsDisplayTextFor.Value"
+                                      @bind-Value="_model.Value"
+                                      For="@(() => _model.Value)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(ConfigurationsDisplayTextFor.Value)" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <ButtonCancel OnClick="Cancel" />
+        <ButtonSubmit OnClick="Submit" Disabled="_isLoading" />
+    </DialogActions>
+</MudDialog>

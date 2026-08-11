@@ -1,0 +1,23 @@
+@inherits DialogBase
+
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
+    <DialogContent>
+        <ErrorViewer Exception="_exception" />
+        <LoadingLinear IsVisible="_isLoading" />
+        <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue">
+            <MudGrid>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@CommonDisplayTextFor.Name"
+                                      @bind-Value="_model.Name"
+                                      For="@(() => _model.Name)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.Name)" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <ButtonCancel OnClick="Cancel" />
+        <ButtonSubmit OnClick="Submit" Disabled="_isLoading" />
+    </DialogActions>
+</MudDialog>

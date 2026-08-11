@@ -1,0 +1,121 @@
+<AuthorizeView>
+    <Authorized>
+        <NavGroupDefault Title="@ExamplesDisplayTextFor.Examples"
+                         Icon="@Icons.Material.TwoTone.DesignServices">
+            <MudNavLink Href="@ExamplesRouteFor.Index"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.Home">
+                @CommonDisplayTextFor.Home
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.Elevations"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.Elevator">
+                @ExamplesDisplayTextFor.Elevations
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.Palette"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.Palette">
+                @ExamplesDisplayTextFor.Palette
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.Buttons"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.SmartButton">
+                @ExamplesDisplayTextFor.Buttons
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.ButtonPanels"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.PictureInPicture">
+                @ExamplesDisplayTextFor.ButtonPanels
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.Typography"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.TextFields">
+                @ExamplesDisplayTextFor.Typography
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.Defaults"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.AutoStories">
+                @ExamplesDisplayTextFor.Defaults
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.TextFields"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.Dns">
+                @ExamplesDisplayTextFor.TextFields
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.Icons"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.Calculate">
+                @ExamplesDisplayTextFor.Icons
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.Masking"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.Masks">
+                @ExamplesDisplayTextFor.Masking
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.DisplayingInformation"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.ChatBubble">
+                @ExamplesDisplayTextFor.DisplayingInformation
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.ErrorHandling"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.ErrorOutline">
+                @ExamplesDisplayTextFor.ErrorHandling
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesRouteFor.Emojis"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.EmojiEmotions">
+                @ExamplesDisplayTextFor.Emojis
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesDocumentsRouteFor.Index"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.FileCopy">
+                @DocumentsDisplayTextFor.Documents
+            </MudNavLink>
+            <MudNavLink Href="@ExamplesPublicHolidaysRouteFor.Index"
+                        Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.TwoTone.AirplaneTicket">
+                @PublicHolidaysDisplayTextFor.PublicHolidays
+            </MudNavLink>
+            <NavGroupDefault Title="@ExamplesLoadingsDisplayTextFor.Loadings"
+                             Icon="@Icons.Material.TwoTone.AccessTime">
+                <MudNavLink Href="@ExamplesLoadingsRouteFor.LoadingLinear"
+                            Match="NavLinkMatch.All"
+                            Icon="@Icons.Material.TwoTone.HorizontalRule">
+                    @ExamplesLoadingsDisplayTextFor.LoadingLinear
+                </MudNavLink>
+                <MudNavLink Href="@ExamplesLoadingsRouteFor.LoadingOverlay"
+                            Match="NavLinkMatch.All"
+                            Icon="@Icons.Material.TwoTone.AutoAwesomeMotion">
+                    @ExamplesLoadingsDisplayTextFor.LoadingOverlay
+                </MudNavLink>
+            </NavGroupDefault>
+            <NavGroupDefault Title="@ExamplesEmailsDisplayTextFor.Emails"
+                             Icon="@Icons.Material.TwoTone.Email">
+                <MudNavLink Href="@ExamplesEmailsRouteFor.SendEmail"
+                            Match="NavLinkMatch.All"
+                            Icon="@Icons.Material.TwoTone.Send">
+                    @ExamplesEmailsDisplayTextFor.SendEmail
+                </MudNavLink>
+                <MudNavLink Href="@ExamplesEmailsRouteFor.SendEmailWithTemplate"
+                            Match="NavLinkMatch.All"
+                            Icon="@Icons.Material.TwoTone.SendTimeExtension">
+                    @ExamplesEmailsDisplayTextFor.SendEmailWithTemplate
+                </MudNavLink>
+            </NavGroupDefault>
+            <NavGroupDefault Title="@ExamplesDummiesDisplayTextFor.Dummies"
+                             Icon="@Icons.Material.TwoTone.SmartToy">
+                <MudNavLink Href="@ExamplesDummiesRouteFor.Index"
+                            Match="NavLinkMatch.All"
+                            Icon="@Icons.Material.TwoTone.CloudDownload">
+                    @ExamplesDummiesDisplayTextFor.GetDummies
+                </MudNavLink>
+                <MudNavLink Href="@ExamplesDummiesRouteFor.Post"
+                            Match="NavLinkMatch.All"
+                            Icon="@Icons.Material.TwoTone.CloudUpload">
+                    @ExamplesDummiesDisplayTextFor.PostDummy
+                </MudNavLink>
+            </NavGroupDefault>
+        </NavGroupDefault>
+    </Authorized>
+</AuthorizeView>
