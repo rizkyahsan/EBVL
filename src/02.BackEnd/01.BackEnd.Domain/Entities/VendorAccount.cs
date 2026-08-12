@@ -12,6 +12,9 @@ public sealed class VendorAccount : ModifiableEntity
     public required string PasswordSalt { get; set; }
 
     public required bool IsActive { get; set; }
-    public required Guid VendorRegistrationId { get; set; }
-    public VendorRegistration VendorRegistration { get; set; } = default!;
+    public required VendorAccountStatus Status { get; set; }
+    public Guid? VendorId { get; set; }
+    public Guid? VendorRegistrationId { get; set; }
+    public Vendor Vendor { get; set; } = default!;
+    public VendorRegistration? VendorRegistration { get; set; }
 }

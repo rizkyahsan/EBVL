@@ -1,7 +1,6 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using EBVL.BackEnd.Infrastructure.Database.Interceptors;
-using EBVL.BackEnd.Infrastructure.Database.Seeders;
 
 namespace EBVL.BackEnd.Infrastructure.Database;
 

@@ -4,6 +4,7 @@ using EBVL.BackEnd.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(DatabaseService))]
-    partial class DatabaseServiceModelSnapshot : ModelSnapshot
+    [Migration("20260812061705_M003CanonicalVendor")]
+    partial class M003CanonicalVendor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -641,148 +644,6 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.HasIndex("VendorId", "DocumentTemplateId");
 
                     b.ToTable("VendorDocuments", "EBVL");
-                });
-
-            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorMigrationCrosswalk", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("RunId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SourceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SourceTable")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<Guid>("TargetId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("TargetTable")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SourceTable", "SourceId")
-                        .IsUnique();
-
-                    b.ToTable("Crosswalks", "Migration");
-                });
-
-            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorMigrationQuarantine", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("Created")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Detail")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<Guid>("RunId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SourceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SourceTable")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RunId", "SourceTable", "SourceId");
-
-                    b.ToTable("Quarantines", "Migration");
-                });
-
-            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorMigrationRow", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Outcome")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.Property<DateTimeOffset>("Processed")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Reason")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<Guid>("RunId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("SourceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("SourceTable")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RunId", "SourceTable", "SourceId")
-                        .IsUnique();
-
-                    b.ToTable("Rows", "Migration");
-                });
-
-            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorMigrationRun", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset?>("Completed")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<int>("Imported")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quarantined")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SourceDatabase")
-                        .IsRequired()
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
-
-                    b.Property<DateTimeOffset>("Started")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Runs", "Migration");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorRegistration", b =>

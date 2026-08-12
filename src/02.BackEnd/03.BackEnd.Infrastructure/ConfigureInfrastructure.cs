@@ -3,6 +3,7 @@ using EBVL.BackEnd.Infrastructure.BackgroundJob;
 using EBVL.BackEnd.Infrastructure.Cryptography;
 using EBVL.BackEnd.Infrastructure.CurrentUser;
 using EBVL.BackEnd.Infrastructure.Database;
+using EBVL.BackEnd.Infrastructure.Database.VendorImport;
 using EBVL.BackEnd.Infrastructure.DateAndTime;
 using EBVL.BackEnd.Infrastructure.Email;
 using EBVL.BackEnd.Infrastructure.Endpoint;
@@ -41,6 +42,7 @@ public static class ConfigureInfrastructure
         _ = builder.Services.AddCryptographyService(cryptographyKey, cryptographyTweak);
         _ = builder.Services.AddCurrentUserService();
         _ = builder.Services.AddDatabaseService(applicationDatabaseConnectionString, healthChecksBuilder);
+        _ = builder.Services.AddTransient<VendorSourceImporter>();
         _ = builder.Services.AddDateAndTimeService();
         _ = builder.Services.AddEmailService(builder.Configuration, smtpUsername, smtpPassword, healthChecksBuilder);
         _ = builder.Services.AddExceptionHandlerService();

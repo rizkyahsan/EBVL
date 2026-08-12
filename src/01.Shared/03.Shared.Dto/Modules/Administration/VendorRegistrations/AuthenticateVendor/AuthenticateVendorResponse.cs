@@ -3,6 +3,7 @@ namespace EBVL.Shared.Dto.Modules.Administration.VendorRegistrations.Authenticat
 public sealed record AuthenticateVendorResponse
 {
     public required Guid VendorAccountId { get; init; }
+    public required Guid VendorId { get; init; }
     public required Guid VendorRegistrationId { get; init; }
     public required string EmailAddress { get; init; }
     public required string CompanyName { get; init; }

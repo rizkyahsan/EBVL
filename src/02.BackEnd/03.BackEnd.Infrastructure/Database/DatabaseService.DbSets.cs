@@ -11,4 +11,15 @@ public partial class DatabaseService : IDatabaseService
     public DbSet<User> Users => Set<User>();
     public DbSet<VendorAccount> VendorAccounts => Set<VendorAccount>();
     public DbSet<VendorRegistration> VendorRegistrations => Set<VendorRegistration>();
+    public DbSet<Vendor> Vendors => Set<Vendor>();
+    public DbSet<VendorType> VendorTypes => Set<VendorType>();
+    public DbSet<ContactType> ContactTypes => Set<ContactType>();
+    public DbSet<VendorContact> VendorContacts => Set<VendorContact>();
+    public DbSet<DocumentTemplate> DocumentTemplates => Set<DocumentTemplate>();
+    public DbSet<VendorDocument> VendorDocuments => Set<VendorDocument>();
+    public DbSet<VendorRegistrationDocument> VendorRegistrationDocuments => Set<VendorRegistrationDocument>();
+    public DbSet<VendorMigrationRun> VendorMigrationRuns => Set<VendorMigrationRun>();
+    public DbSet<VendorMigrationRow> VendorMigrationRows => Set<VendorMigrationRow>();
+    public DbSet<VendorMigrationCrosswalk> VendorMigrationCrosswalks => Set<VendorMigrationCrosswalk>();
+    public DbSet<VendorMigrationQuarantine> VendorMigrationQuarantines => Set<VendorMigrationQuarantine>();
 }

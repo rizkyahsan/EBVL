@@ -94,7 +94,9 @@ public sealed class RegisterVendorCommandHandler(IDatabaseService databaseServic
             EmailAddress = email,
             PasswordHash = passwordHash,
             PasswordSalt = passwordSalt,
-            IsActive = true,
+            IsActive = false,
+            Status = VendorAccountStatus.PendingActivation,
+            VendorId = null,
             VendorRegistrationId = registration.Id,
             VendorRegistration = registration
         };

@@ -4,6 +4,7 @@ using EBVL.BackEnd.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(DatabaseService))]
-    partial class DatabaseServiceModelSnapshot : ModelSnapshot
+    [Migration("20260812085324_M005VendorMigrationLedger")]
+    partial class M005VendorMigrationLedger
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,7 +190,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ContactTypes", "EBVL");
+                    b.ToTable("ContactTypes", "dbo");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.Country", b =>
@@ -309,7 +312,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .IsUnique()
                         .HasFilter("[Alias] IS NOT NULL");
 
-                    b.ToTable("DocumentTemplates", "EBVL");
+                    b.ToTable("DocumentTemplates", "dbo");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.PublicHoliday", b =>
@@ -467,7 +470,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasIndex("VendorTypeId");
 
-                    b.ToTable("Vendors", "EBVL");
+                    b.ToTable("Vendors", "dbo");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorAccount", b =>
@@ -576,7 +579,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasIndex("VendorId");
 
-                    b.ToTable("VendorContacts", "EBVL");
+                    b.ToTable("VendorContacts", "dbo");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorDocument", b =>
@@ -640,7 +643,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasIndex("VendorId", "DocumentTemplateId");
 
-                    b.ToTable("VendorDocuments", "EBVL");
+                    b.ToTable("VendorDocuments", "dbo");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorMigrationCrosswalk", b =>
@@ -998,7 +1001,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VendorTypes", "EBVL");
+                    b.ToTable("VendorTypes", "dbo");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.Vendor", b =>

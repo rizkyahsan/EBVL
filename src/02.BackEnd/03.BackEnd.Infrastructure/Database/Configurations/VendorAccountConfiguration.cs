@@ -11,10 +11,16 @@ public sealed class VendorAccountConfiguration : IEntityTypeConfiguration<Vendor
         _ = builder.Property(x => x.PasswordHash).HasColumnType(ColumnTypeFor.Nvarchar(VendorsMaximumLengthFor.PasswordHash));
         _ = builder.Property(x => x.PasswordSalt).HasColumnType(ColumnTypeFor.Nvarchar(VendorsMaximumLengthFor.PasswordHash));
         _ = builder.HasIndex(x => x.EmailAddress).IsUnique();
-        _ = builder.HasIndex(x => x.VendorRegistrationId).IsUnique();
+        _ = builder.Property(x => x.Status).HasColumnType("int");
+        _ = builder.HasIndex(x => x.VendorId);
+        _ = builder.HasIndex(x => x.VendorRegistrationId).IsUnique().HasFilter("[VendorRegistrationId] IS NOT NULL");
+        _ = builder.HasOne(x => x.Vendor)
+            .WithMany(x => x.Accounts)
+            .HasForeignKey(x => x.VendorId)
+            .OnDelete(DeleteBehavior.Restrict);
         _ = builder.HasOne(x => x.VendorRegistration)
-            .WithOne(x => x.Account)
-            .HasForeignKey<VendorAccount>(x => x.VendorRegistrationId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .WithMany()
+            .HasForeignKey(x => x.VendorRegistrationId)
+            .OnDelete(DeleteBehavior.SetNull);
     }
 }

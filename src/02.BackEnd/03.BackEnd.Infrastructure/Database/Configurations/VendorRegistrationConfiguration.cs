@@ -7,6 +7,8 @@ public sealed class VendorRegistrationConfiguration : IEntityTypeConfiguration<V
         _ = builder.ToTable(nameof(IDatabaseService.VendorRegistrations));
         builder.ConfigureModifiableProperties();
 
+        _ = builder.Property(x => x.VendorId).HasColumnType("uniqueidentifier");
+
         _ = builder.Property(x => x.SapVendorNumber).HasColumnType(ColumnTypeFor.Nvarchar(VendorsMaximumLengthFor.SapVendorNumber));
         _ = builder.Property(x => x.CompanyName).HasColumnType(ColumnTypeFor.Nvarchar(VendorsMaximumLengthFor.CompanyName));
         _ = builder.Property(x => x.CompanyEmail).HasColumnType(ColumnTypeFor.Nvarchar(VendorsMaximumLengthFor.EmailAddress));
@@ -28,5 +30,10 @@ public sealed class VendorRegistrationConfiguration : IEntityTypeConfiguration<V
         _ = builder.Property(x => x.MainCertificateFileName).HasColumnType(ColumnTypeFor.Nvarchar(VendorsMaximumLengthFor.FileName));
         _ = builder.HasIndex(x => x.SapVendorNumber).IsUnique();
         _ = builder.HasIndex(x => x.Status);
+        _ = builder.HasIndex(x => x.VendorId);
+        _ = builder.HasOne(x => x.Vendor)
+            .WithMany(x => x.Registrations)
+            .HasForeignKey(x => x.VendorId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

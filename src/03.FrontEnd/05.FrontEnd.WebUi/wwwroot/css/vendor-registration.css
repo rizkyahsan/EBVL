@@ -1,9 +1,8 @@
-.vendor-public-shell { min-height:100vh; background:#f7f9fb; color:#30343b; }
-.vendor-public-header { min-height:88px; padding:0 32px; background:#0d548c; display:flex; align-items:center; justify-content:space-between; }
-.vendor-public-header a { color:white; text-decoration:none; font-size:1.25rem; font-weight:700; }
-.vendor-public-header > a { font-size:1.8rem; font-weight:400; }
-.vendor-public-header nav { display:flex; gap:40px; }
-.vendor-public-content { min-height:calc(100vh - 88px); display:grid; place-items:center; padding:48px 20px; }
+.vendor-public-shell { --vendor-public-header-height:64px; min-height:100vh; background:#f7f9fb; color:#30343b; }
+.vendor-public-header { min-height:var(--vendor-public-header-height); padding:0 38px; background-color:var(--mud-palette-appbar-background); color:var(--mud-palette-appbar-text); border-bottom:1px solid var(--mud-palette-lines-default); display:flex; align-items:center; backdrop-filter:blur(5px); -webkit-backdrop-filter:blur(5px); }
+.vendor-public-brand { display:flex; align-items:center; color:inherit; }
+.vendor-public-navigation-button { font-weight:600; letter-spacing:normal; }
+.vendor-public-content { min-height:calc(100vh - var(--vendor-public-header-height)); display:grid; place-items:center; padding:48px 20px; }
 .vendor-card { width:min(100%, 920px); background:white; border:1px solid #dfe4e8; border-radius:16px; padding:48px; box-shadow:0 8px 28px rgba(30,45,60,.12); }
 .vendor-card h1 { text-align:center; margin-bottom:32px; }
 .vendor-login-card { max-width:760px; }
@@ -28,4 +27,4 @@
 .vendor-documents input { border:0; padding:0; min-height:auto; }.vendor-documents span { color:#078a64; }
 .account-grid { border-top:1px solid #e4e8eb; padding-top:24px; }
 .vendor-summary { max-width:1100px; margin:40px auto; text-align:center; }.vendor-summary-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:32px; text-align:left; }
-@media(max-width:720px){.vendor-public-header span{display:none}.vendor-public-header nav{gap:12px}.vendor-card{padding:24px}.vendor-form,.vendor-grid.two,.vendor-grid.one{grid-template-columns:1fr}.vendor-documents,.vendor-summary-grid{grid-template-columns:1fr}}
+@media(max-width:720px){.vendor-public-header{padding:0 16px}.vendor-public-brand .mud-typography{font-size:1rem}.vendor-public-navigation{gap:0!important}.vendor-public-navigation-button{min-width:auto;padding:6px}.vendor-card{padding:24px}.vendor-form,.vendor-grid.two,.vendor-grid.one{grid-template-columns:1fr}.vendor-documents,.vendor-summary-grid{grid-template-columns:1fr}}

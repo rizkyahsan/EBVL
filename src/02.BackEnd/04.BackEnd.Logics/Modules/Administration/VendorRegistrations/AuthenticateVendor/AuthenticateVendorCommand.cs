@@ -19,8 +19,9 @@ public sealed class AuthenticateVendorCommandHandler(IDatabaseService databaseSe
     {
         var email = request.EmailAddress.Trim().ToLowerInvariant();
         var account = await databaseService.VendorAccounts
+            .Include(x => x.Vendor)
             .Include(x => x.VendorRegistration)
-            .FirstOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.EmailAddress == email, cancellationToken);
+            .FirstOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.Status == VendorAccountStatus.Active && x.VendorId != null && x.EmailAddress == email, cancellationToken);
 
         if (account is null || !PasswordHasher.Verify(request.Password, account.PasswordHash, account.PasswordSalt))
         {
@@ -30,11 +31,12 @@ public sealed class AuthenticateVendorCommandHandler(IDatabaseService databaseSe
         return new AuthenticateVendorResponse
         {
             VendorAccountId = account.Id,
-            VendorRegistrationId = account.VendorRegistrationId,
+            VendorRegistrationId = account.VendorRegistrationId ?? Guid.Empty,
+            VendorId = account.VendorId!.Value,
             EmailAddress = account.EmailAddress,
-            CompanyName = account.VendorRegistration.CompanyName,
-            SapVendorNumber = account.VendorRegistration.SapVendorNumber,
-            Status = account.VendorRegistration.Status
+            CompanyName = account.Vendor.Name,
+            SapVendorNumber = account.Vendor.SapVendorNumber,
+            Status = account.VendorRegistration?.Status ?? VendorRegistrationStatus.Verified
         };
     }
 }

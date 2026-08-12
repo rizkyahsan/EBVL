@@ -11,6 +11,7 @@ global using Pertamina.Services.Database.Common.Extensions;
 global using Pertamina.Services.Database.Common.Statics;
 global using EBVL.BackEnd.Domain.Entities;
 global using EBVL.BackEnd.Infrastructure.Database.InitialData;
+global using EBVL.BackEnd.Infrastructure.Database.Seeders;
 global using EBVL.BackEnd.Services.Database;
 global using ApiCallsMaximumLengthFor = EBVL.Shared.Statics.ApiCalls.MaximumLengthFor;
 global using AuditsMaximumLengthFor = EBVL.Shared.Statics.Audits.MaximumLengthFor;

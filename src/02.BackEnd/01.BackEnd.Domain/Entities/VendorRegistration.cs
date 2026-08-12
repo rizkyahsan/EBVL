@@ -2,6 +2,7 @@ namespace EBVL.BackEnd.Domain.Entities;
 
 public sealed class VendorRegistration : ModifiableEntity
 {
+    public Guid? VendorId { get; set; }
     public required string SapVendorNumber { get; set; }
     public required string CompanyName { get; set; }
 
@@ -32,5 +33,6 @@ public sealed class VendorRegistration : ModifiableEntity
     public required string TaxCardFileName { get; set; }
     public required string MainCertificateFileName { get; set; }
     public required VendorRegistrationStatus Status { get; set; }
-    public VendorAccount? Account { get; set; }
+    public Vendor? Vendor { get; set; }
+    public ICollection<VendorRegistrationDocument> Documents { get; set; } = [];
 }
