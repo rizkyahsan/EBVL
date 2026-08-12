@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Pertamina.Services.IdAMan;
@@ -13,6 +14,11 @@ public sealed class CustomCookieAuthenticationEvents(
 {
     public override async Task ValidatePrincipal(CookieValidatePrincipalContext context)
     {
+        if (context.Principal?.FindFirstValue(ClaimTypes.AuthenticationMethod) == "LocalAccount")
+        {
+            return;
+        }
+
         var authenticationProperties = context.Properties;
 
         var expiresAt = authenticationProperties.GetTokenValue(TokenNameFor.ExpiresAt);

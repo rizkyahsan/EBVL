@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Pertamina.Common.Statics;
 using Pertamina.Extensions.Identity;
 using Pertamina.Extensions.Identity.Statics;
@@ -11,11 +12,68 @@ using Pertamina.Services.PersonalRoles;
 using Pertamina.Services.PositionRoles;
 using Pertamina.Services.UserPositions;
 using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
+using EBVL.FrontEnd.Services.BackEndApi;
+using EBVL.Shared.Dto.Modules.Administration.VendorRegistrations.AuthenticateVendor;
+using RestSharp;
 
 namespace EBVL.FrontEnd.Infrastructure.Authentication;
 
 public static class AuthenticationHandlers
 {
+    public static async Task<IResult> LocalLoginHandler(
+        [FromForm] string emailAddress,
+        [FromForm] string password,
+        [FromForm] bool? rememberMe,
+        [FromForm] string? returnUrl,
+        HttpContext httpContext,
+        IBackEndApiService backEndApiService,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var request = new AuthenticateVendorRequest
+            {
+                EmailAddress = emailAddress,
+                Password = password
+            };
+            var restRequest = new RestRequest(AuthenticateVendorRoute.ResourceUri, Method.Post).AddJsonBody(request);
+            var vendor = await backEndApiService.SendAnonymousRequestAsync<AuthenticateVendorResponse>(restRequest, cancellationToken);
+
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, vendor.VendorAccountId.ToString()),
+                new Claim(ClaimTypes.Name, vendor.CompanyName),
+                new Claim(ClaimTypes.Email, vendor.EmailAddress),
+                new Claim(ClaimTypes.Role, "Vendor"),
+                new Claim(ClaimTypes.AuthenticationMethod, "LocalAccount"),
+                new Claim("VendorRegistrationId", vendor.VendorRegistrationId.ToString()),
+                new Claim("SapVendorNumber", vendor.SapVendorNumber),
+                new Claim("VendorRegistrationStatus", vendor.Status.ToString())
+            };
+
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var properties = new AuthenticationProperties
+            {
+                IsPersistent = rememberMe is true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(rememberMe is true ? 12 : 2)
+            };
+            await httpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(identity),
+                properties);
+
+            var redirect = string.IsNullOrWhiteSpace(returnUrl) || !Uri.IsWellFormedUriString(returnUrl, UriKind.Relative)
+                ? "/Vendor/Registration/Summary"
+                : returnUrl;
+            return Results.LocalRedirect(redirect);
+        }
+        catch
+        {
+            var encodedEmail = Uri.EscapeDataString(emailAddress);
+            return Results.LocalRedirect($"/Vendor/Login?error=invalid&email={encodedEmail}");
+        }
+    }
+
     public static ChallengeHttpResult LoginHandler(string pathBase, string? returnUrl)
     {
         var authenticationProperties = GenerateAuthenticationProperties(pathBase, returnUrl);
@@ -23,15 +81,14 @@ public static class AuthenticationHandlers
         return TypedResults.Challenge(authenticationProperties, [OpenIdConnectDefaults.AuthenticationScheme]);
     }
 
-    public static SignOutHttpResult LogoutHandler(string pathBase, string? returnUrl)
+    public static SignOutHttpResult LogoutHandler(string pathBase, string? returnUrl, HttpContext httpContext)
     {
         var authenticationProperties = GenerateAuthenticationProperties(pathBase, returnUrl);
 
-        var authenticationSchemes = new[]
-        {
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            OpenIdConnectDefaults.AuthenticationScheme
-        };
+        var isLocalAccount = httpContext.User.FindFirstValue(ClaimTypes.AuthenticationMethod) == "LocalAccount";
+        var authenticationSchemes = isLocalAccount
+            ? [CookieAuthenticationDefaults.AuthenticationScheme]
+            : new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme };
 
         return TypedResults.SignOut(authenticationProperties, authenticationSchemes);
     }

@@ -9,4 +9,6 @@ public partial class DatabaseService : IDatabaseService
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<PublicHoliday> PublicHolidays => Set<PublicHoliday>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<VendorAccount> VendorAccounts => Set<VendorAccount>();
+    public DbSet<VendorRegistration> VendorRegistrations => Set<VendorRegistration>();
 }

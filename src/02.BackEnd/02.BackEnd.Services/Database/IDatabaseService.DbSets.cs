@@ -12,4 +12,6 @@ public partial interface IDatabaseService
     public DbSet<Document> Documents { get; }
     public DbSet<PublicHoliday> PublicHolidays { get; }
     public DbSet<User> Users { get; }
+    public DbSet<VendorAccount> VendorAccounts { get; }
+    public DbSet<VendorRegistration> VendorRegistrations { get; }
 }

@@ -20,3 +20,4 @@ global using CountriesMaximumLengthFor = EBVL.Shared.Statics.Countries.MaximumLe
 global using DocumentsMaximumLengthFor = EBVL.Shared.Statics.Documents.MaximumLengthFor;
 global using PublicHolidaysMaximumLengthFor = EBVL.Shared.Statics.PublicHolidays.MaximumLengthFor;
 global using UsersMaximumLengthFor = EBVL.Shared.Statics.Users.MaximumLengthFor;
+global using VendorsMaximumLengthFor = EBVL.Shared.Statics.Vendors.MaximumLengthFor;

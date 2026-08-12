@@ -1,0 +1,82 @@
+@page "/Vendor/Register"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+@using EBVL.FrontEnd.WebUi.Modules.Administration.Features.VendorRegistrations.Components.Dialog
+@using EBVL.FrontEnd.WebUi.Modules.Administration.Features.VendorRegistrations.Components
+
+<HtmlHead Title="Registrasi Vendor" />
+<div class="vendor-public-shell">
+    <header class="vendor-public-header">
+        <a href="Landing">e-BVL <span>(Electronic Brand Vendor List)</span></a>
+        <nav><a href="Landing">BANTUAN</a><a href="Vendor/Login">LOGIN PAGE</a></nav>
+    </header>
+    <main class="vendor-public-content">
+        <ErrorViewer Exception="_exception" />
+        <section class="vendor-card vendor-register-card">
+            <div class="vendor-progress"><span style="width:@($"{(_step + 1) * 20}%")"></span></div>
+            @if (_step == 0)
+            {
+                <div class="vendor-welcome">
+                    <h1>REGISTRASI VENDOR BARU</h1>
+                    <p>Selamat datang di sistem Electronic Brand Vendor List.<br />Silakan daftarkan perusahaan Anda untuk menjadi mitra resmi kami.</p>
+                    <button class="vendor-button success" @onclick="Next">Klik untuk Register</button>
+                </div>
+            }
+            else if (_step == 1)
+            {
+                <h1>Input nomor SAP Vendor</h1>
+                <div class="vendor-grid one"><label>NO SAP Vendor</label><input @bind="_model.SapVendorNumber" /></div>
+                <VendorWizardActions OnBack="Back" OnNext="Next" />
+            }
+            else if (_step == 2)
+            {
+                <h1>Informasi Perusahaan</h1>
+                <div class="vendor-grid two">
+                    <label>Nama Perusahaan</label><input @bind="_model.CompanyName" />
+                    <label>Email Perusahaan</label><input type="email" @bind="_model.CompanyEmail" />
+                    <label>Email PIC</label><input type="email" @bind="_model.PicEmail" />
+                    <label>Nomor Kontak Perusahaan</label><input @bind="_model.CompanyPhone" />
+                    <label>Nomor Kontak PIC</label><input @bind="_model.PicPhone" />
+                    <label>Website Perusahaan</label><input @bind="_model.Website" />
+                    <label>Layanan Perusahaan</label>
+                    <select @bind="_model.CompanyService"><option value="">Pilih layanan</option><option>Produk</option><option>Jasa</option><option>Produk &amp; Jasa</option></select>
+                    <label>Negara Lokasi Pabrik</label><input @bind="_model.FactoryCountry" />
+                    <label>Alamat Lokasi Pabrik</label><textarea @bind="_model.FactoryAddress"></textarea>
+                    <label>Pemilik / Perwakilan Brand</label><input @bind="_model.BrandRepresentative" />
+                    <label>Status Perusahaan</label>
+                    <select @bind="_model.CompanyStatus"><option value="">Pilih status</option><option>Manufacture</option><option>Agen Distributor Tunggal</option><option>Agen Resmi</option></select>
+                    <label class="vendor-check"><input type="checkbox" @bind="_model.HasRepresentativeInIndonesia" /> Representative di Indonesia</label>
+                    <input placeholder="Nama representative (opsional)" @bind="_model.IndonesiaRepresentativeName" />
+                </div>
+                <VendorWizardActions OnBack="Back" OnNext="Next" />
+            }
+            else if (_step == 3)
+            {
+                <h1>KUESIONER PRA-REGISTRASI</h1>
+                <p class="vendor-muted">LANGKAH 2 DARI 2 — pilih dokumen bukti yang akan dikirim.</p>
+                <div class="vendor-documents">
+                    <label>1. BRAND REGISTRATION LETTER *<InputFile OnChange="@(e => SetFile(e, 1))" /><span>@_model.BrandRegistrationLetterFileName</span></label>
+                    <label>2. COMPANY PROFILE *<InputFile OnChange="@(e => SetFile(e, 2))" /><span>@_model.CompanyProfileFileName</span></label>
+                    <label>3. PRODUCT CATALOG *<InputFile OnChange="@(e => SetFile(e, 3))" /><span>@_model.ProductCatalogFileName</span></label>
+                    <label>4. PRODUCT EXPERIENCE LIST *<InputFile OnChange="@(e => SetFile(e, 4))" /><span>@_model.ProjectExperienceFileName</span></label>
+                    <label>5. NPWP PERUSAHAAN *<InputFile OnChange="@(e => SetFile(e, 5))" /><span>@_model.TaxCardFileName</span></label>
+                    <label>6. BRAND CERT/STP/AUTHORIZED *<InputFile OnChange="@(e => SetFile(e, 6))" /><span>@_model.MainCertificateFileName</span></label>
+                </div>
+                <div class="vendor-grid two account-grid">
+                    <label>Password local account</label><input type="password" @bind="_model.Password" />
+                    <label>Konfirmasi password</label><input type="password" @bind="_model.PasswordConfirmation" />
+                </div>
+                <VendorWizardActions Submit="true" Disabled="_isLoading" OnBack="Back" OnNext="SubmitRegistration" />
+            }
+            else
+            {
+                <div class="vendor-welcome">
+                    <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Large" />
+                    <h1>Pendaftaran Berhasil Dikirim</h1>
+                    <p>Data <b>@_resultCompany</b> telah diterima dan menunggu verifikasi.</p>
+                    <a class="vendor-button success" href="Vendor/Login">Login dengan Local Account</a>
+                </div>
+            }
+        </section>
+    </main>
+</div>

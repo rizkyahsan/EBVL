@@ -68,7 +68,11 @@ public static class ConfigureAuthentication
             .AllowAnonymous();
 
         _ = routeGroupBuilder
-            .MapGet(PatternFor.Logout, (string? returnUrl) => AuthenticationHandlers.LogoutHandler(finalPathBase, returnUrl))
+            .MapPost(PatternFor.LocalLogin, AuthenticationHandlers.LocalLoginHandler)
+            .AllowAnonymous();
+
+        _ = routeGroupBuilder
+            .MapGet(PatternFor.Logout, (string? returnUrl, HttpContext httpContext) => AuthenticationHandlers.LogoutHandler(finalPathBase, returnUrl, httpContext))
             .RequireAuthorization();
 
         _ = routeGroupBuilder

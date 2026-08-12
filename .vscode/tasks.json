@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "EBVL: Run WebApi",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/src/02.BackEnd/05.BackEnd.WebApi/05.BackEnd.WebApi.csproj",
+        "--launch-profile",
+        "WebApi",
+        "--no-restore",
+        "-p:NuGetAudit=false"
+      ],
+      "isBackground": true,
+      "problemMatcher": "$msCompile",
+      "presentation": { "panel": "dedicated", "reveal": "always" }
+    },
+    {
+      "label": "EBVL: Run WebUi",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/src/03.FrontEnd/05.FrontEnd.WebUi/05.FrontEnd.WebUi.csproj",
+        "--launch-profile",
+        "WebUi",
+        "--no-restore",
+        "-p:NuGetAudit=false"
+      ],
+      "isBackground": true,
+      "problemMatcher": "$msCompile",
+      "presentation": { "panel": "dedicated", "reveal": "always" }
+    },
+    {
+      "label": "EBVL: Run All",
+      "type": "process",
+      "command": "${workspaceFolder}/scripts/run-all.sh",
+      "isBackground": true,
+      "problemMatcher": "$msCompile",
+      "presentation": { "panel": "dedicated", "reveal": "always" }
+    }
+  ]
+}

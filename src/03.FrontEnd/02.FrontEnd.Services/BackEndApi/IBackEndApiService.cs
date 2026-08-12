@@ -6,4 +6,6 @@ public interface IBackEndApiService
 {
     public Task SendRequestAsync(RestRequest restRequest, CancellationToken cancellationToken = default);
     public Task<T> SendRequestAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default);
+    public Task SendAnonymousRequestAsync(RestRequest restRequest, CancellationToken cancellationToken = default);
+    public Task<T> SendAnonymousRequestAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default);
 }

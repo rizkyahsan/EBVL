@@ -10,20 +10,26 @@
                 <MudText Typo="Typo.h1">
                     Welcome to @AppConfigFrontEndOptions.Value.AppNickName
                 </MudText>
-                <MudText Typo="Typo.subtitle1" Class="mb-20">
-                    Application subtitle.
+                <MudText Typo="Typo.subtitle1" Class="mb-6">
+                    Electronic Brand Vendor List
                 </MudText>
                 <MudText Typo="Typo.body1" Class="mb-4">
-                    Please <b>log in</b> with your @CommonDisplayTextFor.IdAMan account to get started.
+                    Silakan masuk menggunakan akun internal atau akun vendor.
                 </MudText>
-                <a href="@_loginRoute" class="rounded border px-5 py-4 mud-border-lines-default button-login">
-                    <div class="d-flex align-center gap-2">
+                <div class="d-flex gap-3 flex-wrap justify-center">
+                  <a href="@_loginRoute" class="rounded border px-5 py-4 mud-border-lines-default button-login">
+                    <div class="d-flex align-center gap-2 justify-center">
                         <img src="img/logo-p.jpg" alt="@CommonDisplayTextFor.IdAMan" width="24" height="24" />
-                        <span>
-                            @CommonDisplayTextFor.Login with @CommonDisplayTextFor.IdAMan
-                        </span>
+                        <span>Login with IdAMan</span>
                     </div>
-                </a>
+                  </a>
+                  <a href="Vendor/Login" class="rounded border px-5 py-4 mud-border-lines-default button-login">
+                    <div class="d-flex align-center gap-2 justify-center">
+                        <MudIcon Icon="@Icons.Material.Filled.Business" />
+                        <span>Login with Local Account</span>
+                    </div>
+                  </a>
+                </div>
             </div>
         </div>
     </div>
@@ -32,7 +38,7 @@
             <div class="illus-container rounded">
                 <div class="d-flex flex-column mud-height-full justify-start pa-8">
                     <p class="landing-title">
-                        Application Description.
+                        e-BVL Reengineering.
                     </p>
                 </div>
             </div>

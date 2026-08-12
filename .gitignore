@@ -363,3 +363,10 @@ FodyWeavers.xsd
 
 **/secrets.json
 **/secrets.*.json
+
+# macOS and developer-local artifacts
+.DS_Store
+**/.DS_Store
+.local/nuget-feed/
+NuGetOfflineFeed.zip
+/tools/

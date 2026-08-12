@@ -1,0 +1,35 @@
+@page "/Vendor/Login"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+@using EBVL.FrontEnd.Infrastructure.Authentication.Statics
+
+<HtmlHead Title="Vendor Login" />
+<div class="vendor-public-shell">
+    <header class="vendor-public-header">
+        <a href="Landing">e-BVL <span>(Electronic Brand Vendor List)</span></a>
+        <nav><a href="Landing">BANTUAN</a><a href="Vendor/Login">LOGIN PAGE</a></nav>
+    </header>
+    <main class="vendor-public-content">
+        <section class="vendor-card vendor-login-card">
+            <h1>Selamat Datang</h1>
+            @if (Error == "invalid")
+            {
+                <div class="vendor-alert">Email atau password tidak valid.</div>
+            }
+            <form method="post" action="@($"{PrefixFor.Authentication}/{PatternFor.LocalLogin}")" class="vendor-form">
+                <AntiforgeryToken />
+                <input type="hidden" name="returnUrl" value="@ReturnUrl" />
+                <label>Email / Username</label>
+                <input name="emailAddress" type="email" value="@Email" placeholder="Masukkan email perusahaan" required />
+                <label>Password</label>
+                <input name="password" type="password" placeholder="Masukkan password" required />
+                <label class="vendor-check"><input name="rememberMe" type="checkbox" value="true" /> Ingat saya</label>
+                <p>Belum punya akun? <a href="Vendor/Register"><b>Daftar sekarang</b></a></p>
+                <div class="vendor-actions">
+                    <a class="vendor-button danger" href="Landing">BACK</a>
+                    <button class="vendor-button success" type="submit">NEXT</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>

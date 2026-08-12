@@ -1,4 +1,5 @@
 global using FluentValidation;
+global using EBVL.Shared.Enums;
 global using Pertamina.Common.Dto.Requests;
 global using Pertamina.Common.Dto.Responses;
 global using Pertamina.Common.Validators;

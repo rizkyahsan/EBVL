@@ -74,6 +74,33 @@ public sealed class BackEndApiService(
         return restResponse.Data;
     }
 
+    public async Task SendAnonymousRequestAsync(RestRequest restRequest, CancellationToken cancellationToken = default)
+    {
+        var restResponse = await _restClient.ExecuteAsync(restRequest, cancellationToken);
+
+        if (!restResponse.IsSuccessful)
+        {
+            HandleProblem(restResponse, restRequest);
+        }
+    }
+
+    public async Task<T> SendAnonymousRequestAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default)
+    {
+        var restResponse = await _restClient.ExecuteAsync<T>(restRequest, cancellationToken);
+
+        if (!restResponse.IsSuccessful)
+        {
+            HandleProblem(restResponse, restRequest);
+        }
+
+        if (restResponse.Data is null)
+        {
+            throw ExceptionFor.JsonDeserializationFailed(restResponse.Content!, typeof(T));
+        }
+
+        return restResponse.Data;
+    }
+
     private async Task<bool> GetExpirationInfoAsync()
     {
         var expiresAt = await _httpContext.GetTokenAsync("expires_at");

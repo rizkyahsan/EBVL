@@ -1,5 +1,3 @@
-using EBVL.Shared.Enums;
-
 namespace EBVL.Shared.Dto.Common.Audits;
 
 public abstract record AuditItemBase
