@@ -9,6 +9,7 @@
     <VendorPublicHeader />
     <main class="vendor-public-content">
         <ErrorViewer Exception="_exception" />
+        <EditForm Model="_model" OnValidSubmit="SubmitRegistration" OnInvalidSubmit="HandleInvalidSubmit">
         <section class="vendor-card vendor-register-card">
             <div class="vendor-progress"><span style="width:@($"{(_step + 1) * 20}%")"></span></div>
             @if (_step == 0)
@@ -49,21 +50,30 @@
             }
             else if (_step == 3)
             {
+                @if (!string.IsNullOrWhiteSpace(_validationMessage))
+                {
+                    <div class="vendor-alert">@_validationMessage</div>
+                }
+                @if (_filesResetAfterBack)
+                {
+                    <div class="vendor-alert">Form upload dibuat ulang setelah Back. Pilih kembali keenam file sebelum submit.</div>
+                }
                 <h1>KUESIONER PRA-REGISTRASI</h1>
                 <p class="vendor-muted">LANGKAH 2 DARI 2 — pilih dokumen bukti yang akan dikirim.</p>
                 <div class="vendor-documents">
-                    <label>1. BRAND REGISTRATION LETTER *<InputFile OnChange="@(e => SetFile(e, 1))" /><span>@_model.BrandRegistrationLetterFileName</span></label>
-                    <label>2. COMPANY PROFILE *<InputFile OnChange="@(e => SetFile(e, 2))" /><span>@_model.CompanyProfileFileName</span></label>
-                    <label>3. PRODUCT CATALOG *<InputFile OnChange="@(e => SetFile(e, 3))" /><span>@_model.ProductCatalogFileName</span></label>
-                    <label>4. PRODUCT EXPERIENCE LIST *<InputFile OnChange="@(e => SetFile(e, 4))" /><span>@_model.ProjectExperienceFileName</span></label>
-                    <label>5. NPWP PERUSAHAAN *<InputFile OnChange="@(e => SetFile(e, 5))" /><span>@_model.TaxCardFileName</span></label>
-                    <label>6. BRAND CERT/STP/AUTHORIZED *<InputFile OnChange="@(e => SetFile(e, 6))" /><span>@_model.MainCertificateFileName</span></label>
+                    <label>1. BRAND REGISTRATION LETTER *<InputFile OnChange="@(e => SetFile(e, 1))" /><span>@FileLabel(1)</span></label>
+                    <label>2. COMPANY PROFILE *<InputFile OnChange="@(e => SetFile(e, 2))" /><span>@FileLabel(2)</span></label>
+                    <label>3. PRODUCT CATALOG *<InputFile OnChange="@(e => SetFile(e, 3))" /><span>@FileLabel(3)</span></label>
+                    <label>4. PRODUCT EXPERIENCE LIST *<InputFile OnChange="@(e => SetFile(e, 4))" /><span>@FileLabel(4)</span></label>
+                    <label>5. NPWP PERUSAHAAN *<InputFile OnChange="@(e => SetFile(e, 5))" /><span>@FileLabel(5)</span></label>
+                    <label>6. BRAND CERT/STP/AUTHORIZED *<InputFile OnChange="@(e => SetFile(e, 6))" /><span>@FileLabel(6)</span></label>
                 </div>
                 <div class="vendor-grid two account-grid">
-                    <label>Password local account</label><input type="password" @bind="_model.Password" />
-                    <label>Konfirmasi password</label><input type="password" @bind="_model.PasswordConfirmation" />
+                    <label>Password local account</label><input type="password" @bind="_model.Password" @bind:event="oninput" />
+                    <label>Konfirmasi password</label><input type="password" @bind="_model.PasswordConfirmation" @bind:event="oninput" />
                 </div>
-                <VendorWizardActions Submit="true" Disabled="_isLoading" OnBack="Back" OnNext="SubmitRegistration" />
+                <p class="vendor-muted">File valid: @_files.Count(file => file is not null && IsValidFile(file)) dari 6</p>
+                <VendorWizardActions Submit="true" Disabled="_isLoading" OnBack="Back" OnSubmitClick="RegisterClick" />
             }
             else
             {
@@ -75,5 +85,6 @@
                 </div>
             }
         </section>
+        </EditForm>
     </main>
 </div>

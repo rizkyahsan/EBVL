@@ -1,8 +1,13 @@
 <div class="vendor-actions">
     <button type="button" class="vendor-button danger" @onclick="OnBack">BACK</button>
-    <button type="button" class="vendor-button success" disabled="@Disabled" @onclick="OnNext">
-        @(Submit ? "Kirim Pendaftaran" : "NEXT")
-    </button>
+    @if (Submit)
+    {
+        <button type="submit" class="vendor-button success" disabled="@Disabled" @onclick="OnSubmitClick">Kirim Pendaftaran</button>
+    }
+    else
+    {
+        <button type="button" class="vendor-button success" disabled="@Disabled" @onclick="OnNext">NEXT</button>
+    }
 </div>
 
 @code {
@@ -17,4 +22,7 @@
 
     [Parameter]
     public EventCallback OnNext { get; set; }
+
+    [Parameter]
+    public EventCallback OnSubmitClick { get; set; }
 }

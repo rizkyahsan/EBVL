@@ -16,12 +16,12 @@ public record RegisterVendorRequest
     public required string CompanyStatus { get; set; }
     public required bool HasRepresentativeInIndonesia { get; set; }
     public string? IndonesiaRepresentativeName { get; set; }
-    public required string BrandRegistrationLetterFileName { get; set; }
-    public required string CompanyProfileFileName { get; set; }
-    public required string ProductCatalogFileName { get; set; }
-    public required string ProjectExperienceFileName { get; set; }
-    public required string TaxCardFileName { get; set; }
-    public required string MainCertificateFileName { get; set; }
+    public string? BrandRegistrationLetterFileName { get; set; }
+    public string? CompanyProfileFileName { get; set; }
+    public string? ProductCatalogFileName { get; set; }
+    public string? ProjectExperienceFileName { get; set; }
+    public string? TaxCardFileName { get; set; }
+    public string? MainCertificateFileName { get; set; }
     public required string Password { get; set; }
     public required string PasswordConfirmation { get; set; }
 }
@@ -43,12 +43,12 @@ public sealed class RegisterVendorRequestValidator : AbstractValidatorBase<Regis
         _ = RuleFor(x => x.BrandRepresentative).NotEmpty().MaximumLength(250);
         _ = RuleFor(x => x.CompanyStatus).NotEmpty().MaximumLength(100);
         _ = RuleFor(x => x.IndonesiaRepresentativeName).MaximumLength(250);
-        _ = RuleFor(x => x.BrandRegistrationLetterFileName).NotEmpty().MaximumLength(200);
-        _ = RuleFor(x => x.CompanyProfileFileName).NotEmpty().MaximumLength(200);
-        _ = RuleFor(x => x.ProductCatalogFileName).NotEmpty().MaximumLength(200);
-        _ = RuleFor(x => x.ProjectExperienceFileName).NotEmpty().MaximumLength(200);
-        _ = RuleFor(x => x.TaxCardFileName).NotEmpty().MaximumLength(200);
-        _ = RuleFor(x => x.MainCertificateFileName).NotEmpty().MaximumLength(200);
+        _ = RuleFor(x => x.BrandRegistrationLetterFileName).MaximumLength(200);
+        _ = RuleFor(x => x.CompanyProfileFileName).MaximumLength(200);
+        _ = RuleFor(x => x.ProductCatalogFileName).MaximumLength(200);
+        _ = RuleFor(x => x.ProjectExperienceFileName).MaximumLength(200);
+        _ = RuleFor(x => x.TaxCardFileName).MaximumLength(200);
+        _ = RuleFor(x => x.MainCertificateFileName).MaximumLength(200);
         _ = RuleFor(x => x.Password).NotEmpty().MinimumLength(12).MaximumLength(128)
             .Matches("[A-Z]").Matches("[a-z]").Matches("[0-9]");
         _ = RuleFor(x => x.PasswordConfirmation).Equal(x => x.Password);

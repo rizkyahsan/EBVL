@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.EntityFrameworkCore.Storage;
 using Pertamina.Common.Domain.Attributes;
 using Pertamina.Services.Cryptography;
 using Pertamina.Services.Database.Common.ValueConverters;
@@ -14,6 +15,10 @@ public partial class DatabaseService(
 {
     public const string SchemaName = nameof(EBVL);
     public string CurrentActionName { get; private set; } = string.Empty;
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        return Database.BeginTransactionAsync(cancellationToken);
+    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

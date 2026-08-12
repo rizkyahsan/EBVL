@@ -8,10 +8,12 @@ webui_project="$repository_root/src/03.FrontEnd/05.FrontEnd.WebUi/05.FrontEnd.We
 
 cleanup() {
   if [[ -n "${api_pid:-}" ]]; then
+    pkill -TERM -P "$api_pid" 2>/dev/null || true
     kill "$api_pid" 2>/dev/null || true
   fi
 
   if [[ -n "${webui_pid:-}" ]]; then
+    pkill -TERM -P "$webui_pid" 2>/dev/null || true
     kill "$webui_pid" 2>/dev/null || true
   fi
 }

@@ -19,8 +19,7 @@ public sealed class AuthenticateVendorCommandHandler(IDatabaseService databaseSe
     {
         var email = request.EmailAddress.Trim().ToLowerInvariant();
         var account = await databaseService.VendorAccounts
-            .Include(x => x.Vendor)
-            .Include(x => x.VendorRegistration)
+            .AsNoTracking()
             .FirstOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.Status == VendorAccountStatus.Active && x.VendorId != null && x.EmailAddress == email, cancellationToken);
 
         if (account is null || !PasswordHasher.Verify(request.Password, account.PasswordHash, account.PasswordSalt))
@@ -28,15 +27,28 @@ public sealed class AuthenticateVendorCommandHandler(IDatabaseService databaseSe
             throw new UnauthorizedAccessException("Email atau password tidak valid.");
         }
 
+        var vendor = await databaseService.Vendors
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => !x.IsDeleted && x.Id == account.VendorId, cancellationToken);
+        _ = vendor ?? throw new UnauthorizedAccessException("Email atau password tidak valid.");
+
+        var registrationStatus = account.VendorRegistrationId is null
+            ? VendorRegistrationStatus.Verified
+            : await databaseService.VendorRegistrations
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.Id == account.VendorRegistrationId)
+                .Select(x => (VendorRegistrationStatus?)x.Status)
+                .FirstOrDefaultAsync(cancellationToken) ?? VendorRegistrationStatus.Verified;
+
         return new AuthenticateVendorResponse
         {
             VendorAccountId = account.Id,
             VendorRegistrationId = account.VendorRegistrationId ?? Guid.Empty,
             VendorId = account.VendorId!.Value,
             EmailAddress = account.EmailAddress,
-            CompanyName = account.Vendor.Name,
-            SapVendorNumber = account.Vendor.SapVendorNumber,
-            Status = account.VendorRegistration?.Status ?? VendorRegistrationStatus.Verified
+            CompanyName = vendor.Name,
+            SapVendorNumber = vendor.SapVendorNumber,
+            Status = registrationStatus
         };
     }
 }
