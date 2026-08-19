@@ -24,10 +24,21 @@ if ! docker ps --format '{{.Names}}' | grep -qx 'sqlserver'; then
   exit 1
 fi
 
-if docker container inspect ebvl-azurite >/dev/null 2>&1; then
-  if [[ "$(docker inspect -f '{{.State.Running}}' ebvl-azurite)" != "true" ]]; then
-    echo "Starting the existing Azurite container ..."
-    docker start ebvl-azurite >/dev/null
+is_azurite_ready() {
+  curl --silent --show-error --dump-header - --output /dev/null \
+    'http://127.0.0.1:10000/devstoreaccount1?comp=list' 2>/dev/null |
+    grep -qi '^Server: Azurite-Blob/'
+}
+
+if is_azurite_ready; then
+  azurite_container="$(docker ps --filter publish=10000 --format '{{.Names}}' | head -n 1)"
+  echo "Reusing Azurite on port 10000${azurite_container:+ (container: $azurite_container)} ..."
+elif docker container inspect ebvl-azurite >/dev/null 2>&1; then
+  echo "Starting the existing Azurite container ..."
+  if ! docker start ebvl-azurite >/dev/null; then
+    echo "Unable to start ebvl-azurite. Port 10000 may be used by a non-Azurite service." >&2
+    echo "Stop that service or change its published port, then retry this task." >&2
+    exit 1
   fi
 else
   echo "Creating the Azurite container ..."
@@ -39,7 +50,7 @@ else
 fi
 
 for attempt in {1..30}; do
-  if nc -z 127.0.0.1 10000 >/dev/null 2>&1; then
+  if is_azurite_ready; then
     break
   fi
 
