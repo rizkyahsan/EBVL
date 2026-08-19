@@ -1,14 +1,52 @@
-<MudNavLink Href="@MainRouteFor.Index"
+@* <MudNavLink Href="@MainRouteFor.Index"
             Match="NavLinkMatch.All"
             Icon="@Icons.Material.TwoTone.Home">
     @CommonDisplayTextFor.Home
-</MudNavLink>
-<AuthorizeView>
+</MudNavLink> *@
+<AuthorizeView Policy="@MainPermissions.MainPage">
     <Authorized>
-        <MudNavLink Href="@MainMyProfileRouteFor.Index"
-                    Match="NavLinkMatch.Prefix"
-                    Icon="@Icons.Material.TwoTone.AccountBox">
-            @UsersDisplayTextFor.MyProfile
-        </MudNavLink>
+        <AuthorizeView Context="MyProject" Policy="@MainPermissions.MainPageMyProject">
+            <Authorized>
+                <MudNavLink Href="@MainPageMyProjectsRouteFor.Index"
+                            Match="NavLinkMatch.Prefix"
+                            Icon="@Icons.Material.TwoTone.Flag">
+                    @($"My {ProjectsDisplayTextFor.Project}s")
+                </MudNavLink>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Context="Project" Policy="@MainPermissions.MainPageProject">
+            <Authorized>
+                <NavGroupDefault Title="@ProjectsDisplayTextFor.Project"
+                                 Icon="@Icons.Material.TwoTone.Dataset">
+                    <AuthorizeView Context="ManageProject" Policy="@MainPermissions.MainPageProjectRead">
+                        <Authorized>
+                            <MudNavLink Href="@MainPageProjectsRouteFor.Index"
+                                        Match="NavLinkMatch.All"
+                                        Icon="@Icons.Material.TwoTone.AccountBalance">
+                                @($"Ongoing {ProjectsDisplayTextFor.Projects}")
+                            </MudNavLink>
+                        </Authorized>
+                    </AuthorizeView>
+                    <AuthorizeView Context="VerifyProject" Policy="@MainPermissions.MainPageProjectRead">
+                        <Authorized>
+                            <MudNavLink Href="@MainPageProjectsRouteFor.Verify()"
+                                        Match="NavLinkMatch.Prefix"
+                                        Icon="@Icons.Material.TwoTone.EventNote">
+                                @($"Verify {ProjectStagesDisplayTextFor.ProjectStages}")
+                            </MudNavLink>
+                        </Authorized>
+                    </AuthorizeView>
+                    <AuthorizeView Context="ManageProject" Policy="@MainPermissions.MainPageProjectRead">
+                        <Authorized>
+                            <MudNavLink Href="@MainPageProjectsRouteFor.Complete()"
+                                        Match="NavLinkMatch.Prefix"
+                                        Icon="@Icons.Material.TwoTone.CheckCircle">
+                                @($"Complete {ProjectsDisplayTextFor.Projects}")
+                            </MudNavLink>
+                        </Authorized>
+                    </AuthorizeView>
+                </NavGroupDefault>
+            </Authorized>
+        </AuthorizeView>
     </Authorized>
 </AuthorizeView>

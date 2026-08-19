@@ -3,11 +3,11 @@
 @inherits PageBase
 
 <HtmlHead Title="@ExamplesDisplayTextFor.Emojis" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <PageHeader Title="@ExamplesDisplayTextFor.Emojis" />
 <HorizontalTabs>
     <MudTabPanel Text="Random Emoji">
-        <LoadingLinear IsVisible="_isLoading" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
         <ErrorViewer Exception="_exceptionForGetRandomEmoji" />
         <ButtonPrimary OnClick="GetRandomEmoji">
             Get Random Emoji
@@ -61,7 +61,7 @@
                 Search
             </ButtonPrimary>
         </MudStack>
-        <LoadingLinear IsVisible="_isLoading" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
         <ErrorViewer Exception="_exceptionForSearchEmojis" />
         @if (_emojis.Any())
         {

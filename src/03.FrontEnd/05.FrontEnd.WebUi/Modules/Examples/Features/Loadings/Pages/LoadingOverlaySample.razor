@@ -2,7 +2,7 @@
 @inherits PageBase
 
 <HtmlHead Title="@ExamplesLoadingsDisplayTextFor.LoadingOverlay" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <PageHeader Title="@ExamplesLoadingsDisplayTextFor.LoadingOverlay" />
 <LoadingOverlay IsVisible="@_isLoading" />
 <Paper25>

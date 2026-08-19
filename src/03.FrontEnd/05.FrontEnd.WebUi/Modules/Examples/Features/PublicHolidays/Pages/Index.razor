@@ -3,16 +3,16 @@
 @using EBVL.Shared.Dto.Modules.Examples.PublicHolidays.GetPublicHolidays
 
 <HtmlHead Title="@PublicHolidaysDisplayTextFor.PublicHolidays" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <PageHeader Title="@PublicHolidaysDisplayTextFor.PublicHolidays" />
-<ErrorViewer Exception="_exception" />
+<ErrorViewer Exception="@(_exception)" />
 <TopButtonPanel>
     <ButtonDark OnClick="ShowDialogLoadPublicHolidays">
         @CommonDisplayTextFor.Load @PublicHolidaysDisplayTextFor.PublicHolidays
     </ButtonDark>
 </TopButtonPanel>
 <TableDefault Items="_items"
-              Loading="_isLoading"
+              Loading="@(_isLoading)"
               Filter="FilterItems">
     <ToolBarContent>
         <MudSpacer />

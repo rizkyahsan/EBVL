@@ -1,0 +1,37 @@
+﻿<table style="width:100%;">
+    <tbody>
+        <tr>
+            <th style="width:@(StepWidth); text-align:center;">
+                <MudChip T="string" Size="Size.Large" Color="@GetDraftColor()">
+                    Draft
+                </MudChip>
+            </th>
+
+            <th style="width:@(StepWidth); text-align:center;">
+                <MudChip T="string" Size="Size.Large" Color="@GetOnProgressColor()">
+                    On Progress
+                </MudChip>
+            </th>
+
+            <th style="width:@(StepWidth); text-align:center;">
+                <MudChip T="string" Size="Size.Large" Color="@GetReviewColor()">
+                    Review
+                </MudChip>
+            </th>
+
+            <th style="width:@(StepWidth); text-align:center;">
+                <MudChip T="string" Size="Size.Large" Color="@GetResultColor()">
+                    Result
+                </MudChip>
+            </th>
+        </tr>
+    </tbody>
+    <tbody>
+        <tr>
+            <td colspan="4">
+                <MudProgressLinear Color="@GetProgressColor()" Value="@GetProgress()" Striped="true" Rounded="true"
+                                   Size="Size.Large" Class="my-7" />
+            </td>
+        </tr>
+    </tbody>
+</table>

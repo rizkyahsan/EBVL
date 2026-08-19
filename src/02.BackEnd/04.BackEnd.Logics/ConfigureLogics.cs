@@ -1,4 +1,5 @@
 using System.Reflection;
+using EBVL.BackEnd.Logics.Common.Services.FileStorageDb;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Pertamina.Extensions.MediatR.Behaviors;
@@ -9,6 +10,8 @@ public static class ConfigureLogics
 {
     public static void AddLogics(this IServiceCollection services, IConfiguration configuration)
     {
+        _ = services.AddScoped<IFileStorageDbService, FileStorageDbService>();
+
         _ = services.Configure<LoggingBehaviorOptions>(configuration.GetSection(LoggingBehaviorOptions.SectionKey));
         _ = services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -21,5 +24,12 @@ public static class ConfigureLogics
             _ = configuration.AddOpenBehavior(typeof(ValidationBehavior<,>));
             _ = configuration.AddOpenBehavior(typeof(PerformanceBehavior<,>));
         });
+    }
+    // 🆕 Run once at startup
+    public static async Task EnsureBlobContainerAsync(this IServiceProvider serviceProvider)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var fileStorageService = scope.ServiceProvider.GetRequiredService<IFileStorageDbService>();
+        await fileStorageService.EnsureContainerExistsAsync();
     }
 }

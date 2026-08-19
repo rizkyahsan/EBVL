@@ -20,4 +20,9 @@ public static class RouteFor
     {
         return $"ErrorWithCode/{statusCode}";
     }
+
+    public static string LoginOtp(string externalLoginId)
+    {
+        return $"LoginOtp/{externalLoginId}";
+    }
 }

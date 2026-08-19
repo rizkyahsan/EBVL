@@ -1,0 +1,16 @@
+﻿<AuthorizeView Policy="@LogPermissions.Log">
+    <Authorized>
+        <NavGroupDefault Title="@LogDisplayTextFor.Log"
+                         Icon="@Icons.Material.TwoTone.Dataset">
+            <AuthorizeView Context="LogEmails" Policy="@LogPermissions.LogEmailsRead">
+                <Authorized>
+                    <MudNavLink Href="@LogEmailRouteFor.Index"
+                                Match="NavLinkMatch.Prefix"
+                                Icon="@Icons.Material.TwoTone.WorkHistory">
+                        @LogEmailsDisplayTextFor.LogEmails
+                    </MudNavLink>
+                </Authorized>
+            </AuthorizeView>
+        </NavGroupDefault>
+    </Authorized>
+</AuthorizeView>

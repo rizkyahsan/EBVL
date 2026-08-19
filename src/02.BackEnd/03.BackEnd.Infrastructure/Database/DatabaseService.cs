@@ -1,9 +1,9 @@
 using System.Reflection;
+using EBVL.BackEnd.Infrastructure.Database.Interceptors;
 using Microsoft.EntityFrameworkCore.Storage;
 using Pertamina.Common.Domain.Attributes;
 using Pertamina.Services.Cryptography;
 using Pertamina.Services.Database.Common.ValueConverters;
-using EBVL.BackEnd.Infrastructure.Database.Interceptors;
 
 namespace EBVL.BackEnd.Infrastructure.Database;
 
@@ -15,10 +15,6 @@ public partial class DatabaseService(
 {
     public const string SchemaName = nameof(EBVL);
     public string CurrentActionName { get; private set; } = string.Empty;
-    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
-    {
-        return Database.BeginTransactionAsync(cancellationToken);
-    }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -63,5 +59,10 @@ public partial class DatabaseService(
         CurrentActionName = string.Empty;
 
         return numberOfStateEntries;
+    }
+
+    public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        return Database.BeginTransactionAsync(cancellationToken);
     }
 }

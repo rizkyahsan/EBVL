@@ -1,0 +1,126 @@
+﻿@inherits DrawerBase
+
+<MudDrawer Variant="DrawerVariant.Temporary"
+           Anchor="Anchor.Right"
+           Width="750px"
+           OverlayAutoClose="false"
+           @bind-Open="IsOpen">
+    <MudDrawerHeader>
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center"
+                  Class="mud-width-full">
+            <MudText Typo="Typo.h3">
+                @CountriesDisplayTextFor.Country @CommonDisplayTextFor.Details
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDrawer" />
+        </MudStack>
+    </MudDrawerHeader>
+    <div class="pa-5">
+        <LoadingLinear IsVisible="@(_isLoading)" />
+        @if (LogEmail is not null)
+        {
+            <MudStack Spacing="2">
+
+                <MudPaper Class="pa-4" Outlined="true">
+                    <MudGrid>
+
+                        <MudItem xs="6">
+                            <div class="d-flex flex-column gap-2">
+                                <MudText Typo="Typo.caption">Status</MudText>
+
+                                @if (LogEmail.IsSuccessful)
+                                {
+                                    <MudChip T="string" Color="Color.Success" Size="Size.Small"
+                                             Icon="@Icons.Material.Filled.CheckCircle">
+                                        @CommonDisplayTextFor.Success
+                                    </MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip T="string" Color="Color.Error" Size="Size.Small"
+                                             Icon="@Icons.Material.Filled.Error">
+                                        @($"Failed")
+                                    </MudChip>
+                                }
+                            </div>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.caption">Provider</MudText>
+                            <MudText>@LogEmail.Provider</MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.caption">Module</MudText>
+                            <MudText>@LogEmail.Module</MudText>
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.caption">Action</MudText>
+                            <MudText>@LogEmail.Action</MudText>
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.caption">Sent At</MudText>
+                            <MudText>
+                                @($"{LogEmail.SentAt:dd-MMM-yyyy HH:mm:ss} WIB (GMT+7)")
+                            </MudText>
+                        </MudItem>
+
+                    </MudGrid>
+                </MudPaper>
+
+                <MudPaper Class="pa-4" Outlined="true">
+                    <MudText Typo="Typo.caption">To</MudText>
+                    <MudText Style="white-space: pre-wrap">
+                        @LogEmail.To
+                    </MudText>
+                </MudPaper>
+
+                @if (!string.IsNullOrWhiteSpace(LogEmail.Cc))
+                {
+                    <MudPaper Class="pa-4" Outlined="true">
+                        <MudText Typo="Typo.caption">CC</MudText>
+                        <MudText Style="white-space: pre-wrap">
+                            @LogEmail.Cc
+                        </MudText>
+                    </MudPaper>
+                }
+
+                <MudPaper Class="pa-4" Outlined="true">
+                    <MudText Typo="Typo.caption">Subject</MudText>
+                    <MudText>@LogEmail.Subject</MudText>
+                </MudPaper>
+
+                <MudPaper Class="pa-4" Outlined="true">
+                    <MudText Typo="Typo.caption">
+                        Content
+                    </MudText>
+
+                    <div class="pa-2"
+                         style="border:1px solid var(--mud-palette-lines-default); border-radius:4px;">
+                        @((MarkupString)LogEmail.Content)
+                    </div>
+                </MudPaper>
+
+                @if (!string.IsNullOrWhiteSpace(LogEmail.Message))
+                {
+                    <MudPaper Class="pa-4" Outlined="true">
+                        <MudText Typo="Typo.caption">
+                            Provider Message
+                        </MudText>
+
+                        <MudText Style="white-space: pre-wrap">
+                            @LogEmail.Message
+                        </MudText>
+                    </MudPaper>
+                }
+
+            </MudStack>
+        }
+        <BottomButtonPanel>
+            <ButtonClose OnClick="CloseDrawer" />
+        </BottomButtonPanel>
+    </div>
+</MudDrawer>

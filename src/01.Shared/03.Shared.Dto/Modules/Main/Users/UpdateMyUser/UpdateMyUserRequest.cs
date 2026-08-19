@@ -24,7 +24,7 @@ public sealed class UpdateMyUserRequestValidator : AbstractValidator<UpdateMyUse
 
         _ = When(request => !string.IsNullOrWhiteSpace(request.PhoneNumber), () =>
         {
-            _ = RuleFor(x => x.PhoneNumber!)
+            _ = RuleFor(x => x.PhoneNumber)
                 .MinimumLength(CommonMinimumLengthFor.PhoneNumber)
                 .MaximumLength(CommonMaximumLengthFor.PhoneNumber);
         });

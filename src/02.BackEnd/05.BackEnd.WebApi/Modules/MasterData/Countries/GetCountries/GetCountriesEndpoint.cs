@@ -18,9 +18,15 @@ public sealed class GetCountriesEndpoint : IEndpoint
     }
 
     private static async Task<IResult> Handle(
+        HttpContext context,
         ISender sender,
         CancellationToken cancellationToken)
     {
+        if (!context.User.HasPermission(Permissions.MasterDataCountriesRead))
+        {
+            //return Results.Forbid();
+        }
+
         var query = new GetCountriesQuery();
         var response = await sender.Send(query, cancellationToken);
 

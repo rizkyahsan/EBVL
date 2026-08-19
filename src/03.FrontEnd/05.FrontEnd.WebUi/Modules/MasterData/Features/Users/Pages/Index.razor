@@ -1,0 +1,162 @@
+@page "/MasterData/Users"
+@using EBVL.Shared.Dto.Modules.MasterData.Users.GetUsers
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Users.Components
+@inherits PageBase
+@attribute [Authorize(Policy = MasterDataPermissions.MasterDataUsersRead)]
+
+<HtmlHead Title="@UsersDisplayTextFor.Users" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@UsersDisplayTextFor.Users" />
+<ErrorViewer Exception="@(_exception)" />
+<AuthorizeView Policy="@MasterDataPermissions.MasterDataUsersWrite">
+    <Authorized>
+        <TopButtonPanel>
+            <ButtonAdd Size="Size.Small" EntityType="@UsersDisplayTextFor.User" OnClick="ShowDrawerAdd" />
+        </TopButtonPanel>
+    </Authorized>
+</AuthorizeView>
+<LoadingOverlay IsVisible="@_isLoading" />
+<TableDefault Items="_items"
+              Loading="@(_isLoading)"
+              Filter="FilterItems">
+    <ToolBarContent>
+        <MudSpacer />
+        <TextFieldSearch Placeholder="Search Lender" @bind-Value="_searchKeyword" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh Style="width: 15%;">
+            <MudTableSortLabel SortBy="new Func<UserItem, object>(x => x.Name)"
+                               InitialDirection="SortDirection.Ascending">
+                @UsersDisplayTextFor.Name
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<UserItem, object>(x => x.EmailAddress)"
+                               InitialDirection="SortDirection.Ascending">
+                @UsersDisplayTextFor.EmailAddress
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<UserItem, object>(x => x.LenderName)"
+                               InitialDirection="SortDirection.Ascending">
+                @UsersDisplayTextFor.Lender
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh Style="width: 15%;">
+            @UsersDisplayTextFor.PhoneNumber
+        </MudTh>
+        <MudTh Style="width: 5%;">
+            @UsersDisplayTextFor.IsPic
+        </MudTh>
+        <MudTh Style="width: 20%;" Class="text-center">
+            @CommonDisplayTextFor.Action
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@UsersDisplayTextFor.Name">
+            <div class="d-flex flex-column align-center gap-2">
+                <LinkDefault Href="@MasterDataUsersRouteFor.Details(context.Id)">
+                    <MudHighlighter Text="@context.Name" HighlightedText="@_searchKeyword" />
+                </LinkDefault>
+                @if (context.IsVerified)
+                {
+                    <MudChip T="string" Style="font-size:10px;"
+                             Icon="@Icons.Material.Filled.VerifiedUser"
+                             Color="Color.Success">
+                        @CommonDisplayTextFor.Verified
+                    </MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Style="font-size:10px;"
+                             Icon="@Icons.Material.Filled.NewReleases"
+                             Color="Color.Error">
+                        @CommonDisplayTextFor.NotVerified
+                    </MudChip>
+                }
+            </div>
+        </MudTd>
+        <MudTd DataLabel="@UsersDisplayTextFor.EmailAddress">
+            <div class="d-flex flex-column align-center gap-2">
+                @context.EmailAddress
+                <AuthorizeView Context="MasterDataUsers" Policy="@MasterDataPermissions.MasterDataUsersWrite">
+                    <Authorized>
+                        @if (context.IsVerified)
+                        {
+                            <MudButton Color="Color.Dark"
+                                       StartIcon="@Icons.Material.Filled.LockReset"
+                                       Variant="Variant.Filled"
+                                       DropShadow="false"
+                                       OnClick="@(() => SendResetPasswordEmail(context))">
+                                Send Reset Password
+                            </MudButton>
+                        }
+                        else
+                        {
+                            <MudButton Color=Color.Dark
+                                       StartIcon=@Icons.Material.Filled.Send
+                                       Variant=Variant.Filled
+                                       DropShadow=false
+                                       OnClick="@(() => SendVerificationEmail(context))">
+                                Resend Verification
+                            </MudButton>
+                        }
+                    </Authorized>
+                </AuthorizeView>
+            </div>
+        </MudTd>
+        <MudTd DataLabel="@UsersDisplayTextFor.Lender">
+            @context.LenderName
+        </MudTd>
+        <MudTd DataLabel="@UsersDisplayTextFor.PhoneNumber">
+            @context.FullPhoneNumber
+        </MudTd>
+        <MudTd DataLabel="@UsersDisplayTextFor.IsPic">
+            <div class="d-flex flex-column align-center gap-2">
+                @if (context.CountPicLender >= 2)
+                {
+                    <MudCheckBox T="bool" Value="@context.IsPicLender" ValueChanged="@(async value => await UpdateLenderPic(context, value))"
+                                 Size="Size.Large" Color="Color.Primary" Disabled="@_isLoading" />
+                }
+                else if (context.CountPicLender > 0)
+                {
+                    <MudCheckBox T="bool" Value="@context.IsPicLender" ValueChanged="@(async value => await UpdateLenderPic(context, value))"
+                                 Size="Size.Large" Color="Color.Warning" Disabled="@_isLoading" />
+                }
+                else
+                {
+                    <MudCheckBox T="bool" Value="@context.IsPicLender" ValueChanged="@(async value => await UpdateLenderPic(context, value))"
+                                 Size="Size.Large" Color="Color.Default" Disabled="@_isLoading" />
+                }
+            </div>
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+            <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                <ButtonDetails Size="Size.Small" OnClick="@(() => ShowDrawerDetails(context.Id))" />
+                <AuthorizeView Context="MasterDataUsers" Policy="@MasterDataPermissions.MasterDataUsersWrite">
+                    <Authorized>
+                        <ButtonEdit Size="Size.Small" OnClick="@(() => ShowDrawerEdit(context))" />
+                        <ButtonDelete Size="Size.Small" OnClick="@(() => ShowDialogDelete(context))" />
+                    </Authorized>
+                </AuthorizeView>
+            </MudStack>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</TableDefault>
+
+@if (_isDrawerAddOpen)
+{
+    <DrawerAdd @bind-IsOpen="_isDrawerAddOpen" OnReload="LoadItems" />
+}
+@if (_isDrawerDetailsOpen)
+{
+    <DrawerDetails @bind-IsOpen="_isDrawerDetailsOpen" User="_selectedUser" />
+}
+@if (_isDrawerEditOpen)
+{
+    <DrawerEdit @bind-IsOpen="_isDrawerEditOpen" Model="_model" OnReload="LoadItems" />
+}
+

@@ -17,24 +17,25 @@
     <ProjectReference Include="..\02.FrontEnd.Services\02.FrontEnd.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pertamina.Common.Exceptions" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Extensions.Identity" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Extensions.Polly" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.CurrentUser.HttpContext" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.DateAndTime.System" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.PersonalRoles.IdAMan" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.PositionRoles.IdAMan" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Secret.JsonFile" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Secret.PertaminaVault" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.UserPositions.IdAMan" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.UserProfile.IdAMan" Version="1.0.3" />
+    <PackageReference Include="OpenTelemetry.Api" Version="1.17.0" />
+    <PackageReference Include="Pertamina.Common.Exceptions" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Extensions.Identity" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Extensions.Polly" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.CurrentUser.HttpContext" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.DateAndTime.System" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.PersonalRoles.IdAMan" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.PositionRoles.IdAMan" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Secret.JsonFile" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Secret.PertaminaVault" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.UserPositions.IdAMan" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.UserProfile.IdAMan" Version="1.0.4" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.2" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="10.0.11" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
-    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="5.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
   </ItemGroup>
 </Project>

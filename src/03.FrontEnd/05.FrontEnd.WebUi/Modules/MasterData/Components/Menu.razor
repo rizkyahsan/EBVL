@@ -2,17 +2,30 @@
     <Authorized>
         <NavGroupDefault Title="@MasterDataDisplayTextFor.MasterData"
                          Icon="@Icons.Material.TwoTone.Dataset">
-            <MudNavLink Href="@MasterDataRouteFor.Index"
-                        Match="NavLinkMatch.All"
-                        Icon="@Icons.Material.TwoTone.Home">
-                @CommonDisplayTextFor.Home
-            </MudNavLink>
-            <AuthorizeView Context="context2" Policy="@MasterDataPermissions.MasterDataCountriesRead">
+            <AuthorizeView Context="MasterDataCountries" Policy="@MasterDataPermissions.MasterDataCountriesRead">
                 <Authorized>
                     <MudNavLink Href="@MasterDataCountriesRouteFor.Index"
                                 Match="NavLinkMatch.Prefix"
                                 Icon="@Icons.Material.TwoTone.Flag">
                         @CountriesDisplayTextFor.Countries
+                    </MudNavLink>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView Context="MasterDataLenders" Policy="@MasterDataPermissions.MasterDataLendersRead">
+                <Authorized>
+                    <MudNavLink Href="@MasterDataLendersRouteFor.Index"
+                                Match="NavLinkMatch.Prefix"
+                                Icon="@Icons.Material.TwoTone.AccountBalance">
+                        @LendersDisplayTextFor.Lenders
+                    </MudNavLink>
+                </Authorized>
+            </AuthorizeView>
+            <AuthorizeView Context="MasterDataUsers" Policy="@MasterDataPermissions.MasterDataUsersRead">
+                <Authorized>
+                    <MudNavLink Href="@MasterDataUsersRouteFor.Index"
+                                Match="NavLinkMatch.Prefix"
+                                Icon="@Icons.Material.TwoTone.VerifiedUser">
+                        @UsersDisplayTextFor.Users
                     </MudNavLink>
                 </Authorized>
             </AuthorizeView>

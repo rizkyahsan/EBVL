@@ -2,6 +2,6 @@
 @inherits PageBase
 
 <HtmlHead Title="@PublicHolidaysDisplayTextFor.ApiCallsHistory" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <PageHeader Title="@PublicHolidaysDisplayTextFor.ApiCallsHistory" />
-<ErrorViewer Exception="_exception" />
+<ErrorViewer Exception="@(_exception)" />

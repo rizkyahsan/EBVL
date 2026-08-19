@@ -15,27 +15,37 @@
   <ItemGroup>
     <ProjectReference Include="..\..\01.Shared\02.Shared.Statics\02.Shared.Statics.csproj" />
     <ProjectReference Include="..\02.BackEnd.Services\02.BackEnd.Services.csproj" />
+    <ProjectReference Include="..\04.BackEnd.Logics\04.BackEnd.Logics.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pertamina.Extensions.ExceptionHandling" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Extensions.Polly" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.BackgroundJob.Hangfire" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Cryptography.Fpe" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.CurrentUser.HttpContext" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Database.Common" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.DateAndTime.System" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Email.EmailBlast" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Email.None" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Email.Smtp" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.FileStorage.FileSystem" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.HealthCheck" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Otp.Default" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.PersonalRoles.IdAMan" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.PositionRoles.IdAMan" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Secret.JsonFile" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Secret.PertaminaVault" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.UserPositions.IdAMan" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.UserProfile.IdAMan" Version="1.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
+    <PackageReference Include="MimeKit" Version="4.17.0" />
+    <PackageReference Include="OpenTelemetry.Api" Version="1.17.0" />
+    <PackageReference Include="Pertamina.Extensions.ExceptionHandling" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Extensions.Identity" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Extensions.Polly" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.BackgroundJob.Hangfire" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Cryptography.Fpe" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.CurrentUser.HttpContext" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Database.Common" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.DateAndTime.System" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Email.EmailBlast" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Email.None" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.FileStorage.FileSystem" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.HealthCheck" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Otp.Default" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.PersonalRoles.IdAMan" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.PositionRoles.IdAMan" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Secret.JsonFile" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Secret.PertaminaVault" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.UserPositions.IdAMan" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.UserProfile.IdAMan" Version="1.0.4" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.Hangfire" Version="9.0.0" />
@@ -44,15 +54,19 @@
     <PackageReference Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
     <PackageReference Include="AspNetCore.HealthChecks.UI.SqlServer.Storage" Version="9.0.0" />
-    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
+    <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.6.0" />
     <PackageReference Include="Hangfire.Dashboard.BasicAuthorization" Version="1.0.2" />
     <PackageReference Include="IdentityModel" Version="5.2.0" />
-    <PackageReference Include="KubernetesClient" Version="18.0.13" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
+    <PackageReference Include="KubernetesClient" Version="19.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.11" />
+    <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.0" />
-    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="5.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
+    <PackageReference Include="Serilog.Sinks.ApplicationInsights" Version="5.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <!-- Override AspNetCore.HealthChecks.Network's vulnerable transitive version. -->
+    <PackageReference Include="SSH.NET" Version="2026.0.0" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.11" />
   </ItemGroup>
 </Project>

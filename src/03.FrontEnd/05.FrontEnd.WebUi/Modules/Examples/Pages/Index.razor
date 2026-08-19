@@ -2,7 +2,7 @@
 @inherits PageBase
 
 <HtmlHead Title="@ExamplesDisplayTextFor.Examples" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <MudText Typo="Typo.h1">
     <span class="blue-text">
         Explore
@@ -238,6 +238,35 @@
                     </MudText>
                     <MudText Typo="Typo.subtitle1">
                         How to send e-mail with template
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+    </MudGrid>
+    <MudText Typo="Typo.h2" Class="mt-15 mb-5">
+        @ExamplesDummiesDisplayTextFor.Dummies
+    </MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesDummiesRouteFor.Index">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Gray.Default};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 gray-text">
+                        @ExamplesDummiesDisplayTextFor.GetDummies
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Dummy operation with GET HTTP method
+                    </MudText>
+                </Paper25>
+            </a>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <a href="@ExamplesDummiesRouteFor.Post">
+                <Paper25 Class="pa-5 hover-shadow" Style="@($"border-right-color: {Colors.Shades.Black};")">
+                    <MudText Typo="Typo.h3" Class="mb-10 shades-text text-black">
+                        @ExamplesDummiesDisplayTextFor.PostDummy
+                    </MudText>
+                    <MudText Typo="Typo.subtitle1">
+                        Dummy operation with POST HTTP method
                     </MudText>
                 </Paper25>
             </a>

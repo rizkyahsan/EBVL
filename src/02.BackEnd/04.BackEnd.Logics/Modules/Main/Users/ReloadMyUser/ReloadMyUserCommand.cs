@@ -5,6 +5,7 @@ using EBVL.Shared.Dto.Modules.Main.Users.ReloadMyUser;
 
 namespace EBVL.BackEnd.Logics.Modules.Main.Users.ReloadMyUser;
 
+[AuthorizeRequest]
 public sealed record ReloadMyUserCommand : ReloadMyUserRequest, IRequest
 {
 }
@@ -39,7 +40,7 @@ public sealed class ReloadMyUserCommandHandler(
             throw new InvalidOperationException($"{UsersDisplayTextFor.User} {user.Username} is not verified.");
         }
 
-        var verificationCodeIsValid = otpService.VerifyCode(user.OtpSecret, request.VerificationCode);
+        var verificationCodeIsValid = otpService.VerifyCode(user.OtpSecret!, request.VerificationCode);
 
         if (!verificationCodeIsValid)
         {
@@ -48,7 +49,7 @@ public sealed class ReloadMyUserCommandHandler(
 
         var userProfileResponse = await userProfileService.GetUserProfileAsync(username, cancellationToken);
 
-        user.Name = userProfileResponse.DisplayName;
+        user.DisplayName = userProfileResponse.DisplayName;
         user.EmailAddress = userProfileResponse.EmailAddress;
         user.PhoneNumber = userProfileResponse.PhoneNumber;
 

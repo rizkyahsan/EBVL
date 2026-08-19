@@ -53,7 +53,7 @@ public sealed class DisplayInfo : INotifyPropertyChanged
         {
             if (!IsDarkMode && IsDrawerOpen)
             {
-                return "img/logo-pertamina-colorful.svg";
+                return "img/logo-pertamina-colorful-ppn.svg";
             }
 
             if (!IsDarkMode && !IsDrawerOpen)
@@ -63,7 +63,7 @@ public sealed class DisplayInfo : INotifyPropertyChanged
 
             if (IsDrawerOpen)
             {
-                return "img/logo-pertamina-white.svg";
+                return "img/logo-pertamina-white-ppn.svg";
             }
 
             return "img/logo-pertamina-white-small.svg";

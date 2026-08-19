@@ -22,6 +22,11 @@ public static class ConfigureAuthorization
             {
                 options.AddPolicy(permission, policy => policy.RequireClaim(ClaimTypeFor.Permission, permission));
             }
+
+            foreach (var permission in LogPermissions.All)
+            {
+                options.AddPolicy(permission, policy => policy.RequireClaim(ClaimTypeFor.Permission, permission));
+            }
         });
 
         return services;

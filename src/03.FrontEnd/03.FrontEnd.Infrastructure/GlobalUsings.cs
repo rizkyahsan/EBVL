@@ -9,3 +9,4 @@ global using Pertamina.Common.Exceptions;
 global using AdministrationPermissions = EBVL.Shared.Dto.Modules.Administration.Permissions;
 global using MainPermissions = EBVL.Shared.Dto.Modules.Main.Permissions;
 global using MasterDataPermissions = EBVL.Shared.Dto.Modules.MasterData.Permissions;
+global using LogPermissions = EBVL.Shared.Dto.Modules.Log.Permissions;

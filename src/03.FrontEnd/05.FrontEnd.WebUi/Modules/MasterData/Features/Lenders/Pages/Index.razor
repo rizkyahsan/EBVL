@@ -1,0 +1,103 @@
+@page "/MasterData/Lenders"
+@using EBVL.Shared.Dto.Modules.MasterData.Lenders.GetLenders
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Lenders.Components
+@inherits PageBase
+@attribute [Authorize(Policy = MasterDataPermissions.MasterDataLendersRead)]
+
+<HtmlHead Title="@LendersDisplayTextFor.Lenders" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@LendersDisplayTextFor.Lenders" />
+<ErrorViewer Exception="@(_exception)" />
+<AuthorizeView Policy="@MasterDataPermissions.MasterDataLendersWrite">
+    <Authorized>
+        <TopButtonPanel>
+            <ButtonAdd Size="Size.Small" EntityType="@LendersDisplayTextFor.Lender" OnClick="ShowDrawerAdd" />
+        </TopButtonPanel>
+    </Authorized>
+</AuthorizeView>
+<TableDefault Items="_items"
+              Loading="@(_isLoading)"
+              Filter="FilterItems">
+    <ToolBarContent>
+        <MudSpacer />
+        <TextFieldSearch @bind-Value="_searchKeyword" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<LenderItem, object>(x => x.Name)"
+                               InitialDirection="SortDirection.Ascending">
+                @LendersDisplayTextFor.Name
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            @LendersDisplayTextFor.Address
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<LenderItem, object>(x => x.Country)">
+                @LendersDisplayTextFor.Country
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            @LendersDisplayTextFor.PhoneNumber
+        </MudTh>
+        <MudTh>
+            @LendersDisplayTextFor.EmailAddress
+        </MudTh>
+        <MudTh>
+            @LendersDisplayTextFor.Website
+        </MudTh>
+        <MudTh Style="width: 20%;" Class="text-center">
+            @CommonDisplayTextFor.Action
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@LendersDisplayTextFor.Name">
+            <LinkDefault Href="@MasterDataLendersRouteFor.Details(context.Id)">
+                <MudHighlighter Text="@context.Name" HighlightedText="@_searchKeyword" />
+            </LinkDefault>
+        </MudTd>
+        <MudTd DataLabel="@LendersDisplayTextFor.Address">
+            @context.Address
+        </MudTd>
+        <MudTd DataLabel="@LendersDisplayTextFor.Country">
+            <MudHighlighter Text="@context.Country" HighlightedText="@_searchKeyword" />
+        </MudTd>
+        <MudTd DataLabel="@LendersDisplayTextFor.PhoneNumber">
+            @context.FullPhoneNumber
+        </MudTd>
+        <MudTd DataLabel="@LendersDisplayTextFor.EmailAddress">
+            @context.EmailAddress
+        </MudTd>
+        <MudTd DataLabel="@LendersDisplayTextFor.Website">
+            @context.Website
+        </MudTd>
+        <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+            <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                <ButtonDetails Size="Size.Small" OnClick="@(() => ShowDrawerDetails(context.Id))" />
+                <AuthorizeView Context="MasterDataCountries" Policy="@MasterDataPermissions.MasterDataLendersWrite">
+                    <Authorized>
+                        <ButtonEdit Size="Size.Small" OnClick="@(() => ShowDrawerEdit(context))" />
+                        <ButtonDelete Size="Size.Small" OnClick="@(() => ShowDialogDelete(context))" />
+                    </Authorized>
+                </AuthorizeView>
+            </MudStack>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</TableDefault>
+
+@if (_isDrawerAddOpen)
+{
+    <DrawerAdd @bind-IsOpen="_isDrawerAddOpen" OnReload="LoadItems" />
+}
+@if (_isDrawerDetailsOpen)
+{
+    <DrawerDetails @bind-IsOpen="_isDrawerDetailsOpen" Lender="_selectedLender" />
+}
+@if (_isDrawerEditOpen)
+{
+    <DrawerEdit @bind-IsOpen="_isDrawerEditOpen" Model="_model" OnReload="LoadItems" />
+}
+

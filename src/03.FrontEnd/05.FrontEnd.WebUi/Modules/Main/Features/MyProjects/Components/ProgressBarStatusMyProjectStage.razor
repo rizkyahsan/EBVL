@@ -1,0 +1,54 @@
+﻿<table style="width:100%;">
+    <tbody>
+        <tr>
+            <th style="width:@StepWidth; text-align:center;">
+                <MudChip T="string" Size="Size.Large" Color="@GetOnProgressColor()">
+                    On Progress
+                </MudChip>
+            </th>
+
+            @if (StageLevel == 0)
+            {
+                _state = GetState();
+
+                if (_state == ProgressState.Revision)
+                {
+                    <th style="width:@StepWidth; text-align:center;">
+                        <MudChip T="string" Size="Size.Large" Color="@GetSubmitColor()">
+                            Revision
+                        </MudChip>
+                    </th>
+                }
+                else
+                {
+                    <th style="width:@StepWidth; text-align:center;">
+                        <MudChip T="string" Size="Size.Large" Color="@GetSubmitColor()">
+                            Submit
+                        </MudChip>
+                    </th>
+                }
+            }
+
+            <th style="width:@StepWidth; text-align:center;">
+                <MudChip T="string" Size="Size.Large" Color="@GetReviewColor()">
+                    Review
+                </MudChip>
+            </th>
+
+            <th style="width:@StepWidth; text-align:center;">
+                <MudChip T="string" Size="Size.Large" Color="@GetResultColor()">
+                    Result
+                </MudChip>
+            </th>
+        </tr>
+    </tbody>
+
+    <tbody>
+        <tr>
+            <td colspan="100">
+                <MudProgressLinear Color="@GetProgressColor()" Value="@GetProgress()" Striped="true" Rounded="true"
+                                   Size="Size.Large" Class="my-7" />
+            </td>
+        </tr>
+    </tbody>
+</table>

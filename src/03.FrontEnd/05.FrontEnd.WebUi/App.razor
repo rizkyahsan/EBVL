@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="_content/Pertamina.Common.Components/css/styles.css" />
     <link rel="stylesheet" href="@Assets["css/override-mudblazor.css"]" />
     <link rel="stylesheet" href="@Assets["css/app.css"]" />
-    <link rel="stylesheet" href="@Assets["css/vendor-registration.css"]" />
     <link rel="stylesheet" href="@Assets["EBVL.FrontEnd.WebUi.styles.css"]" />
     <ImportMap />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
@@ -27,9 +26,14 @@
 </head>
 <body>
     <AppContainer @rendermode="@interactiveServerRenderMode" />
-    <BlazorErrorUI @rendermode="@interactiveServerRenderMode" Mode="BlazorErrorUI.DisplayMode.Dialog" />
+    <div id="blazor-error-ui" data-nosnippet>
+        <span>Oops! Something went wrong.</span>
+        <span>Click <a href="" class="reload">here</a> to reload.</span>
+        <a class="dismiss">🗙</a>
+    </div>
     <script src="_framework/blazor.web.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="@Assets["js/downloadFile.js"]"></script>
+    <script src="@Assets["js/timeZone.js"]"></script>
 </body>
 </html>

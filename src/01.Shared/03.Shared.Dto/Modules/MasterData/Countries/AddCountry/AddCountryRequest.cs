@@ -4,6 +4,9 @@ public record AddCountryRequest
 {
     public required string Name { get; set; }
     public required string Code { get; set; }
+    public required string PhoneCode { get; set; }
+    public required string CurrencyCode { get; set; }
+    public string Region { get; set; } = string.Empty;
 }
 
 public sealed class AddCountryRequestValidator : AbstractValidatorBase<AddCountryRequest>
@@ -19,5 +22,13 @@ public sealed class AddCountryRequestValidator : AbstractValidatorBase<AddCountr
             .NotEmpty()
             .MinimumLength(CountriesMinimumLengthFor.Code)
             .MaximumLength(CountriesMaximumLengthFor.Code);
+
+        _ = RuleFor(x => x.PhoneCode)
+            .NotEmpty();
+
+        _ = RuleFor(x => x.CurrencyCode)
+            .NotEmpty()
+            .MinimumLength(CountriesMinimumLengthFor.CurrencyCode)
+            .MaximumLength(CountriesMaximumLengthFor.CurrencyCode);
     }
 }

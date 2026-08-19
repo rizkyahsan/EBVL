@@ -18,22 +18,23 @@
     <ProjectReference Include="..\02.BackEnd.Services\02.BackEnd.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pertamina.Extensions.DataUri" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Extensions.DisplayText" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Extensions.Json" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Extensions.MediatR" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Extensions.Text" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Authorization" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Cryptography.Abstractions" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.DateAndTime.Abstractions" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Email.Abstractions" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.FileStorage.Abstractions" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.Otp.Abstractions" Version="1.0.3" />
-    <PackageReference Include="Pertamina.Services.UserProfile.Abstractions" Version="1.0.3" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.29.1" />
+    <PackageReference Include="Pertamina.Extensions.DataUri" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Extensions.DisplayText" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Extensions.Json" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Extensions.MediatR" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Extensions.Text" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Authorization" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Cryptography.Abstractions" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.DateAndTime.Abstractions" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Email.Abstractions" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.FileStorage.Abstractions" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.Otp.Abstractions" Version="1.0.4" />
+    <PackageReference Include="Pertamina.Services.UserProfile.Abstractions" Version="1.0.4" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.11" />
   </ItemGroup>
 </Project>

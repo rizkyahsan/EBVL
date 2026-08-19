@@ -1,0 +1,124 @@
+@page "/Projects/Complete"
+@inherits PageBase
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.Projects.Components
+@attribute [Authorize(Policy = MainPermissions.MainPageProjectRead)]
+
+<HtmlHead Title="@(_pageTitle)" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@(_pageTitle)" EntityType="@ProjectsDisplayTextFor.Project" />
+<ErrorViewer Exception="@(_exception)" />
+<LoadingOverlay IsVisible="@(_isLoading)" />
+
+<PageSection>
+    <MudGrid>
+        <MudItem xs="6">
+            <LenderSelector Label="@(UsersDisplayTextFor.Lender)" Value="@(_selectedLender)" ValueChanged="LenderValueChanged"
+                            ShowAllOption="true" IsAllowNoValue="true" />
+        </MudItem>
+    </MudGrid>
+</PageSection>
+
+<PageSection>
+    <MudGrid>
+        <MudItem xs="12">
+            <TableDefault Items="_items" Loading="@(_isLoading)">
+                <HeaderContent>
+                    <MudTh Style="width: 5%;">
+                        @(CommonDisplayTextFor.No)
+                    </MudTh>
+                    <MudTh Style="width: 45%;">
+                        @(ProjectsDisplayTextFor.Title)
+                    </MudTh>
+                    <MudTh Style="width: 15%;" Class="text-center">
+                        @(CommonDisplayTextFor.Status)
+                    </MudTh>
+                    <MudTh Style="width:15%;" Class="text-center">
+                        @($"{CommonDisplayTextFor.File}s")
+                    </MudTh>
+                    <MudTh Style="width: 20%;" Class="text-center">
+                        @(CommonDisplayTextFor.Action)
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="@CommonDisplayTextFor.No">
+                        <div style="display:flex; justify-content:flex-end; align-items:center; gap:4px;">
+                            @if (context.ProjectFiles.Any())
+                            {
+                                <MudIconButton Icon="@(IsExpanded(context.Id) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                               Size="Size.Small" OnClick="@(() => Toggle(context))" />
+                            }
+                            <span>@(GetRowNumber(context))</span>
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="@ProjectsDisplayTextFor.Title">
+                        @(context.Title)
+                    </MudTd>
+                    <MudTd DataLabel="Files" Class="text-center">
+                        <MudChip T="string" Variant="Variant.Outlined" Size="Size.Medium" Disabled="@(!context.ProjectFiles.Any())"
+                                 Color="@(context.ProjectFiles.Any() ? Color.Info : Color.Warning)" OnClick="@(() => Toggle(context))">
+                            @if (context.ProjectFiles.Any())
+                            {
+                                @($"{context.ProjectFiles.Count} File{(context.ProjectFiles.Count > 1 ? "s" : "")}")
+                            }
+                            else
+                            {
+                                @("No Files")
+                            }
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="@CommonDisplayTextFor.Status" Class="text-center">
+                        <ChipStatus Value="@(context.StatusName)" StatusCode="@(context.StatusCode)"></ChipStatus>
+                    </MudTd>
+                    <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+                        <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                            <ButtonUpload Size="Size.Small" OnClick="@(() => ShowDrawerUpload(context))" />
+                            <ButtonDetails Size="Size.Small" OnClick="@(() => Details(context))" />
+                        </MudStack>
+                    </MudTd>
+                </RowTemplate>
+                <ChildRowContent Context="detailItem">
+                    @if (_expanded.Contains(detailItem.Id) && detailItem.ProjectFiles.Count > 0)
+                    {
+                        <MudTr>
+                            <td colspan="100">
+                                <MudGrid Style="padding-left: 25px;">
+                                    <MudItem xs="12">
+                                        <TableDefault Items="detailItem.ProjectFiles" Loading="@(_isLoading)">
+                                            <HeaderContent>
+                                                <MudTh Style="width: 70%;">
+                                                    @(ProjectLenderReqFilesDisplayTextFor.FileName)
+                                                </MudTh>
+                                                <MudTh Style="width: 30%;" Class="text-center">
+                                                    @(CommonDisplayTextFor.Action)
+                                                </MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate>
+                                                <MudTd DataLabel="@ProjectLenderReqFilesDisplayTextFor.FileName">
+                                                    @context.FileStorageName
+                                                </MudTd>
+                                                <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+                                                    <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                                                        <ButtonDownload Size="Size.Small" OnClick="@(() => DownloadFile(context))" />
+                                                        <ButtonDelete Size="Size.Small" OnClick="@(() => DeleteProjectFile(context))" />
+                                                    </MudStack>
+                                                </MudTd>
+                                            </RowTemplate>
+                                        </TableDefault>
+                                    </MudItem>
+                                </MudGrid>
+                            </td>
+                        </MudTr>
+                    }
+                </ChildRowContent>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </TableDefault>
+        </MudItem>
+    </MudGrid>
+</PageSection>
+
+@if (_isDrawerUploadOpen)
+{
+    <DrawerUploadFile Title="@(_selectedProject?.Title)" @bind-IsOpen="_isDrawerUploadOpen" OnFileUploaded="FileUploaded" />
+}

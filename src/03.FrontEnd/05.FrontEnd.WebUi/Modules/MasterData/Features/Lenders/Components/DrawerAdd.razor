@@ -1,0 +1,82 @@
+@inherits DrawerBase
+
+<MudDrawer Variant="DrawerVariant.Temporary"
+           Anchor="Anchor.Right"
+           Width="500px"
+           OverlayAutoClose="false"
+           @bind-Open="IsOpen">
+    <MudDrawerHeader>
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center"
+                  Class="mud-width-full">
+            <MudText Typo="Typo.h3">
+                @CommonDisplayTextFor.Add @LendersDisplayTextFor.Lender
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDrawer" />
+        </MudStack>
+    </MudDrawerHeader>
+    <div class="pa-5">
+        <ErrorViewer Exception="@(_exception)" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
+        <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue">
+            <MudGrid>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@LendersDisplayTextFor.Name"
+                                      @bind-Value="_model.Name"
+                                      For="@(() => _model.Name)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(LendersDisplayTextFor.Name)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@LendersDisplayTextFor.Address"
+                                      @bind-Value="_model.Address"
+                                      For="@(() => _model.Address)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(LendersDisplayTextFor.Address)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <CountrySelector Label="@LendersDisplayTextFor.Country"
+                                     @bind-Value="_model.CountryId"
+                                     SelectedCountryChanged="HandleCountrySelected"
+                                     IsAllowNoValue="true"
+                                     Required="true"
+                                     RequiredError="@ErrorMessageFor.FieldIsRequired(LendersDisplayTextFor.Country)"></CountrySelector>
+                </MudItem>
+                <MudItem xs="6">
+                    <TextFieldDefault Label="@LendersDisplayTextFor.CountryPhoneCode"
+                                      @bind-Value="_countryPhoneCode"
+                                      For="@(() => _countryPhoneCode)"
+                                      ReadOnly="true"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(LendersDisplayTextFor.CountryPhoneCode)" />
+                </MudItem>
+                <MudItem xs="6">
+                    <TextFieldDefault Label="@LendersDisplayTextFor.PhoneNumber"
+                                      @bind-Value="_model.PhoneNumber"
+                                      For="@(() => _model.PhoneNumber)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(LendersDisplayTextFor.PhoneNumber)" />
+                </MudItem>                
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@LendersDisplayTextFor.EmailAddress"
+                                      @bind-Value="_model.EmailAddress"
+                                      For="@(() => _model.EmailAddress)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(LendersDisplayTextFor.EmailAddress)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@LendersDisplayTextFor.Website"
+                                      @bind-Value="_model.Website"
+                                      For="@(() => _model.Website)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(LendersDisplayTextFor.Website)" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+        <BottomButtonPanel>
+            <ButtonCancel OnClick="CloseDrawer" />
+            <ButtonSubmit OnClick="Submit" Disabled="_isLoading" />
+        </BottomButtonPanel>
+    </div>
+</MudDrawer>

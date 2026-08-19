@@ -1,7 +1,6 @@
-using Microsoft.Extensions.Logging;
-using Pertamina.Common.Dto.Enums;
 using EBVL.Shared.Dto.Modules.Administration;
 using EBVL.Shared.Dto.Modules.Administration.Audits.GetAudits;
+using Pertamina.Common.Dto.Enums;
 
 namespace EBVL.BackEnd.Logics.Modules.Administration.Audits.GetAudits;
 
@@ -19,7 +18,6 @@ public sealed class GetAuditsQueryValidator : AbstractValidatorBase<GetAuditsQue
 }
 
 public sealed class GetAuditsQueryHandler(
-    ILogger<GetAuditsQueryHandler> logger,
     IDatabaseService databaseService,
     IDateAndTimeService dateAndTimeService)
     : IRequestHandler<GetAuditsQuery, GetAuditsResponse>
@@ -28,10 +26,6 @@ public sealed class GetAuditsQueryHandler(
     {
         var from = request.From ?? dateAndTimeService.Now.AddDays(-7);
         var to = request.To ?? dateAndTimeService.Now;
-
-        logger.LogDebug("GetAuditsQueryHandler: Get Audits from {From} to {To}",
-            from.ToDisplayText("d MMMM yyyy HH:mm:ss zzz"),
-            to.ToDisplayText("d MMMM yyyy HH:mm:ss zzz"));
 
         var query = databaseService.Audits
             .AsNoTracking()

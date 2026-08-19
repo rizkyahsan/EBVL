@@ -16,7 +16,10 @@ public partial class DrawerAdd
         _model = new()
         {
             Code = string.Empty,
-            Name = string.Empty
+            Name = string.Empty,
+            PhoneCode = string.Empty,
+            CurrencyCode = string.Empty,
+            Region = string.Empty
         };
 
         _validator = new();
@@ -41,6 +44,7 @@ public partial class DrawerAdd
         catch (Exception exception)
         {
             _exception = exception;
+            Snackbar.AddErrors(_exception.GetAllErrorMessages());
         }
         finally
         {

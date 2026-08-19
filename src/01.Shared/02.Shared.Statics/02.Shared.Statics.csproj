@@ -12,4 +12,7 @@
     <FileVersion>1.0.3</FileVersion>
     <InformationalVersion>1.0.3</InformationalVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Common\Extensions\" />
+  </ItemGroup>
 </Project>

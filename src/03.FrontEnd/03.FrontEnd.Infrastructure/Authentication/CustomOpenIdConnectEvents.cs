@@ -18,6 +18,15 @@ public sealed class CustomOpenIdConnectEvents(
     IUserPositionsService userPositionsService)
     : OpenIdConnectEvents
 {
+    private const string SignInCallbackPath = "/signin-oidc";
+
+    public override Task RedirectToIdentityProvider(RedirectContext context)
+    {
+        context.ProtocolMessage.RedirectUri = $"{context.Request.Scheme}://{context.Request.Host}{SignInCallbackPath}";
+
+        return Task.CompletedTask;
+    }
+
     public override async Task TokenResponseReceived(TokenResponseReceivedContext context)
     {
         var principal = context.Principal;

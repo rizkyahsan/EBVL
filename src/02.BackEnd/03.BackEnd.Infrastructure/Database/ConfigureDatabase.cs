@@ -1,6 +1,7 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using EBVL.BackEnd.Infrastructure.Database.Interceptors;
+using EBVL.BackEnd.Infrastructure.Database.Seeders;
 
 namespace EBVL.BackEnd.Infrastructure.Database;
 
@@ -33,7 +34,10 @@ public static class ConfigureDatabase
         _ = services.AddScoped<DatabaseMigrator>();
 
         _ = services.AddTransient<AuditSeeder>();
+        _ = services.AddTransient<ConfigurationSeeder>();
         _ = services.AddTransient<CountrySeeder>();
+        _ = services.AddTransient<StatusSeeder>();
+        _ = services.AddTransient<EmailTemplateSeeder>();
 
         return services;
     }
@@ -51,8 +55,17 @@ public static class ConfigureDatabase
 
         if (isDataSeedingEnabled)
         {
+            var configurationSeeder = serviceProvider.GetRequiredService<ConfigurationSeeder>();
+            await configurationSeeder.SeedConfigurations();
+
             var countrySeeder = serviceProvider.GetRequiredService<CountrySeeder>();
             await countrySeeder.SeedCountries();
+
+            var statusSeeder = serviceProvider.GetRequiredService<StatusSeeder>();
+            await statusSeeder.SeedStatuses();
+
+            var emailTemplateSeeder = serviceProvider.GetRequiredService<EmailTemplateSeeder>();
+            await emailTemplateSeeder.SeederEmailTemplate();
         }
     }
 }

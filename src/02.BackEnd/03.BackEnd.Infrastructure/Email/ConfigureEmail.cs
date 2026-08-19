@@ -1,9 +1,9 @@
+using EBVL.BackEnd.Services.EmailBlast2;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Pertamina.Extensions.Polly;
 using Pertamina.Services.Email;
 using Pertamina.Services.Email.EmailBlast;
 using Pertamina.Services.Email.None;
-using Pertamina.Services.Email.Smtp;
 
 namespace EBVL.BackEnd.Infrastructure.Email;
 
@@ -14,7 +14,7 @@ public static class ConfigureEmail
     private const int RetryCount = 5;
     private const int AllowedHandledEvents = 5;
 
-    public static IServiceCollection AddEmailService(this IServiceCollection services, IConfiguration configuration, string smtpUsername, string smtpPassword, IHealthChecksBuilder healthChecksBuilder)
+    public static IServiceCollection AddEmailService(this IServiceCollection services, IConfiguration configuration, IHealthChecksBuilder healthChecksBuilder, string emailBlastClientId, string emailBlastClientSecret, string sendGridApiKey)
     {
         var emailProvider = configuration[$"{nameof(Email)}:Provider"]
             ?? throw new ConfigurationBindingFailedException($"{nameof(Email)}:Provider", typeof(string));
@@ -23,33 +23,6 @@ public static class ConfigureEmail
 
         switch (emailProvider)
         {
-            case EmailProvider.Smtp:
-                var smtpEmailOptionsFromConfiguration = configuration.GetRequiredSection(SmtpEmailOptions.SectionKey).Get<SmtpEmailOptions>()
-                    ?? throw new ConfigurationBindingFailedException(SmtpEmailOptions.SectionKey, typeof(SmtpEmailOptions));
-
-                var smtpEmailOptions = new SmtpEmailOptions
-                {
-                    Server = smtpEmailOptionsFromConfiguration.Server,
-                    Port = smtpEmailOptionsFromConfiguration.Port,
-                    Username = smtpUsername,
-                    Password = smtpPassword,
-                    SecureOption = smtpEmailOptionsFromConfiguration.SecureOption
-                };
-
-                _ = services.AddSingleton(Options.Create(smtpEmailOptions));
-                _ = services.AddTransient<SmtpEmailSender>();
-                _ = services.AddTransient<IEmailService, SmtpEmailService>();
-
-                _ = healthChecksBuilder.AddSmtpHealthCheck(options =>
-                    {
-                        options.Host = smtpEmailOptions.Server;
-                        options.Port = smtpEmailOptions.Port;
-                        options.AllowInvalidRemoteCertificates = true;
-                    },
-                    name: $"Email Service: SMTP ({smtpEmailOptions.Server}:{smtpEmailOptions.Port})",
-                    failureStatus: HealthStatus.Degraded,
-                    tags: ["Email"]);
-                break;
             case EmailProvider.EmailBlast:
                 var emailBlastEmailSection = configuration.GetRequiredSection(EmailBlastEmailOptions.SectionKey);
                 var emailBlastEmailOptions = emailBlastEmailSection.Get<EmailBlastEmailOptions>()
@@ -62,6 +35,33 @@ public static class ConfigureEmail
                 _ = healthChecksBuilder.Add(new HealthCheckRegistration(
                     name: $"Email Service: Email Blast ({emailBlastEmailOptions.ApiBaseUrl})",
                     instance: new EmailBlastEmailServiceHealthCheck(emailBlastEmailOptions.RestBaseUrl, emailBlastEmailOptions.HealthCheckEndpoint),
+                    failureStatus: HealthStatus.Unhealthy,
+                    tags: ["Email"]));
+                break;
+            case EmailProvider.EmailBlast2:
+                var emailBlast2EmailFromConfiguration = configuration.GetRequiredSection(EmailBlast2EmailOptions.SectionKey).Get<EmailBlast2EmailOptions>()
+                    ?? throw new ConfigurationBindingFailedException(EmailBlast2EmailOptions.SectionKey, typeof(EmailBlast2EmailOptions));
+
+                var emailBlast2EmailOptions = new EmailBlast2EmailOptions
+                {
+                    Scope = emailBlast2EmailFromConfiguration.Scope,
+                    RestBaseUrl = emailBlast2EmailFromConfiguration.RestBaseUrl,
+                    TokenEndpoint = emailBlast2EmailFromConfiguration.TokenEndpoint,
+                    ClientId = emailBlastClientId,
+                    ClientSecret = emailBlastClientSecret,
+                    HealthCheckEndpoint = emailBlast2EmailFromConfiguration.HealthCheckEndpoint,
+                    ApiPathBase = emailBlast2EmailFromConfiguration.ApiPathBase,
+                    ResourceEndpoint = emailBlast2EmailFromConfiguration.ResourceEndpoint,
+                    SendGridApiKey = sendGridApiKey,
+                };
+
+                _ = services.AddSingleton(Options.Create(emailBlast2EmailOptions));
+                _ = services.AddHttpClient<IEmailBlast2Service, EmailBlast2EmailService>()
+                    .SetDefaultPollyPolicy(_handlerLifetime, RetryCount, AllowedHandledEvents, _durationOfBreak);
+
+                _ = healthChecksBuilder.Add(new HealthCheckRegistration(
+                    name: $"Email Service: Email Blast2 ({emailBlast2EmailOptions.ApiBaseUrl})",
+                    instance: new EmailBlastEmailServiceHealthCheck(emailBlast2EmailOptions.RestBaseUrl, emailBlast2EmailOptions.HealthCheckEndpoint),
                     failureStatus: HealthStatus.Unhealthy,
                     tags: ["Email"]));
                 break;

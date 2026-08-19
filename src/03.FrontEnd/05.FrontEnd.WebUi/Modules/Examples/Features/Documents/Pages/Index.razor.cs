@@ -1,11 +1,16 @@
+using EBVL.FrontEnd.Logics.Modules.Examples.Documents.DownloadDocument;
 using EBVL.FrontEnd.Logics.Modules.Examples.Documents.GetDocuments;
 using EBVL.FrontEnd.WebUi.Modules.Examples.Features.Documents.Components;
 using EBVL.Shared.Dto.Modules.Examples.Documents.GetDocuments;
+using Microsoft.JSInterop;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Examples.Features.Documents.Pages;
 
 public partial class Index
 {
+    [Inject]
+    public required IJSRuntime JSRuntime { get; init; }
+
     private IEnumerable<DocumentItem> _items = [];
     private string? _searchKeyword;
 
@@ -98,6 +103,37 @@ public partial class Index
             var documentId = (Guid)result.Data;
 
             NavigationManager.NavigateTo(ExamplesDocumentsRouteFor.Details(documentId));
+        }
+    }
+
+    private async Task DownloadFile(DocumentItem item)
+    {
+        try
+        {
+            _isLoading = true;
+
+            ClearException();
+
+            var query = new DownloadDocumentQuery
+            {
+                DocumentId = item.Id
+            };
+
+            var response = await Sender.Send(query);
+
+            await JSRuntime.InvokeVoidAsync(
+                "downloadFile",
+                response.FileName,
+                response.FileContentType,
+                Convert.ToBase64String(response.FileContent));
+        }
+        catch (Exception exception)
+        {
+            _exception = exception;
+        }
+        finally
+        {
+            _isLoading = false;
         }
     }
 }

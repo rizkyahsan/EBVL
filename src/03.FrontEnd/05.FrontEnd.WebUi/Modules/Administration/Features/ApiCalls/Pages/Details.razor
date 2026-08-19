@@ -2,11 +2,11 @@
 @inherits PageBase
 @attribute [Authorize(Policy = AdministrationPermissions.AdministrationApiCallsRead)]
 
-<HtmlHead Title="@_pageTitle" />
-<Breadcrumbs Items="_breadcrumbItems" />
-<PageHeader Title="@_pageTitle" EntityType="@ApiCallsDisplayTextFor.ApiCall" />
-<LoadingLinear IsVisible="_isLoading" />
-<ErrorViewer Exception="_exception" />
+<HtmlHead Title="@(_pageTitle)" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@(_pageTitle)" EntityType="@ApiCallsDisplayTextFor.ApiCall" />
+<LoadingLinear IsVisible="@(_isLoading)" />
+<ErrorViewer Exception="@(_exception)" />
 @if (_item is not null)
 {
     <HorizontalTabs>

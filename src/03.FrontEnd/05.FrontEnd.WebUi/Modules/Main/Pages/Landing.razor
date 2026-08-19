@@ -7,29 +7,41 @@
     <div class="pa-8 rounded text-center">
         <div class="d-flex flex-column justify-center gap-3 mud-height-full">
             <div class="d-flex flex-column align-center gap-1">
-                <MudText Typo="Typo.h1">
+                <!-- Logo Row -->
+                <MudImage Src="@DisplayInfo.SrcLogo"
+                          Alt="App Logo"
+                          Style="display:block; margin:0 auto; width:100%; max-width:200px; height:auto;" />
+
+                 <br/>
+                <!-- App Nickname Row -->
+                <MudText Typo="Typo.h1" Align="Align.Center">
                     Welcome to @AppConfigFrontEndOptions.Value.AppNickName
                 </MudText>
-                <MudText Typo="Typo.subtitle1" Class="mb-6">
-                    Electronic Brand Vendor List
+
+                <!-- Login Instructions -->
+                <MudText Typo="Typo.body1" Class="mb-4" Align="Align.Center">
+                    Please <b>log in</b> with your account to get started.
                 </MudText>
-                <MudText Typo="Typo.body1" Class="mb-4">
-                    Silakan masuk menggunakan akun internal atau akun vendor.
-                </MudText>
-                <div class="d-flex gap-3 flex-wrap justify-center">
-                  <a href="@_loginRoute" class="rounded border px-5 py-4 mud-border-lines-default button-login">
-                    <div class="d-flex align-center gap-2 justify-center">
-                        <img src="img/logo-p.jpg" alt="@CommonDisplayTextFor.IdAMan" width="24" height="24" />
-                        <span>Login with IdAMan</span>
-                    </div>
-                  </a>
-                  <a href="Vendor/Login" class="rounded border px-5 py-4 mud-border-lines-default button-login">
-                    <div class="d-flex align-center gap-2 justify-center">
-                        <MudIcon Icon="@Icons.Material.Filled.Business" />
-                        <span>Login with Local Account</span>
-                    </div>
-                  </a>
-                </div>
+
+                <!-- Login Buttons -->
+                <MudStack Row="true">
+                    <a href="@_loginRoute" class="rounded border px-5 py-4 mud-border-lines-default button-login">
+                        <div class="d-flex align-center gap-2">
+                            <img src="img/logo-p.jpg" alt="@CommonDisplayTextFor.IdAMan" width="24" height="24" />
+                            <span>
+                                @($"{CommonDisplayTextFor.Login} Internal")
+                            </span>
+                        </div>
+                    </a>
+                    <MudDivider Vertical="true" FlexItem="true" />
+                    <a href="@_localLoginRoute" class="rounded border px-5 py-4 mud-border-lines-default button-login">
+                        <div class="d-flex align-center gap-2">
+                            <span>
+                                @($"{CommonDisplayTextFor.Login} External")
+                            </span>
+                        </div>
+                    </a>
+                </MudStack>
             </div>
         </div>
     </div>
@@ -38,7 +50,7 @@
             <div class="illus-container rounded">
                 <div class="d-flex flex-column mud-height-full justify-start pa-8">
                     <p class="landing-title">
-                        e-BVL Reengineering.
+                        @AppConfigFrontEndOptions.Value.AppNickName
                     </p>
                 </div>
             </div>

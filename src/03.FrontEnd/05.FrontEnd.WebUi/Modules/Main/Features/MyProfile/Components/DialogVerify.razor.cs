@@ -37,6 +37,7 @@ public partial class DialogVerify
         catch (Exception exception)
         {
             _exception = exception;
+            Snackbar.AddErrors(_exception.GetAllErrorMessages());
         }
         finally
         {

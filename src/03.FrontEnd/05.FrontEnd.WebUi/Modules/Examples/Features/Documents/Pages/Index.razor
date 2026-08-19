@@ -3,14 +3,14 @@
 @using EBVL.Shared.Dto.Modules.Examples.Documents.GetDocuments
 
 <HtmlHead Title="@DocumentsDisplayTextFor.Documents" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <PageHeader Title="@DocumentsDisplayTextFor.Documents" />
-<ErrorViewer Exception="_exception" />
+<ErrorViewer Exception="@(_exception)" />
 <TopButtonPanel>
     <ButtonAdd EntityType="@DocumentsDisplayTextFor.Document" OnClick="ShowDialogAdd" />
 </TopButtonPanel>
 <TableDefault Items="_items"
-              Loading="_isLoading"
+              Loading="@(_isLoading)"
               Filter="FilterItems">
     <ToolBarContent>
         <MudSpacer />
@@ -59,6 +59,7 @@
         </MudTd>
         <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
             <ButtonDetails Href="@ExamplesDocumentsRouteFor.Details(context.Id)" />
+            <ButtonDownload Size="Size.Small" OnClick="@(() => DownloadFile(context))" />
         </MudTd>
     </RowTemplate>
     <PagerContent>

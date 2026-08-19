@@ -1,0 +1,38 @@
+@using EBVL.Shared.Dto.Modules.MasterData.Countries.GetCountries
+@inherits SelectorBase<string>
+
+@if (_isLoading)
+{
+    <MudAutocomplete T="CountryItem" Label="@Label" Placeholder="Loading..." Disabled="true" />
+}
+else if (!_items.Any())
+{
+    <MudAlert Severity="Severity.Warning" Dense>
+        @($"No {CountriesDisplayTextFor.PhoneCode} available")
+    </MudAlert>
+}
+else
+{
+    <MudAutocomplete T="CountryItem" Label="@(IsNoLabel ? null : Label)" Value="SelectedCountry"
+                     ValueChanged="OnCountryChanged" SearchFunc="SearchCountries" Clearable="true"
+                     Dense="true" Variant="Variant.Outlined" Required="@Required"
+                     RequiredError="@RequiredError" ReadOnly="@Readonly" DebounceInterval="300"
+                     ToStringFunc="@(x => x is null ? string.Empty : $"{x.Name} ({x.PhoneCode})")"
+                     Placeholder="@(IsAllowNoValue ? (ShowAllOption ? "All" : "Please Select") : string.Empty)">
+        <ItemTemplate Context="item">
+            <MudGrid>
+                <MudItem xs="8">
+                    <MudText Typo="Typo.body1">
+                        @item.Name
+                    </MudText>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+                        @item.PhoneCode
+                    </MudText>
+                </MudItem>
+            </MudGrid>
+        </ItemTemplate>
+    </MudAutocomplete>
+}

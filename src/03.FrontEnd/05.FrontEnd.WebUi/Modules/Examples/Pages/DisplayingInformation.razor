@@ -2,14 +2,14 @@
 @inherits PageBase
 
 <HtmlHead Title="@ExamplesDisplayTextFor.DisplayingInformation" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <PageHeader Title="@ExamplesDisplayTextFor.DisplayingInformation" />
 <HorizontalTabs>
     <MudTabPanel Text="From the Page, show a Dialog">
         <MudText Typo="Typo.h2" Class="mb-10">
             Add Something 1
         </MudText>
-        <LoadingLinear IsVisible="_isLoading" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
         <ErrorViewer Exception="_exception1" />
         <MudForm @ref="_form1" Model="_model1" Validation="_validator1.ValidateValue">
             <MudGrid>
@@ -30,7 +30,7 @@
         <MudText Typo="Typo.h2" Class="mb-10">
             Add Something 2
         </MudText>
-        <LoadingLinear IsVisible="_isLoading" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
         <ErrorViewer Exception="_exception2" />
         <MudForm @ref="_form2" Model="_model2" Validation="_validator2.ValidateValue">
             <MudGrid>

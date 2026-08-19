@@ -25,6 +25,9 @@ public partial class DialogCreate
             var command = new CreateMyUserCommand();
             var response = await Sender.Send(command);
 
+            //var command = new AddUserCommand();
+            //var response = await Sender.Send(command);
+
             Snackbar.AddSuccess($"{CommonDisplayTextFor.Your} {UsersDisplayTextFor.UserProfile} ({response.Item.Username}) has been successfully {CommonDisplayTextFor.Created.ToLower()}.");
 
             Dialog.Close();
@@ -32,6 +35,7 @@ public partial class DialogCreate
         catch (Exception exception)
         {
             _exception = exception;
+            Snackbar.AddErrors(_exception.GetAllErrorMessages());
         }
         finally
         {

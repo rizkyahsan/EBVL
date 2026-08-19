@@ -19,10 +19,16 @@ public sealed class AddCountryEndpoint : IEndpoint
     }
 
     private static async Task<IResult> Handle(
+        HttpContext context,
         AddCountryCommand command,
         ISender sender,
         CancellationToken cancellationToken)
     {
+        if (!context.User.HasPermission(Permissions.MasterDataCountriesWrite))
+        {
+            //return Results.Forbid();
+        }
+
         var response = await sender.Send(command, cancellationToken);
 
         return Results.Created(GetCountryRoute.ResourceUri(response.Item.Id), response);

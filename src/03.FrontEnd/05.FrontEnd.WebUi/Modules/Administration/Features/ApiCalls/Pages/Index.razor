@@ -4,11 +4,11 @@
 @attribute [Authorize(Policy = AdministrationPermissions.AdministrationApiCallsRead)]
 
 <HtmlHead Title="@ApiCallsDisplayTextFor.ApiCalls" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <PageHeader Title="@ApiCallsDisplayTextFor.ApiCalls" />
-<ErrorViewer Exception="_exception" />
+<ErrorViewer Exception="@(_exception)" />
 <TableDefault Items="_items"
-              Loading="_isLoading"
+              Loading="@(_isLoading)"
               Filter="FilterItems">
     <ToolBarContent>
         <MudSpacer />

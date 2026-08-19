@@ -30,11 +30,13 @@ public static class ConfigureAuthentication
             options.Authority = idAManOptions.Authentication.AuthorityUrl;
             options.ClientId = idAManOptions.ClientId;
             options.ClientSecret = idAManOptions.ClientSecret;
+            options.CallbackPath = "/signin-oidc";
+            options.CorrelationCookie.Path = "/signin-oidc";
+            options.NonceCookie.Path = "/signin-oidc";
             options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
             options.EventsType = typeof(CustomOpenIdConnectEvents);
-            options.Scope.Add(OpenIdConnectScope.OpenIdProfile);
+            options.Scope.Add(OpenIdConnectScope.Email);
             options.Scope.Add(OpenIdConnectScope.OfflineAccess);
-            options.Scope.Add(idAManOptions.Authentication.ApiAudienceScope);
 
             options.TokenValidationParameters = new()
             {
@@ -68,16 +70,16 @@ public static class ConfigureAuthentication
             .AllowAnonymous();
 
         _ = routeGroupBuilder
-            .MapPost(PatternFor.LocalLogin, AuthenticationHandlers.LocalLoginHandler)
-            .AllowAnonymous();
-
-        _ = routeGroupBuilder
-            .MapGet(PatternFor.Logout, (string? returnUrl, HttpContext httpContext) => AuthenticationHandlers.LogoutHandler(finalPathBase, returnUrl, httpContext))
+            .MapGet(PatternFor.Logout, (string? returnUrl, IHttpContextAccessor httpContextAccessor) => AuthenticationHandlers.LogoutHandler(finalPathBase, returnUrl, httpContextAccessor))
             .RequireAuthorization();
 
         _ = routeGroupBuilder
             .MapGet(PatternFor.SwitchPosition, ([FromRoute] string positionId, string? returnUrl, IHttpContextAccessor httpContextAccessor, IUserPositionsService userPositionsService, IPositionRolesService positionRolesService, IPersonalRolesService personalRolesService) => AuthenticationHandlers.SwitchPositionHandler(positionId, returnUrl, httpContextAccessor, userPositionsService, positionRolesService, personalRolesService))
             .RequireAuthorization();
+
+        _ = routeGroupBuilder
+            .MapGet(PatternFor.LocalLoginHandler, ([FromRoute] string sessionId, string? returnUrl, IHttpContextAccessor httpContextAccessor) => AuthenticationHandlers.LocalLoginHandler(sessionId, returnUrl, httpContextAccessor))
+            .AllowAnonymous();
 
         return app;
     }

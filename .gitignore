@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 
+# Local application credentials
+**/secrets.json
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
@@ -30,6 +33,8 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+!src/**/Modules/Log/
+!src/**/Modules/Log/**
 [Ll]ogs/
 
 # Visual Studio 2015/2017 cache/options directory
@@ -193,10 +198,14 @@ PublishScripts/
 
 # NuGet Packages
 *.nupkg
+!packages/nuget-offline/*.nupkg
 # NuGet Symbol Packages
 *.snupkg
 # The packages folder can be ignored because of Package Restore
 **/[Pp]ackages/*
+!packages/
+!packages/nuget-offline/
+!packages/nuget-offline/*.nupkg
 # except build/, which is used as an MSBuild target.
 !**/[Pp]ackages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
@@ -361,12 +370,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-**/secrets.json
-**/secrets.*.json
-
-# macOS and developer-local artifacts
-.DS_Store
-**/.DS_Store
-.local/nuget-feed/
-NuGetOfflineFeed.zip
-/tools/
+# Machine-local offline NuGet packages and validation cache
+.local/

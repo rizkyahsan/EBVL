@@ -1,0 +1,92 @@
+﻿@page "/UserVerification/{Id}"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+
+<HtmlHead Title="@($"{CommonDisplayTextFor.Verification} {CommonDisplayTextFor.User}")" />
+<LoadingOverlay IsVisible="@(_isLoading)" />
+<ErrorViewer Exception="_exception" Class="mt-5" />
+
+@if (_isVerifing)
+{
+    <MudStack AlignItems="AlignItems.Center">
+        <div class="text-center">
+            <MudText Typo="Typo.h1">@CommonDisplayTextFor.Loading</MudText>
+            <MudText Typo="Typo.subtitle1">Verified you access, please wait a moment...</MudText>
+        </div>
+        <div>
+            <img src="img/local-user.png" alt="@CommonDisplayTextFor.Verified" style="max-width: 400px;" />
+        </div>
+        <DivHistoryBack />
+    </MudStack>
+}
+else if (_isSuccess)
+{
+    <MudStack AlignItems="AlignItems.Center">
+        <div class="text-center">
+            <MudText Typo="Typo.h1">@CommonDisplayTextFor.Loading</MudText>
+            <MudText Typo="Typo.subtitle1">"Your account has been successfully activated. Please wait while we redirect you..</MudText>
+        </div>
+        <div>
+            <img src="img/access-allow.png" alt="@CommonDisplayTextFor.Access" style="max-width: 400px;" />
+        </div>
+        <DivHistoryBack />
+    </MudStack>
+}
+else if (_isAllowAccess)
+{
+    <div class="landing-container">
+        <MudContainer Class="pa-20">
+            <Paper25 class="mud-height-full">
+                <div class="illus-container rounded pa-20">
+                    <Paper25 Class="pa-10">
+                        <PageHeader Title="@($"{CommonDisplayTextFor.Verification} {CommonDisplayTextFor.User}")" />
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <FieldDefault Label="@CommonDisplayTextFor.Email">
+                                    @(_username)
+                                </FieldDefault>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <TextFieldDefault Label="New Password" @bind-Value="_model.Password"
+                                                  InputType="@(_showPassword ? InputType.Text : InputType.Password)"
+                                                  Adornment="Adornment.End"
+                                                  AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                                                  OnAdornmentClick="@TogglePasswordVisibility" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <ButtonSend EntityType="@CommonDisplayTextFor.VerificationCode" OnClick="SendVerificationCode" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <TextFieldDefault Label="@CommonDisplayTextFor.VerificationCode" @bind-Value="_model.VerificationCode"
+                                                  InputType="@(_showOtp ? InputType.Text : InputType.Password)"
+                                                  Adornment="Adornment.End"
+                                                  AdornmentIcon="@(_showOtp ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                                                  OnAdornmentClick="@ToggleOtpVisibility"
+                                                  Required="true"
+                                                  RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.VerificationCode)" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <ButtonSubmit OnClick="ExecuteUserVerification">
+                                    @(CommonDisplayTextFor.Activated)
+                                </ButtonSubmit>
+                            </MudItem>
+                        </MudGrid>
+                    </Paper25>
+                </div>
+            </Paper25>
+        </MudContainer>
+    </div>
+}
+else
+{
+    <MudStack AlignItems="AlignItems.Center">
+        <div class="text-center">
+            <MudText Typo="Typo.h1">@CommonDisplayTextFor.AccessDenied</MudText>
+            <MudText Typo="Typo.subtitle1">@($"{_exception?.Message ?? "Error, please contact Administrator!"}")</MudText>
+        </div>
+        <div>
+            <img src="img/access-denied.png" alt="@CommonDisplayTextFor.AccessDenied" style="max-width: 400px;" />
+        </div>
+        <DivHistoryBack />
+    </MudStack>
+}

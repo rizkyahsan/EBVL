@@ -3,10 +3,10 @@
 @inherits PageBase
 @attribute [Authorize(Policy = AdministrationPermissions.AdministrationAuditsRead)]
 
-<HtmlHead Title="@_pageTitle" />
-<Breadcrumbs Items="_breadcrumbItems" />
-<PageHeader Title="@_pageTitle" />
-<ErrorViewer Exception="_exception" />
+<HtmlHead Title="@(_pageTitle)" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@(_pageTitle)" />
+<ErrorViewer Exception="@(_exception)" />
 
 <ExpansionPanelsFilters>
     <MudGrid Class="mb-8">

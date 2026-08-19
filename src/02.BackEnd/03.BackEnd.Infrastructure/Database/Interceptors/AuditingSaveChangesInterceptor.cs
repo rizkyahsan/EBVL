@@ -1,9 +1,10 @@
 using System.Text.Json;
+using EBVL.Shared.Enums;
+using EBVL.Shared.Statics.Common;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Pertamina.Common.Domain.Interfaces;
 using Pertamina.Services.CurrentUser;
 using Pertamina.Services.DateAndTime;
-using EBVL.Shared.Enums;
 
 namespace EBVL.BackEnd.Infrastructure.Database.Interceptors;
 
@@ -18,7 +19,7 @@ public sealed class AuditingSaveChangesInterceptor(
         CancellationToken cancellationToken = default)
     {
         var context = eventData.Context!;
-        var now = dateAndTimeService.Now;
+        var now = TimeZoneInfo.ConvertTime(dateAndTimeService.Now, TimezoneFor.WibTimeZone);
         var username = currentUserService.Username ?? "system@pertamina.com";
 
         foreach (var entry in context.ChangeTracker.Entries<IHasKey>())

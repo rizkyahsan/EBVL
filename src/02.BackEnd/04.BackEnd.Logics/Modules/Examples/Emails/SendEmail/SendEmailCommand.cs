@@ -1,11 +1,12 @@
 using System.Text;
+using EBVL.BackEnd.Services.AppConfigBackEnd;
+using EBVL.BackEnd.Services.EmailBlast2;
+using EBVL.BackEnd.Services.EmailBlast2.Model;
+using EBVL.Shared.Dto.Modules.Examples.Emails.SendEmail;
 using Microsoft.Extensions.Options;
 using Pertamina.Services.CurrentUser;
-using Pertamina.Services.Email;
 using Pertamina.Services.Email.Statics;
 using Pertamina.Services.UserProfile;
-using EBVL.BackEnd.Services.AppConfigBackEnd;
-using EBVL.Shared.Dto.Modules.Examples.Emails.SendEmail;
 
 namespace EBVL.BackEnd.Logics.Modules.Examples.Emails.SendEmail;
 
@@ -23,7 +24,7 @@ public sealed class SendEmailCommandValidator : AbstractValidatorBase<SendEmailC
 }
 
 public sealed class SendEmailCommandHandler(
-    IEmailService emailService,
+    IEmailBlast2Service emailService,
     ICurrentUserService currentUserService,
     IUserProfileService userProfileService,
     IOptions<AppConfigBackEndOptions> appConfigBackEndOptions)
@@ -33,7 +34,7 @@ public sealed class SendEmailCommandHandler(
 
     public async Task<SendEmailResponse> Handle(SendEmailCommand request, CancellationToken cancellationToken)
     {
-        var tos = request.Tos.Select(x => new EmailContact
+        var tos = request.Tos.Select(x => new EmailContact2
         {
             Address = x.Address,
             Name = x.Name
@@ -45,20 +46,20 @@ public sealed class SendEmailCommandHandler(
         {
             var userProfile = await userProfileService.GetUserProfileAsync(username, cancellationToken);
 
-            tos.Add(new EmailContact
+            tos.Add(new EmailContact2
             {
                 Address = userProfile.EmailAddress,
                 Name = userProfile.DisplayName
             });
         }
 
-        var ccs = request.Ccs.Select(x => new EmailContact
+        var ccs = request.Ccs.Select(x => new EmailContact2
         {
             Address = x.Address,
             Name = x.Name
         }).ToList();
 
-        var bccs = request.Bccs.Select(x => new EmailContact
+        var bccs = request.Bccs.Select(x => new EmailContact2
         {
             Address = x.Address,
             Name = x.Name
@@ -67,23 +68,19 @@ public sealed class SendEmailCommandHandler(
         var body = new StringBuilder(request.Body);
         _ = body.AppendLine($"<p>Visit <a href=\"{ContentPlaceholderFor.FrontEndUrl}/\">{_appConfigBackEndOptions.AppNickName}</a>.</p>");
 
-        var attachments = request.Attachments.Select(x => new EmailAttachment
+        var sendEmailInput = new SendEmailInput2
         {
-            FileName = x.FileName,
-            FileContent = x.FileContent
-        }).ToList();
-
-        var sendEmailInput = new SendEmailInput
-        {
+            Module = string.Empty,
+            Action = string.Empty,
+            EmailWith = EmailTemplatesEmailWith.TwilioSendGrid,
             Tos = tos,
             Ccs = ccs,
             Bccs = bccs,
             Subject = request.Subject,
-            Body = body.ToString(),
-            Attachments = attachments
+            Body = body.ToString()
         };
 
-        emailService.SendEmail(sendEmailInput);
+        emailService.SendEmails(sendEmailInput);
 
         var recipientsCount = tos.Count + ccs.Count + bccs.Count;
 
@@ -91,7 +88,7 @@ public sealed class SendEmailCommandHandler(
         {
             Item = new SendEmailResult
             {
-                Message = $"Email with subject {sendEmailInput.Subject} and {attachments.Count} attachment(s) has been successfully sent to the {recipientsCount} recipient(s)."
+                Message = $"Email with subject {sendEmailInput.Subject} attachment(s) has been successfully sent to the {recipientsCount} recipient(s)."
             }
         };
     }

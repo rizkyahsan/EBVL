@@ -1,0 +1,42 @@
+﻿@inherits DrawerBase
+
+<MudDrawer Variant="DrawerVariant.Temporary"
+           Anchor="Anchor.Right"
+           Width="500px"
+           OverlayAutoClose="false"
+           @bind-Open="IsOpen">
+    <MudDrawerHeader>
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center"
+                  Class="mud-width-full">
+            <MudText Typo="Typo.h3">
+                @CommonDisplayTextFor.Upload @ProjectAttachmentsDisplayTextFor.ProjectAttachment
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDrawer" />
+        </MudStack>
+    </MudDrawerHeader>
+    <div class="pa-5">
+        <ErrorViewer Exception="@(_exception)" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
+        <MudGrid>
+            <MudItem xs="12">
+                <FieldDefault Label="@ProjectReqsDisplayTextFor.Name">
+                    @(Name)
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12">
+                <FieldDefault Label="@ProjectReqsDisplayTextFor.Desc">
+                    @(Desc)
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" Class="text-right">
+                <FileUploadSingleComplete Accept="@AcceptFor.Documents" OnFileUpdated="FileUpdated" />
+            </MudItem>
+        </MudGrid>
+        <BottomButtonPanel>
+            <ButtonCancel OnClick="CloseDrawer" />
+            <ButtonSubmit OnClick="Submit" Disabled="_isLoading" />
+        </BottomButtonPanel>
+    </div>
+</MudDrawer>

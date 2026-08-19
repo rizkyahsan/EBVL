@@ -4,9 +4,9 @@
 @attribute [Authorize(Policy = AdministrationPermissions.AdministrationConfigurationsRead)]
 
 <HtmlHead Title="@ConfigurationsDisplayTextFor.Configurations" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <PageHeader Title="@ConfigurationsDisplayTextFor.Configurations" />
-<ErrorViewer Exception="_exception" />
+<ErrorViewer Exception="@(_exception)" />
 <AuthorizeView Policy="@AdministrationPermissions.AdministrationConfigurationsWrite">
     <Authorized>
         <TopButtonPanel>
@@ -15,7 +15,7 @@
     </Authorized>
 </AuthorizeView>
 <TableDefault Items="_items"
-              Loading="_isLoading"
+              Loading="@(_isLoading)"
               Filter="FilterItems">
     <ToolBarContent>
         <MudSpacer />

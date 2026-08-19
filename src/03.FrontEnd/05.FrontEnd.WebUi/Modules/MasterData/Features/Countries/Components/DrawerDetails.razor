@@ -17,7 +17,7 @@
         </MudStack>
     </MudDrawerHeader>
     <div class="pa-5">
-        <LoadingLinear IsVisible="_isLoading" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
         @if (Country is not null)
         {
             <MudGrid>
@@ -29,6 +29,21 @@
                 <MudItem xs="12">
                     <FieldDefault Label="@CommonDisplayTextFor.Code">
                         @Country.Code
+                    </FieldDefault>
+                </MudItem>
+                 <MudItem xs="12">
+                    <FieldDefault Label="@CountriesDisplayTextFor.Region">
+                        @Country.Region
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CountriesDisplayTextFor.PhoneCode">
+                        @Country.PhoneCode
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CountriesDisplayTextFor.CurrencyCode">
+                        @Country.CurrencyCode
                     </FieldDefault>
                 </MudItem>
                 <MudItem xs="12">

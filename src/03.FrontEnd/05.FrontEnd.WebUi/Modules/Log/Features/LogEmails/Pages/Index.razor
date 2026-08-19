@@ -1,0 +1,130 @@
+@page "/Log/LogEmails"
+@using EBVL.Shared.Dto.Modules.Log.LogEmails.GetLogEmails
+@using EBVL.FrontEnd.WebUi.Modules.Log.Features.LogEmails.Components
+@inherits PageBase
+@attribute [Authorize(Policy = LogPermissions.LogEmailsRead)]
+
+<HtmlHead Title="@LogEmailsDisplayTextFor.LogEmails" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@LogEmailsDisplayTextFor.LogEmails" />
+<ErrorViewer Exception="@(_exception)" />
+
+<PageSection>
+    <MudGrid Spacing="2">
+        <MudItem xs="12" md="6">
+            <MudStack Row="true" Spacing="1">
+                <MudButton Variant="@(_selectedPreset == "Today" ? Variant.Filled : Variant.Outlined)"
+                           Color="Color.Primary" Size="Size.Medium" OnClick="SetToday">
+                    Today
+                </MudButton>
+
+                <MudButton Variant="@(_selectedPreset == "Yesterday" ? Variant.Filled : Variant.Outlined)"
+                           Color="Color.Primary" Size="Size.Medium" OnClick="SetYesterday">
+                    Yesterday
+                </MudButton>
+
+                <MudButton Variant="@(_selectedPreset == "Last7Days" ? Variant.Filled : Variant.Outlined)"
+                           Color="Color.Primary" Size="Size.Medium" OnClick="SetLast7Days">
+                    Last 7 Days
+                </MudButton>
+
+                <MudButton Variant="@(_selectedPreset == "Last30Days" ? Variant.Filled : Variant.Outlined)"
+                           Color="Color.Primary" Size="Size.Medium" OnClick="SetLast30Days">
+                    Last 30 Days
+                </MudButton>
+            </MudStack>
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+            <MudDateRangePicker Label="Filter Date" DateRange="@(_dateRange)" DateFormat="dd MMM yyyy"
+                                Editable="false" Margin="Margin.Dense" PickerVariant="PickerVariant.Dialog"
+                                DateRangeChanged="OnDateRangeChanged" />
+        </MudItem>
+    </MudGrid>
+</PageSection>
+
+<PageSection>
+    <MudGrid>
+        <MudItem xs="12">
+            <TableDefault Items="_items" Loading="@(_isLoading)" Filter="FilterItems">
+                <ToolBarContent>
+                    <MudSpacer />
+                    <TextFieldSearch @bind-Value="_searchKeyword" />
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<LogEmailItem, object>(x => x.Module)">
+                            @LogEmailsDisplayTextFor.Module
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortBy="new Func<LogEmailItem, object>(x => x.Action)">
+                            @LogEmailsDisplayTextFor.Action
+                        </MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        @LogEmailsDisplayTextFor.Provider
+                    </MudTh>
+                    <MudTh>
+                        @LogEmailsDisplayTextFor.Subject
+                    </MudTh>
+                    <MudTh>
+                        @LogEmailsDisplayTextFor.SentAt
+                    </MudTh>
+                    <MudTh>
+                        @LogEmailsDisplayTextFor.IsSuccessful
+                    </MudTh>
+                    <MudTh Style="width: 20%;" Class="text-center">
+                        @CommonDisplayTextFor.Action
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="@LogEmailsDisplayTextFor.Module">
+                        <MudHighlighter Text="@context.Module" HighlightedText="@_searchKeyword" />
+                    </MudTd>
+                    <MudTd DataLabel="@LogEmailsDisplayTextFor.Action">
+                        <MudHighlighter Text="@context.Action" HighlightedText="@_searchKeyword" />
+                    </MudTd>
+                    <MudTd DataLabel="@LogEmailsDisplayTextFor.Provider">
+                        @context.Provider
+                    </MudTd>
+                    <MudTd DataLabel="@LogEmailsDisplayTextFor.Subject">
+                        @context.Subject
+                    </MudTd>
+                    <MudTd DataLabel="@LogEmailsDisplayTextFor.SentAt">
+                        @($"{context.SentAt:dd-MMM-yyyy HH:mm:ss} WIB (GMT+7)")
+                    </MudTd>
+                    <MudTd DataLabel="@LogEmailsDisplayTextFor.IsSuccessful">
+                        @if (context.IsSuccessful)
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small"
+                                     Icon="@Icons.Material.Filled.CheckCircle">
+                                @CommonDisplayTextFor.Success
+                            </MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" Color="Color.Error" Size="Size.Small"
+                                     Icon="@Icons.Material.Filled.Error">
+                                @($"Failed")
+                            </MudChip>
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+                        <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                            <ButtonDetails Size="Size.Small" OnClick="@(() => ShowDrawerDetails(context.Id))" />
+                        </MudStack>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </TableDefault>
+        </MudItem>
+    </MudGrid>
+</PageSection>
+
+@if (_isDrawerDetailsOpen)
+{
+    <DrawerDetails @bind-IsOpen="_isDrawerDetailsOpen" LogEmail="@(_selectedLogEmail)" />
+}

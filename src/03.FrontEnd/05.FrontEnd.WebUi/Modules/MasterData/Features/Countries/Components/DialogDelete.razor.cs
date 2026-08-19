@@ -28,6 +28,7 @@ public partial class DialogDelete
         catch (Exception exception)
         {
             _exception = exception;
+            Snackbar.AddErrors(_exception.GetAllErrorMessages());
         }
         finally
         {

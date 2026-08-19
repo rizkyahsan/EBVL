@@ -1,0 +1,226 @@
+@page "/Projects/StageUpdate/{Id:guid}"
+@inherits PageBase
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.Projects.Components
+@attribute [Authorize(Policy = MainPermissions.MainPageProjectWrite)]
+
+<HtmlHead Title="@(_pageTitle)" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@(_pageTitle)" EntityType="@ProjectStagesDisplayTextFor.ProjectStage" />
+<LoadingOverlay IsVisible="@(_isLoading)" />
+<ErrorViewer Exception="@(_exception)" />
+
+@if (_item is not null)
+{
+    <MudForm @ref="_form" Model="@(_model)" Validation="@(_validator.ValidateValue)">
+        <PageSection>
+            <ProgressBarStatusProjectStage StatusCode="@(_item.StatusCode)"></ProgressBarStatusProjectStage>
+        </PageSection>
+
+        <PageSection>
+            <MudText Typo="Typo.h4" Class="mb-3">
+                @($"{ProjectsDisplayTextFor.Project} Info")
+            </MudText>
+
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@(ProjectsDisplayTextFor.Title)">
+                        @(_item.ProjectTitle)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@(ProjectsDisplayTextFor.Desc)">
+                        @(_item.ProjectDesc)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@(ProjectsDisplayTextFor.Objective)">
+                        @(_item.ProjectObjective)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@(ProjectsDisplayTextFor.FinanceType)">
+                        @(_item.ProjectFinanceType)
+                    </FieldDefault>
+                </MudItem>
+            </MudGrid>
+        </PageSection>
+
+        <PageSection>
+            <MudText Typo="Typo.h4" Class="mb-3">
+                @($"{ProjectStagesDisplayTextFor.Stage} Detail")
+            </MudText>
+
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <TextFieldDefault Label="@(ProjectStagesDisplayTextFor.Name)"
+                                      @bind-Value="_model.Name"
+                                      For="@(() => _model.Name)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(ProjectStagesDisplayTextFor.Name)" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <TextFieldAutoGrow Label="@(ProjectStagesDisplayTextFor.Desc)"
+                                       @bind-Value="_model.Desc"
+                                       For="@(() => _model.Desc)"
+                                       Required="true"
+                                       RequiredError="@ErrorMessageFor.FieldIsRequired(ProjectStagesDisplayTextFor.Desc)" />
+                </MudItem>
+                <MudItem xs="12" sm="12">
+                    <MyDateTimePicker DateLabel="@($"{ProjectStagesDisplayTextFor.DueDate}")" @bind-Value="_model.DueDate"
+                                      MinDate="@(TimeZoneInfo.ConvertTime(DateTimeOffset.Now.DateTime, TimezoneFor.WibTimeZone))"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(ProjectStagesDisplayTextFor.DueDate)" />
+                </MudItem>
+            </MudGrid>
+        </PageSection>
+
+        <PageSection>
+            <MudText Typo="Typo.h4" Class="mb-3">
+                @($"{ProjectAttachmentsDisplayTextFor.ProjectAttachmentLabel}s")
+            </MudText>
+
+            <MudGrid>
+                <MudItem xs="12">
+                    <TopButtonPanel>
+                        <ButtonAdd Size="Size.Small" Style="white-space: nowrap;" EntityType="@(ProjectAttachmentsDisplayTextFor.ProjectAttachmentLabel)"
+                                   OnClick="AddProjectAttachments" />
+                    </TopButtonPanel>
+                    <TableDefault Items="@(_model.ProjectAttachments)" Loading="@(_isLoading)">
+                        <HeaderContent>
+                            <MudTh Style="width: 20%;">
+                                @(ProjectAttachmentsDisplayTextFor.Name)
+                            </MudTh>
+                            <MudTh Style="width: 35%;">
+                                @(ProjectAttachmentsDisplayTextFor.Desc)
+                            </MudTh>
+                            <MudTh Style="width: 5%;">
+                                @(ProjectReqsDisplayTextFor.SortNo)
+                            </MudTh>
+                            <MudTh Style="width: 20%;" Class="text-center">
+                                @(ProjectAttachmentsDisplayTextFor.File)
+                            </MudTh>
+                            <MudTh Style="width: 20%;" Class="text-center">
+                                @(CommonDisplayTextFor.Action)
+                            </MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="@(ProjectAttachmentsDisplayTextFor.Name)">
+                                <TextFieldAutoGrow Style="font-size:small;" @bind-Value="context.AttachmentName"
+                                                   For="@(() => context.AttachmentName)" Required="true"
+                                                   RequiredError="@ErrorMessageFor.FieldIsRequired(ProjectAttachmentsDisplayTextFor.Name)" />
+                            </MudTd>
+                            <MudTd DataLabel="@(ProjectAttachmentsDisplayTextFor.Desc)">
+                                <TextFieldAutoGrow Style="font-size:small;" @bind-Value="context.AttachmentDesc"
+                                                   For="@(() => context.AttachmentDesc)" Required="true"
+                                                   RequiredError="@ErrorMessageFor.FieldIsRequired(ProjectAttachmentsDisplayTextFor.Desc)" />
+                            </MudTd>
+                            <MudTd DataLabel="@(ProjectReqsDisplayTextFor.SortNo)">
+                                <NumericFieldDefault Style="font-size:small;" @bind-Value="context.AttachmentSortNo"
+                                                     For="@(() => context.AttachmentSortNo)" HideSpinButtons="true" Required="true"
+                                                     RequiredError="@ErrorMessageFor.FieldIsRequired(ProjectReqsDisplayTextFor.SortNo)" />
+                            </MudTd>
+                            <MudTd DataLabel="@ProjectAttachmentsDisplayTextFor.File" Class="text-center">
+                                <div class="d-flex flex-column align-center gap-2">
+                                    @if (context.File is not null)
+                                    {
+                                        <span style="font-size:small;">@context.File.FileName</span>
+                                        <ButtonDownload Size="Size.Small" OnClick="@(() => DownloadFileAttachment(context))" />
+                                        <ButtonDelete EntityType="@CommonDisplayTextFor.File" Size="Size.Small"
+                                                      Style="white-space: nowrap;" OnClick="@(() => DeleteProjectAttachmentFile(context))" />
+                                    }
+                                    else if (context.FileStorageId != Guid.Empty)
+                                    {
+                                        <span style="font-size:small;">@GetProjectAttachmentFileName(context.FileStorageId)</span>
+                                        <ButtonDownload Size="Size.Small" OnClick="@(() => DownloadFileAttachment(context))" />
+                                        <ButtonDelete EntityType="@CommonDisplayTextFor.File" Size="Size.Small"
+                                                      Style="white-space: nowrap;" OnClick="@(() => DeleteProjectAttachmentFile(context))" />
+                                    }
+                                    else
+                                    {
+                                        @("-")
+                                        <ButtonUpload Size="Size.Small" OnClick="@(() => ShowDrawerUploadAttachment(context))" />
+                                    }
+                                </div>
+                            </MudTd>
+                            <MudTd DataLabel="@(CommonDisplayTextFor.Action)" Class="text-center">
+                                <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                                    <ButtonDelete EntityType="Row" Size="Size.Small" OnClick="@(() => DeleteProjectAttachments(context))" />
+                                </MudStack>
+                            </MudTd>
+                        </RowTemplate>
+                    </TableDefault>
+                </MudItem>
+            </MudGrid>
+        </PageSection>
+
+        <PageSection>
+            <MudText Typo="Typo.h4" Class="mb-3">
+                @($"{ProjectReqsDisplayTextFor.ProjectReqlabel}s")
+            </MudText>
+
+            <MudGrid>
+                <MudItem xs="12">
+                    <TopButtonPanel>
+                        <ButtonAdd Size="Size.Small" Style="white-space: nowrap;" EntityType="@(ProjectReqsDisplayTextFor.ProjectReqlabel)"
+                                   OnClick="AddProjectReqs" />
+                    </TopButtonPanel>
+                    <TableDefault Items="@(_model.ProjectReqs)" Loading="@(_isLoading)">
+                        <HeaderContent>
+                            <MudTh Style="width: 20%;">
+                                @(ProjectReqsDisplayTextFor.Name)
+                            </MudTh>
+                            <MudTh Style="width: 50%;">
+                                @(ProjectReqsDisplayTextFor.Desc)
+                            </MudTh>
+                            <MudTh Style="width: 5%;">
+                                @(ProjectReqsDisplayTextFor.IsRequired)
+                            </MudTh>
+                            <MudTh Style="width: 5%;">
+                                @(ProjectReqsDisplayTextFor.SortNo)
+                            </MudTh>
+                            <MudTh Style="width: 20%;" Class="text-center">
+                                @(CommonDisplayTextFor.Action)
+                            </MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="@(ProjectReqsDisplayTextFor.Name)">
+                                <TextFieldAutoGrow Style="font-size:small;" @bind-Value="context.ReqName"
+                                                   For="@(() => context.ReqName)" Required="true"
+                                                   RequiredError="@ErrorMessageFor.FieldIsRequired(ProjectReqsDisplayTextFor.Name)" />
+                            </MudTd>
+                            <MudTd DataLabel="@(ProjectReqsDisplayTextFor.Desc)">
+                                <TextFieldAutoGrow Style="font-size:small;" @bind-Value="context.ReqDesc"
+                                                   For="@(() => context.ReqDesc)" Required="true"
+                                                   RequiredError="@ErrorMessageFor.FieldIsRequired(ProjectReqsDisplayTextFor.Desc)" />
+                            </MudTd>
+                            <MudTd DataLabel="@(ProjectReqsDisplayTextFor.IsRequired)">
+                                <MudCheckBox @bind-Value="context.IsRequired" Size="Size.Large" Color="Color.Primary"></MudCheckBox>
+                            </MudTd>
+                            <MudTd DataLabel="@(ProjectReqsDisplayTextFor.SortNo)">
+                                <NumericFieldDefault Style="font-size:small;" @bind-Value="context.ReqSortNo"
+                                                     For="@(() => context.ReqSortNo)" HideSpinButtons="true" Required="true"
+                                                     RequiredError="@ErrorMessageFor.FieldIsRequired(ProjectReqsDisplayTextFor.SortNo)" />
+                            </MudTd>
+                            <MudTd DataLabel="@(CommonDisplayTextFor.Action)" Class="text-center">
+                                <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                                    <ButtonDelete EntityType="Row" Size="Size.Small" OnClick="@(() => DeleteProjectReqs(context))" />
+                                </MudStack>
+                            </MudTd>
+                        </RowTemplate>
+                    </TableDefault>
+                </MudItem>
+            </MudGrid>
+        </PageSection>
+    </MudForm>
+
+    <BottomButtonPanel>
+        <ButtonReturn OnClick="Cancel" Disabled="@(_isLoading)"></ButtonReturn>
+        <ButtonUpdate OnClick="@(UpdateStageProject)" Disabled="_isLoading" />
+        <ButtonPublish Size="Size.Small" OnClick="@(StagePublish)" Disabled="_isLoading" />
+    </BottomButtonPanel>
+
+    @if (_isDrawerUploadAttachmentOpen)
+    {
+        <DrawerUploadAttachment Name="@(_selectedAttachment?.AttachmentName)" Desc="@(_selectedAttachment?.AttachmentDesc)" @bind-IsOpen="_isDrawerUploadAttachmentOpen" OnFileUploaded="FileUploaded" />
+    }
+}

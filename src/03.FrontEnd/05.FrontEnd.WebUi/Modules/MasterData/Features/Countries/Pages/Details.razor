@@ -2,11 +2,11 @@
 @inherits PageBase
 @attribute [Authorize(Policy = MasterDataPermissions.MasterDataCountriesRead)]
 
-<HtmlHead Title="@_pageTitle" />
-<Breadcrumbs Items="_breadcrumbItems" />
-<PageHeader Title="@_pageTitle" EntityType="@CountriesDisplayTextFor.Country" />
-<LoadingLinear IsVisible="_isLoading" />
-<ErrorViewer Exception="_exception" />
+<HtmlHead Title="@(_pageTitle)" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@(_pageTitle)" EntityType="@CountriesDisplayTextFor.Country" />
+<LoadingLinear IsVisible="@(_isLoading)" />
+<ErrorViewer Exception="@(_exception)" />
 @if (_item is not null)
 {
     <HorizontalTabs>
@@ -21,12 +21,27 @@
             <MudGrid>
                 <MudItem xs="12" sm="6">
                     <FieldDefault Label="@CommonDisplayTextFor.Name">
-                        @_item.Name
+                        @(_item.Name)
                     </FieldDefault>
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <FieldDefault Label="@CommonDisplayTextFor.Code">
                         @_item.Code
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CountriesDisplayTextFor.Region">
+                        @_item.Region
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CountriesDisplayTextFor.PhoneCode">
+                        @_item.PhoneCode
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@CountriesDisplayTextFor.CurrencyCode">
+                        @_item.CurrencyCode
                     </FieldDefault>
                 </MudItem>
                 <MudItem xs="12" sm="6">

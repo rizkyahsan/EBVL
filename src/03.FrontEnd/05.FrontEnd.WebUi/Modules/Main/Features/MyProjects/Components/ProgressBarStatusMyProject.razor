@@ -1,0 +1,28 @@
+﻿<table style="width: 100%;">
+    <tbody>
+        <tr>
+            @foreach (var stage in ListStage)
+            {
+                <th style="width:@Width; text-align:center;">
+                    <MudChip T="string" Size="Size.Large" Color="@GetStageColor(stage.Value)">
+                        @(stage.Value.Name)
+                    </MudChip>
+                </th>
+            }
+
+            <th style="width:@(Width); text-align:center;">
+                <MudChip T="string" Size="Size.Large" Color="@(GetResultColor())">
+                    @(ResultText)
+                </MudChip>
+            </th>
+        </tr>
+    </tbody>
+    <tbody>
+        <tr>
+            <td colspan="@(ColspanProgressBar)">
+                <MudProgressLinear Color="@(GetProgressColor())" Value="@(ProgressPercentage)" Striped="true" Rounded="true"
+                                   Size="Size.Large" Class="my-7" />
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -1,4 +1,5 @@
 using EBVL.BackEnd.Logics.Modules.Examples.Documents.AddDocument;
+using EBVL.Shared.Dto.Common.FileStorages;
 using EBVL.Shared.Dto.Modules.Examples.Documents;
 using EBVL.Shared.Dto.Modules.Examples.Documents.AddDocument;
 using EBVL.Shared.Dto.Modules.Examples.Documents.GetDocument;

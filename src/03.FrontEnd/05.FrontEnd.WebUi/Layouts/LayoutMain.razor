@@ -1,6 +1,7 @@
 @using EBVL.FrontEnd.WebUi.Layouts.Components
 @inherits LayoutBase
 
+<LoadingOverlay IsVisible="@(_isLoading)" />
 <MudThemeProvider Theme="Statics.ThemeFor.Default"
                   @ref="_mudThemeProvider"
                   @bind-IsDarkMode="DisplayInfo.IsDarkMode" />
@@ -24,10 +25,30 @@
             <MudStack Row="true"
                       AlignItems="AlignItems.Center"
                       Spacing="2"
-                      Class="ml-6">
+                      Class="ml-4">
                 <MudText Typo="Typo.h4">
                     @AppConfigFrontEndOptions.Value.AppNickName
                 </MudText>
+            </MudStack>
+            <MudSpacer />
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      Spacing="2"
+                      Class="ml-4">
+                @{
+                    var loginFrom = _user?.Identity?.AuthenticationType;
+                    if (!string.IsNullOrEmpty(loginFrom) && loginFrom == AuthenticationTypeFor.LocalAuthentication)
+                    {
+                        var lender = _user?.GetCompanyName();
+
+                        if (lender != string.Empty)
+                        {
+                            <MudText Typo="Typo.body1">
+                                @($"Welcome, Lender {lender}")
+                            </MudText>
+                        }
+                    }
+                }
             </MudStack>
             <MudSpacer />
             <MudIconButton Color="Color.Inherit"

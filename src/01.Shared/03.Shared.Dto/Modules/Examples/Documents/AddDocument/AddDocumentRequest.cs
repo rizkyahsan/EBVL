@@ -1,3 +1,5 @@
+using EBVL.Shared.Dto.Common.FileStorages;
+
 namespace EBVL.Shared.Dto.Modules.Examples.Documents.AddDocument;
 
 public record AddDocumentRequest

@@ -1,0 +1,7 @@
+﻿@page "/Log"
+@inherits PageBase
+@attribute [Authorize(Policy = LogPermissions.Log)]
+
+<HtmlHead Title="@LogDisplayTextFor.Log" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@LogDisplayTextFor.Log" />

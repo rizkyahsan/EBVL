@@ -3,15 +3,15 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
+using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
+using EBVL.FrontEnd.Services.BackEndApi;
 using Pertamina.Common.Statics;
 using Pertamina.Extensions.Identity;
-using EBVL.FrontEnd.Services.BackEndApi;
 using RestSharp;
 
 namespace EBVL.FrontEnd.Infrastructure.BackEndApi;
 
 public sealed class BackEndApiService(
-    ILogger<BackEndApiService> logger,
     HttpClient httpClient,
     IHttpContextAccessor httpContextAccessor,
     NavigationManager navigationManager)
@@ -74,36 +74,14 @@ public sealed class BackEndApiService(
         return restResponse.Data;
     }
 
-    public async Task SendAnonymousRequestAsync(RestRequest restRequest, CancellationToken cancellationToken = default)
-    {
-        var restResponse = await _restClient.ExecuteAsync(restRequest, cancellationToken);
-
-        if (!restResponse.IsSuccessful)
-        {
-            HandleProblem(restResponse, restRequest);
-        }
-    }
-
-    public async Task<T> SendAnonymousRequestAsync<T>(RestRequest restRequest, CancellationToken cancellationToken = default)
-    {
-        var restResponse = await _restClient.ExecuteAsync<T>(restRequest, cancellationToken);
-
-        if (!restResponse.IsSuccessful)
-        {
-            HandleProblem(restResponse, restRequest);
-        }
-
-        if (restResponse.Data is null)
-        {
-            throw ExceptionFor.JsonDeserializationFailed(restResponse.Content!, typeof(T));
-        }
-
-        return restResponse.Data;
-    }
-
     private async Task<bool> GetExpirationInfoAsync()
     {
-        var expiresAt = await _httpContext.GetTokenAsync("expires_at");
+        var expiresAt = await _httpContext.GetTokenAsync(TokenNameFor.ExpiresAt);
+
+        if (expiresAt is null)
+        {
+            return false;
+        }
 
         if (!DateTimeOffset.TryParse(expiresAt, CultureInfo.InvariantCulture, out var expires))
         {
@@ -115,8 +93,8 @@ public sealed class BackEndApiService(
 
     private async Task AddAuthorizationHeaderAsync(RestRequest restRequest)
     {
-        var tokenType = await _httpContext.GetTokenAsync("token_type");
-        var accessToken = await _httpContext.GetTokenAsync("access_token");
+        var tokenType = await _httpContext.GetTokenAsync(TokenNameFor.TokenType);
+        var accessToken = await _httpContext.GetTokenAsync(TokenNameFor.AccessToken);
 
         if (!string.IsNullOrWhiteSpace(accessToken))
         {
@@ -162,8 +140,6 @@ public sealed class BackEndApiService(
 
         var problemType = problemDetails.Type;
 
-        logger.LogDebug("Problem Type: {ProblemType}", problemType);
-
         if (string.IsNullOrWhiteSpace(problemType))
         {
             throw new InvalidOperationException(problemDetails.Detail);
@@ -172,8 +148,6 @@ public sealed class BackEndApiService(
         var exceptionType = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(x => x.GetTypes())
             .FirstOrDefault(x => x.FullName == problemType && typeof(Exception).IsAssignableFrom(x));
-
-        logger.LogDebug("Exception Type: {ExceptionType}", exceptionType);
 
         if (exceptionType is null || !typeof(Exception).IsAssignableFrom(exceptionType))
         {
@@ -184,9 +158,6 @@ public sealed class BackEndApiService(
             ?? throw new InvalidOperationException(problemDetails.Detail);
 
         var exception = (Exception)exceptionObject;
-
-        logger.LogDebug("The system will throw {ExceptionTypeFullName} with error message: {ErrorMessage}",
-            exception.GetType().FullName, exception.Message);
 
         throw exception;
     }

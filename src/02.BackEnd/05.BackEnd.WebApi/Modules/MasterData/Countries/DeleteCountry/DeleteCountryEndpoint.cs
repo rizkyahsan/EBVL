@@ -19,9 +19,15 @@ public sealed class DeleteCountryEndpoint : IEndpoint
 
     private static async Task<IResult> Handle(
         [FromRoute] Guid countryId,
+        HttpContext context,
         ISender sender,
         CancellationToken cancellationToken)
     {
+        if (!context.User.HasPermission(Permissions.MasterDataCountriesWrite))
+        {
+            //return Results.Forbid();
+        }
+
         var command = new DeleteCountryCommand
         {
             CountryId = countryId

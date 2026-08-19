@@ -2,8 +2,8 @@
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
-        <ErrorViewer Exception="_exception" />
-        <LoadingLinear IsVisible="_isLoading" />
+        <ErrorViewer Exception="@(_exception)" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
         <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue">
             <MudGrid>
                 <MudItem xs="12">

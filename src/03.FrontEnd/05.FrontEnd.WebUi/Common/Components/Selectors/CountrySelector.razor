@@ -1,0 +1,25 @@
+@using EBVL.Shared.Dto.Modules.MasterData.Countries.GetCountries
+@inherits SelectorBase<Guid>
+
+@if (_isLoading)
+{
+    <MudAutocomplete T="CountryItem" Label="@Label" Placeholder="Loading..." Disabled="true" />
+}
+else if (!_items.Any())
+{
+    <MudAlert Severity="Severity.Warning" Dense>
+        @($"No {CountriesDisplayTextFor.Countries} available")
+    </MudAlert>
+}
+else
+{
+    <MudAutocomplete T="CountryItem" Label="@(IsNoLabel ? null : Label)" Value="@SelectedCountry"
+                     ValueChanged="@OnCountryChanged" SearchFunc="@SearchCountries"
+                     ToStringFunc="@(x => x?.Name ?? string.Empty)"
+                     Clearable="true" Dense="true" Variant="Variant.Outlined" Required="@Required"
+                     RequiredError="@RequiredError" ReadOnly="@Readonly">
+        <ItemTemplate Context="item">
+            <MudText>@item.Name</MudText>
+        </ItemTemplate>
+    </MudAutocomplete>
+}

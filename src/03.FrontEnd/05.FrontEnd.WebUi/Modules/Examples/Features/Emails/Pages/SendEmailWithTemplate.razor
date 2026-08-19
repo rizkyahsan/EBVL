@@ -1,10 +1,10 @@
 @page "/Examples/Emails/SendEmailWithTemplate"
 @inherits PageBase
 
-<HtmlHead Title="@_pageTitle" />
-<Breadcrumbs Items="_breadcrumbItems" />
-<PageHeader Title="@_pageTitle" />
-<LoadingLinear IsVisible="_isLoading" />
+<HtmlHead Title="@(_pageTitle)" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@(_pageTitle)" />
+<LoadingLinear IsVisible="@(_isLoading)" />
 <ErrorViewer Exception="_exception" ShowSnackbar="true" />
 <Paper25>
     @if (_model is not null)
@@ -51,6 +51,6 @@
     }
 </Paper25>
 <div class="mt-3">
-    <LoadingLinear IsVisible="_isLoading" />
-    <ErrorViewer Exception="_exception" />
+    <LoadingLinear IsVisible="@(_isLoading)" />
+    <ErrorViewer Exception="@(_exception)" />
 </div>

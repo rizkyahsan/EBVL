@@ -1,0 +1,111 @@
+﻿@page "/Projects/Verify"
+@inherits PageBase
+@attribute [Authorize(Policy = MainPermissions.MainPageProjectVerify)]
+
+<HtmlHead Title="@(_pageTitle)" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@(_pageTitle)" EntityType="@(ProjectStagesDisplayTextFor.ProjectStages)" />
+<ErrorViewer Exception="@(_exception)" />
+<LoadingOverlay IsVisible="@(_isLoading)" />
+
+<PageSection>
+    <MudGrid>
+        <MudItem xs="6">
+            <LenderSelector Label="@(UsersDisplayTextFor.Lender)" Value="@(_selectedLender)" ValueChanged="LenderValueChanged"
+                            ShowAllOption="true" IsAllowNoValue="true" />
+        </MudItem>
+    </MudGrid>
+</PageSection>
+
+<PageSection>
+    <MudGrid>
+        <MudItem xs="12">
+            <TableDefault Items="@(_items)" Loading="@(_isLoading)">
+                <HeaderContent>
+                    <MudTh Style="width: 10%;">
+                        @(CommonDisplayTextFor.No)
+                    </MudTh>
+                    <MudTh Style="width: 60%;">
+                        @(ProjectsDisplayTextFor.Title)
+                    </MudTh>
+                    <MudTh Style="width: 30%;" Class="text-center">
+                        @(CommonDisplayTextFor.Status)
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="@CommonDisplayTextFor.No">
+                        <div style="display:flex; justify-content:flex-end; align-items:center; gap:4px;">
+                            @if (context.ProjectStages.Any())
+                            {
+                                <MudIconButton Icon="@(IsExpanded(context.Id) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                               Size="Size.Small" OnClick="@(() => Toggle(context))" />
+                            }
+                            <span>@(GetRowNumber(context))</span>
+                        </div>
+                    </MudTd>
+                    <MudTd DataLabel="@ProjectsDisplayTextFor.Title">
+                        @(context.Title)
+                    </MudTd>
+                    <MudTd DataLabel="@CommonDisplayTextFor.Status" Class="text-center">
+                        <ChipStatus Value="@(context.StatusName)" StatusCode="@(context.StatusCode)"></ChipStatus>
+                    </MudTd>
+                </RowTemplate>
+                <ChildRowContent Context="detailItem">
+                    @if (IsExpanded(detailItem.Id) && detailItem.ProjectStages.Any())
+                    {
+                        <MudTr>
+                            <td colspan="100">
+                                <MudGrid Style="padding-left: 25px;">
+                                    <MudItem xs="12">
+                                        <TableDefault Items="@(detailItem.ProjectStages)" Loading="@(_isLoading)">
+                                            <HeaderContent>
+                                                <MudTh Style="width: 20%;">
+                                                    @(ProjectStagesDisplayTextFor.Name)
+                                                </MudTh>
+                                                <MudTh Style="width: 30%;">
+                                                    @(ProjectStagesDisplayTextFor.Desc)
+                                                </MudTh>
+                                                <MudTh Style="width: 20%;">
+                                                    @(ProjectStagesDisplayTextFor.DueDate)
+                                                </MudTh>
+                                                <MudTh Style="width: 10%;" Class="text-center">
+                                                    @(CommonDisplayTextFor.Status)
+                                                </MudTh>
+                                                <MudTh Style="width: 20%;" Class="text-center">
+                                                    @(CommonDisplayTextFor.Action)
+                                                </MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate>
+                                                <MudTd DataLabel="@(ProjectStagesDisplayTextFor.Name)">
+                                                    @(context.Name)
+                                                </MudTd>
+                                                <MudTd DataLabel="@(ProjectStagesDisplayTextFor.Desc)">
+                                                    @(context.Desc)
+                                                </MudTd>
+                                                <MudTd DataLabel="@(ProjectStagesDisplayTextFor.DueDate)">
+                                                    @($"{context.DueDate:dd-MMM-yyyy HH:mm:ss} WIB (GMT+7)")
+                                                </MudTd>
+                                                <MudTd DataLabel="@(CommonDisplayTextFor.Status)" Class="text-center">
+                                                    <ChipStatus Value="@(context.StatusName)" StatusCode="@(context.StatusCode)"></ChipStatus>
+                                                </MudTd>
+                                                <MudTd DataLabel="@(CommonDisplayTextFor.Action)" Class="text-center">
+                                                    <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                                                        <ButtonVerify EntityType="Stage" Size="Size.Small" OnClick="@(() => StageVerify(context))" />
+                                                    </MudStack>
+                                                </MudTd>
+                                            </RowTemplate>
+                                        </TableDefault>
+                                    </MudItem>
+                                </MudGrid>
+                            </td>
+                        </MudTr>
+                    }
+                </ChildRowContent>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </TableDefault>
+        </MudItem>
+    </MudGrid>
+</PageSection>
+

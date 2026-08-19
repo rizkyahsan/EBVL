@@ -1,0 +1,15 @@
+@inherits DialogBase
+
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
+    <DialogContent>
+        <ErrorViewer Exception="@(_exception)" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
+        <MudText>
+            Are you sure you want to delete the @LendersDisplayTextFor.Name <b>@Model.LenderName</b>?
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <ButtonNo OnClick="Cancel" />
+        <ButtonYes OnClick="Submit" Disabled="_isLoading" />
+    </DialogActions>
+</MudDialog>

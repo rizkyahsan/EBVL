@@ -1,5 +1,5 @@
 using EBVL.FrontEnd.Logics.Modules.Examples.Documents.AddDocument;
-using EBVL.Shared.Dto.Modules.Examples.Documents.AddDocument;
+using EBVL.Shared.Dto.Common.FileStorages;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Examples.Features.Documents.Components;
 

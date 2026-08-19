@@ -1,9 +1,10 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Pertamina.Common.Statics;
 using Pertamina.Extensions.Identity;
 using Pertamina.Extensions.Identity.Statics;
@@ -11,69 +12,11 @@ using Pertamina.Services.IdAMan.Statics;
 using Pertamina.Services.PersonalRoles;
 using Pertamina.Services.PositionRoles;
 using Pertamina.Services.UserPositions;
-using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
-using EBVL.FrontEnd.Services.BackEndApi;
-using EBVL.Shared.Dto.Modules.Administration.VendorRegistrations.AuthenticateVendor;
-using RestSharp;
 
 namespace EBVL.FrontEnd.Infrastructure.Authentication;
 
 public static class AuthenticationHandlers
 {
-    public static async Task<IResult> LocalLoginHandler(
-        [FromForm] string emailAddress,
-        [FromForm] string password,
-        [FromForm] bool? rememberMe,
-        [FromForm] string? returnUrl,
-        HttpContext httpContext,
-        IBackEndApiService backEndApiService,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var request = new AuthenticateVendorRequest
-            {
-                EmailAddress = emailAddress,
-                Password = password
-            };
-            var restRequest = new RestRequest(AuthenticateVendorRoute.ResourceUri, Method.Post).AddJsonBody(request);
-            var vendor = await backEndApiService.SendAnonymousRequestAsync<AuthenticateVendorResponse>(restRequest, cancellationToken);
-
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, vendor.VendorAccountId.ToString()),
-                new Claim(ClaimTypes.Name, vendor.CompanyName),
-                new Claim(ClaimTypes.Email, vendor.EmailAddress),
-                new Claim(ClaimTypes.Role, "Vendor"),
-                new Claim(ClaimTypes.AuthenticationMethod, "LocalAccount"),
-                new Claim("VendorRegistrationId", vendor.VendorRegistrationId.ToString()),
-                new Claim("SapVendorNumber", vendor.SapVendorNumber),
-                new Claim("VendorRegistrationStatus", vendor.Status.ToString())
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var properties = new AuthenticationProperties
-            {
-                IsPersistent = rememberMe is true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddHours(rememberMe is true ? 12 : 2)
-            };
-            await httpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(identity),
-                properties);
-
-            var redirect = string.IsNullOrWhiteSpace(returnUrl) || !Uri.IsWellFormedUriString(returnUrl, UriKind.Relative)
-                ? "/Vendor/Registration/Summary"
-                : returnUrl;
-            return Results.LocalRedirect(redirect);
-        }
-        catch
-        {
-            var encodedEmail = Uri.EscapeDataString(emailAddress);
-            return Results.LocalRedirect($"/Vendor/Login?error=invalid&email={encodedEmail}");
-        }
-    }
-
     public static ChallengeHttpResult LoginHandler(string pathBase, string? returnUrl)
     {
         var authenticationProperties = GenerateAuthenticationProperties(pathBase, returnUrl);
@@ -81,14 +24,35 @@ public static class AuthenticationHandlers
         return TypedResults.Challenge(authenticationProperties, [OpenIdConnectDefaults.AuthenticationScheme]);
     }
 
-    public static SignOutHttpResult LogoutHandler(string pathBase, string? returnUrl, HttpContext httpContext)
+    public static SignOutHttpResult LogoutHandler(string pathBase, string? returnUrl, IHttpContextAccessor httpContextAccessor)
     {
+        if (httpContextAccessor.HttpContext is null)
+        {
+            return TypedResults.SignOut();
+        }
+
+        if (httpContextAccessor.HttpContext.User.Identity is not ClaimsIdentity currentIdentity)
+        {
+            return TypedResults.SignOut();
+        }
+
         var authenticationProperties = GenerateAuthenticationProperties(pathBase, returnUrl);
 
-        var isLocalAccount = httpContext.User.FindFirstValue(ClaimTypes.AuthenticationMethod) == "LocalAccount";
-        var authenticationSchemes = isLocalAccount
-            ? [CookieAuthenticationDefaults.AuthenticationScheme]
-            : new[] { CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme };
+        if (currentIdentity.AuthenticationType is AuthenticationTypeFor.LocalAuthentication)
+        {
+            var localAuthenticationSchemes = new[]
+            {
+                CookieAuthenticationDefaults.AuthenticationScheme
+            };
+
+            return TypedResults.SignOut(authenticationProperties, localAuthenticationSchemes);
+        }
+
+        var authenticationSchemes = new[]
+        {
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            OpenIdConnectDefaults.AuthenticationScheme
+        };
 
         return TypedResults.SignOut(authenticationProperties, authenticationSchemes);
     }
@@ -133,6 +97,76 @@ public static class AuthenticationHandlers
             return TypedResults.Redirect("");
         }
 
+        return TypedResults.Redirect(returnUrl);
+    }
+
+    public static async Task<RedirectHttpResult> LocalLoginHandler(string sessionId, string? returnUrl, IHttpContextAccessor httpContextAccessor)
+    {
+        if (httpContextAccessor.HttpContext is null)
+        {
+            return TypedResults.Redirect(RouteFor.Landing);
+        }
+
+        #region Verification
+        var httpContext = httpContextAccessor.HttpContext;
+        var userToken = UserTokenStore.GetSession(new Guid(sessionId));
+        if (userToken is null)
+        {
+            return TypedResults.Redirect(RouteFor.Landing);
+        }
+
+        var currentIp = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var currentUserAgent = httpContext.Request.Headers.UserAgent.ToString();
+        UserTokenStore.RemoveSession(new Guid(sessionId));
+        if (userToken.IpAddress != currentIp)
+        {
+            return TypedResults.Redirect(RouteFor.Landing);
+        }
+
+        if (userToken.UserAgent != currentUserAgent)
+        {
+            return TypedResults.Redirect(RouteFor.Landing);
+        }
+        #endregion
+
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.ReadJwtToken(userToken.UserToken);
+        var authenticationTime = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
+        var displayName = token.Claims.FirstOrDefault(x => x.Type is JwtRegisteredClaimNames.Name)?.Value ?? "Local User";
+        var email = token.Claims.FirstOrDefault(x => x.Type is JwtRegisteredClaimNames.Email)?.Value ?? "No Email Address";
+        var role = token.Claims.FirstOrDefault(x => x.Type is "role")?.Value ?? "No Role Assign";
+        var lender = token.Claims.FirstOrDefault(x => x.Type is ClaimTypeFor.CompanyName)?.Value ?? "No Lender Assign";
+        var photoUrl = "img/local-user.png";
+
+        var identity = new ClaimsIdentity(token.Claims, AuthenticationTypeFor.LocalAuthentication);
+        identity.AddClaim(new Claim(JwtRegisteredClaimNames.AuthTime, authenticationTime));
+        identity.AddClaim(new Claim(ClaimTypeFor.DisplayName, displayName));
+        identity.AddClaim(new Claim(ClaimTypes.Email, email));
+        identity.AddClaim(new Claim(ClaimTypeFor.PhotoUrl, photoUrl));
+        identity.AddClaim(new Claim(ClaimTypes.Role, role));
+        identity.AddClaim(new Claim(ClaimTypeFor.CompanyName, lender));
+
+        var authenticationProperties = await GetAuthenticationProperties(httpContextAccessor.HttpContext);
+
+        var tokens = new List<AuthenticationToken>
+        {
+            new() { Name = TokenNameFor.TokenType, Value = "Bearer" },
+            new() { Name = TokenNameFor.AccessToken, Value = userToken.UserToken },
+            new() { Name = TokenNameFor.ExpiresAt, Value = DateTimeOffset.Now.AddDays(1).ToString("o") }
+        };
+
+        authenticationProperties.StoreTokens(tokens);
+
+        var claimsPrincipal = new ClaimsPrincipal(identity);
+
+        await httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authenticationProperties);
+
+        //if (string.IsNullOrWhiteSpace(returnUrl))
+        //{
+        //    return TypedResults.Redirect("/");
+        //}
+
+        returnUrl = "/MyProjects";
         return TypedResults.Redirect(returnUrl);
     }
 

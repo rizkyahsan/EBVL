@@ -13,6 +13,6 @@
     <InformationalVersion>1.0.3</InformationalVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Pertamina.Common.Attributes" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Common.Attributes" Version="1.0.4" />
   </ItemGroup>
 </Project>

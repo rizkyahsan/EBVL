@@ -1,0 +1,349 @@
+@page "/Projects/StageVerify/{Id:guid}"
+@inherits PageBase
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.Projects.Components
+@using EBVL.Shared.Statics.Statuses
+@attribute [Authorize(Policy = MainPermissions.MainPageProjectVerify)]
+
+<HtmlHead Title="@(_pageTitle)" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@(_pageTitle)" EntityType="@ProjectStagesDisplayTextFor.ProjectStage" />
+<LoadingOverlay IsVisible="@(_isLoading)" />
+<ErrorViewer Exception="@(_exception)" />
+
+
+@if (_item is not null)
+{
+    <PageSection>
+        <ProgressBarStatusProjectStage StatusCode="@(_item.StatusCode)"></ProgressBarStatusProjectStage>
+    </PageSection>
+
+    <PageSection>
+        <MudText Typo="Typo.h4" Class="mb-3">
+            @($"{ProjectsDisplayTextFor.Project} Info")
+        </MudText>
+
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@ProjectsDisplayTextFor.Title">
+                    @(_item.ProjectTitle)
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@ProjectsDisplayTextFor.Desc">
+                    @(_item.ProjectDesc)
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@ProjectsDisplayTextFor.Objective">
+                    @(_item.ProjectObjective)
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@ProjectsDisplayTextFor.FinanceType">
+                    @(_item.ProjectFinanceType)
+                </FieldDefault>
+            </MudItem>
+        </MudGrid>
+    </PageSection>
+
+    <PageSection>
+        <MudText Typo="Typo.h4" Class="mb-3">
+            @($"{ProjectStagesDisplayTextFor.Stage} Detail")
+        </MudText>
+
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@ProjectStagesDisplayTextFor.Name">
+                    @(_item.Name)
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@ProjectStagesDisplayTextFor.DueDate">
+                    @($"{_item.DueDate:dd-MMM-yyyy HH:mm:ss} WIB (GMT+7)")
+                </FieldDefault>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <FieldDefault Label="@ProjectStagesDisplayTextFor.Desc">
+                    @(_item.Desc)
+                </FieldDefault>
+            </MudItem>
+            @if (_item.StatusCode is CodeFor.ProjectStageOnProgress or CodeFor.ProjectStageOnReview)
+            {
+                <MudItem xs="12" sm="6">
+                    <FieldDefault Label="@ProjectStagesDisplayTextFor.TimesReminder">
+                        <Countdown DueDate=@(_item.DueDate)></Countdown>
+                    </FieldDefault>
+                </MudItem>
+            }
+        </MudGrid>
+    </PageSection>
+
+    <PageSection>
+        <MudText Typo="Typo.h4" Class="mb-3">
+            @($"{ProjectLendersDisplayTextFor.ProjectLenderLabel}")
+        </MudText>
+
+        <MudGrid>
+            <MudItem xs="12">
+                <TableDefault Items="@(_item.ProjectLenderReqs)" Loading="@(_isLoading)">
+                    <HeaderContent>
+                        <MudTh Style="width: 10%;">
+                            @(CommonDisplayTextFor.No)
+                        </MudTh>
+                        <MudTh Style="width: 40%;">
+                            @(ProjectLendersDisplayTextFor.Name)
+                        </MudTh>
+                        <MudTh Style="width: 20%;" Class="text-center">
+                            @(CommonDisplayTextFor.Status)
+                        </MudTh>
+                        <MudTh Style="width: 30%;" Class="text-center">
+                            @(CommonDisplayTextFor.Action)
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="@CommonDisplayTextFor.No">
+                            <div style="display:flex; justify-content:flex-end; align-items:center; gap:4px;">
+                                @if (context.ProjectReqItems.Any())
+                                {
+                                    <MudIconButton Icon="@(IsExpanded(context.Id) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                                   Size="Size.Small" OnClick="@(() => Toggle(context))" />
+                                }
+                                <span>@(GetRowNumber(context))</span>
+                            </div>
+                        </MudTd>
+                        <MudTd DataLabel="@ProjectStagesDisplayTextFor.Name">
+                            @(context.ProjectLenderName)
+                        </MudTd>
+                        <MudTd DataLabel="@CommonDisplayTextFor.Status" Class="text-center">
+                            <ChipStatus Value="@context.StatusName" StatusCode="@context.StatusCode"></ChipStatus>
+                        </MudTd>
+                        <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+                            <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                                @if (_item.StatusCode == StatusesCodeFor.ProjectStageOnProgress
+                                    && context.StatusCode == StatusesCodeFor.ProjectLenderReqSubmit)
+                                {
+                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.AssignmentReturn" Color="Color.Warning"
+                                               Size="Size.Small" OnClick="@(() => ShowDrawerRevision(context))">
+                                        @($"Revision")
+                                    </MudButton>
+                                    <ButtonView EntityType="@(CommonDisplayTextFor.Notes)" Style="white-space: nowrap;" Size="Size.Small"
+                                                OnClick="@(() => ShowDrawerProjectLenderHistories(context))"></ButtonView>
+                                }
+                                else if (_item.StatusCode == StatusesCodeFor.ProjectStageOnReview)
+                                {
+                                    <ButtonView EntityType="@(CommonDisplayTextFor.Notes)" Style="white-space: nowrap;" Size="Size.Small"
+                                                OnClick="@(() => ShowDrawerProjectLenderHistories(context))"></ButtonView>
+                                    @if (context.StatusCode == StatusesCodeFor.ProjectLenderReqSubmit
+                                    || context.StatusCode == StatusesCodeFor.ProjectLenderReqRevision)
+                                    {
+                                        @if (context.ProjectLenderStatusCode != StatusesCodeFor.ProjectLenderReqReject)
+                                        {
+                                            <ButtonApprove Size="Size.Small" OnClick="@(() => Approve(context))" />
+                                        }
+                                    }
+                                    @if (context.StatusCode == StatusesCodeFor.ProjectLenderReqSubmit
+                                    || context.StatusCode == StatusesCodeFor.ProjectLenderReqAccept)
+                                    {
+                                        <ButtonReject Size="Size.Small" OnClick="@(() => Reject(context))" />
+                                    }
+                                }
+                            </MudStack>
+                        </MudTd>
+                    </RowTemplate>
+                    <ChildRowContent Context="detailItem">
+                        @if (IsExpanded(detailItem.Id) && detailItem.ProjectReqItems.Any())
+                        {
+                            <MudTr>
+                                <td colspan="100">
+                                    <MudGrid Style="padding-left: 25px;">
+                                        <MudItem xs="12">
+                                            @if (_item.Level > 0)
+                                            {
+                                                <TableDefault Items="@(detailItem.ProjectReqItems)" Loading="@(_isLoading)">
+                                                    <HeaderContent>
+                                                        <MudTh Style="width: 30%;">
+                                                            @(ProjectStagesDisplayTextFor.Name)
+                                                        </MudTh>
+                                                        <MudTh Style="width: 35%;">
+                                                            @(ProjectStagesDisplayTextFor.Desc)
+                                                        </MudTh>
+                                                        <MudTh Style="width: 5%;">
+                                                            @(ProjectReqsDisplayTextFor.IsRequired)
+                                                        </MudTh>
+                                                        <MudTh Style="width: 30%;" Class="text-center">
+                                                            @(ProjectAttachmentsDisplayTextFor.File)
+                                                        </MudTh>
+                                                    </HeaderContent>
+                                                    <RowTemplate>
+                                                        <MudTd DataLabel="@ProjectStagesDisplayTextFor.Name">
+                                                            <TextFieldAutoGrow Style="font-size:small;" @bind-Value="context.Name" ReadOnly="true" />
+                                                        </MudTd>
+                                                        <MudTd DataLabel="@ProjectStagesDisplayTextFor.Desc">
+                                                            <TextFieldAutoGrow Style="font-size:small;" @bind-Value="context.Desc" ReadOnly="true" />
+                                                        </MudTd>
+                                                        <MudTd DataLabel="@ProjectReqsDisplayTextFor.IsRequired">
+                                                            <MudCheckBox @bind-Value="context.IsRequired" Size="Size.Large" Color="Color.Primary" ReadOnly="true"></MudCheckBox>
+                                                        </MudTd>
+                                                        <MudTd>
+                                                            <div class="d-flex flex-column align-center gap-2">
+                                                                @{
+                                                                    var data = GetFiles(detailItem.ProjectLenderId, context.Id).FirstOrDefault();
+                                                                    if (data is not null)
+                                                                    {
+                                                                        if (data.FileStorageId != Guid.Empty)
+                                                                        {
+                                                                            <span style="font-size:small;">@data.FileStorageName</span>
+                                                                            <ButtonDownload Size="Size.Small" OnClick="@(() => DownloadFileReq(data))" />
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            @("-")
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        @("-")
+                                                                    }
+                                                                }
+                                                            </div>
+                                                        </MudTd>
+                                                    </RowTemplate>
+                                                </TableDefault>
+                                            }
+                                            else
+                                            {
+                                                <TableDefault Items="@(detailItem.ProjectReqItems)" Loading="@(_isLoading)">
+                                                    <HeaderContent>
+                                                        <MudTh Style="width: 30%;">
+                                                            @(ProjectStagesDisplayTextFor.Name)
+                                                        </MudTh>
+                                                        <MudTh Style="width: 55%;">
+                                                            @(ProjectStagesDisplayTextFor.Desc)
+                                                        </MudTh>
+                                                        <MudTh Style="width: 5%;">
+                                                            @(ProjectReqsDisplayTextFor.IsRequired)
+                                                        </MudTh>
+                                                        <MudTh Style="width:10%">
+                                                            @(CommonDisplayTextFor.Status)
+                                                        </MudTh>
+                                                    </HeaderContent>
+                                                    <RowTemplate>
+                                                        <MudTd DataLabel="@(ProjectStagesDisplayTextFor.Name)">
+                                                            <div style="display:flex; justify-content:flex-end; align-items:center; gap:4px;">
+                                                                @if (context.ProjectLenderReqFiles.Any()
+                                                                && (detailItem.StatusCode == StatusesCodeFor.ProjectLenderReqSubmit
+                                                                || detailItem.StatusCode == StatusesCodeFor.ProjectLenderReqAccept
+                                                                || detailItem.StatusCode == StatusesCodeFor.ProjectLenderReqReject))
+                                                                {
+                                                                    <MudIconButton Icon="@(IsExpanded2(context.Id) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                                                                   Size="Size.Small" OnClick="@(() => Toggle2(context))" />
+                                                                }
+                                                                <div class="flex-grow-1">
+                                                                    <TextFieldAutoGrow Style="font-size:small;" @bind-Value="context.Name" ReadOnly="true" />
+                                                                </div>
+                                                            </div>
+                                                        </MudTd>
+                                                        <MudTd DataLabel="@(ProjectStagesDisplayTextFor.Desc)">
+                                                            <TextFieldAutoGrow Style="font-size:small;" @bind-Value="context.Desc" ReadOnly="true" />
+                                                        </MudTd>
+                                                        <MudTd DataLabel="@(ProjectReqsDisplayTextFor.IsRequired)">
+                                                            <MudCheckBox @bind-Value="context.IsRequired" Size="Size.Large" Color="Color.Primary" ReadOnly="true"></MudCheckBox>
+                                                        </MudTd>
+                                                        <MudTd>
+                                                            @if (context.ProjectLenderReqFiles.Any())
+                                                            {
+                                                                <MudChip T="string" Color="Color.Success" Size="Size.Small">
+                                                                    @(CommonDisplayTextFor.Uploaded)
+                                                                </MudChip>
+                                                            }
+                                                            else if (context.IsRequired)
+                                                            {
+                                                                <MudChip T="string" Color="Color.Error" Size="Size.Small">
+                                                                    @($"Required")
+                                                                </MudChip>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudChip T="string" Color="Color.Default" Size="Size.Small">
+                                                                    @($"Optional")
+                                                                </MudChip>
+                                                            }
+                                                        </MudTd>
+                                                    </RowTemplate>
+                                                    <ChildRowContent Context="detailItem2">
+                                                        @if (IsExpanded2(detailItem2.Id) && detailItem2.ProjectLenderReqFiles.Any())
+                                                        {
+                                                            <MudTr>
+                                                                <td colspan="100">
+                                                                    <MudGrid Style="padding-left: 25px;">
+                                                                        <MudItem xs="12">
+                                                                            <TableDefault Items="@(detailItem2.ProjectLenderReqFiles)" Loading="@(_isLoading)">
+                                                                                <HeaderContent>
+                                                                                    <MudTh Style="width: 70%;">
+                                                                                        @(ProjectLenderReqFilesDisplayTextFor.FileName)
+                                                                                    </MudTh>
+                                                                                    <MudTh Style="width: 30%;" Class="text-center">
+                                                                                        @(CommonDisplayTextFor.Action)
+                                                                                    </MudTh>
+                                                                                </HeaderContent>
+                                                                                <RowTemplate>
+                                                                                    <MudTd DataLabel="@ProjectLenderReqFilesDisplayTextFor.FileName">
+                                                                                        @(context.FileStorageName)
+                                                                                    </MudTd>
+                                                                                    <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="text-center">
+                                                                                        <MudStack Row="true" Style="width:100%;" Justify="Justify.Center" AlignItems="AlignItems.Center" Spacing="1">
+                                                                                            <ButtonDownload Size="Size.Small" OnClick="@(() => DownloadFileReq(context))" />
+                                                                                        </MudStack>
+                                                                                    </MudTd>
+                                                                                </RowTemplate>
+                                                                            </TableDefault>
+                                                                        </MudItem>
+                                                                    </MudGrid>
+                                                                </td>
+                                                            </MudTr>
+                                                        }
+                                                    </ChildRowContent>
+                                                </TableDefault>
+                                            }
+                                        </MudItem>
+                                    </MudGrid>
+                                </td>
+                            </MudTr>
+                        }
+                    </ChildRowContent>
+                </TableDefault>
+            </MudItem>
+        </MudGrid>
+    </PageSection>
+
+    <BottomButtonPanel>
+        <ButtonReturn OnClick="Cancel" Disabled="@(_isLoading)"></ButtonReturn>
+        @if (_item.StatusCode == StatusesCodeFor.ProjectStageOnProgress)
+        {
+            <MudButton Disabled="@(_isLoading || !CanReview)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.RateReview"
+                       Style="white-space: nowrap;" Color="Color.Success" OnClick="@(StageReview)">
+                Review Stage
+            </MudButton>
+        }
+        else if (_item.StatusCode == StatusesCodeFor.ProjectStageOnReview)
+        {
+
+            <MudButton Disabled="@(_isLoading || !CanComplete)" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.DoneAll"
+                       Style="white-space: nowrap;" Color="Color.Success" OnClick="StageComplete">
+                Complete Stage
+            </MudButton>
+        }
+    </BottomButtonPanel>
+
+    @if (_isDrawerRevisionOpen)
+    {
+        <DrawerRevision StageName="@(_item.Name)" LenderName="@(_selectedLender)" @bind-IsOpen="_isDrawerRevisionOpen"
+                        Model="@(_modelRevision)" OnRevision="LoadItem" />
+    }
+
+    @if (_isDrawerProjectLenderHistoriesOpen)
+    {
+        <DrawerProjectLenderHistories LenderEmails="@(_selectedLenderEmails)" ProjectLenderHistories="@(_selectedProjectLenderHistories)"
+                                      @bind-IsOpen="_isDrawerProjectLenderHistoriesOpen" />
+    }
+}

@@ -2,7 +2,7 @@
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
-        <ErrorViewer Exception="_exception" />
+        <ErrorViewer Exception="@(_exception)" />
         <MudGrid>
             <MudItem xs="12">
                 <TextFieldDefault Label="@CommonDisplayTextFor.Description"

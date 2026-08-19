@@ -10,6 +10,9 @@ public sealed record CountryItem
 
     public required string Name { get; init; }
     public required string Code { get; init; }
+    public required string PhoneCode { get; init; }
+    public required string CurrencyCode { get; init; }
+    public string Region { get; init; } = string.Empty;
 
     public required IEnumerable<AuditItem> Audits { get; init; }
 }

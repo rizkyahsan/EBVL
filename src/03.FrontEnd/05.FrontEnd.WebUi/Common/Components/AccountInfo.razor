@@ -41,42 +41,56 @@
                                 @context.User.GetUsername()
                             </MudText>
                             <MudText Typo="Typo.body2" Class="gray-text text-darken-2">
-                                @context.User.GetEmployeeId()
+                                @{
+                                    var lender = context.User.GetCompanyName();
+
+                                    if (lender != string.Empty)
+                                    {
+                                        <span>@lender</span>
+                                    }
+                                }
                             </MudText>
                             <MudChip T="string"
                                      Variant="Variant.Text"
                                      Color="Color.Primary"
                                      Size="Size.Small">
                                 @{
-                                    var positionName = context.User.GetPositionName();
+                                    var roleNames = string.Join(", ", context.User.GetRoles().ToList());
 
-                                    if (string.IsNullOrWhiteSpace(positionName))
+                                    if (roleNames == string.Empty)
                                     {
                                         <span>@CommonDefaultValueFor.NotAvailable</span>
                                     }
                                     else
                                     {
-                                        <span>@positionName</span>
+                                        <span>@roleNames</span>
                                     }
                                 }
                             </MudChip>
                         </MudStack>
-                        <MudDivider Class="flex-grow-0" />
-                        <MudList T="string" Dense="true">
-                            <MudListItem Icon="@Icons.Material.Filled.Badge"
-                                         Text="@MainDisplayTextFor.MySession"
-                                         SecondaryText="@($"{CommonDisplayTextFor.View} {MainDisplayTextFor.MySession.ToLower()}")"
-                                         Href="@MainRouteFor.MySession"
-                                         OnClick="GoToMyProfile" />
-                            <MudListItem Icon="@Icons.Material.Filled.SwitchAccount"
-                                         Text="@($"Switch {CommonDisplayTextFor.Position}")"
-                                         SecondaryText="@($"Switch to your other {CommonDisplayTextFor.Position.ToLower()}")"
-                                         OnClick="ShowDialogSwitchPosition" />
-                            <MudListItem Icon="@Icons.Material.Filled.Login"
-                                         Href="@_loginRoute"
-                                         Text="Relogin"
-                                         SecondaryText="@($"{CommonDisplayTextFor.Login} again to {CommonDisplayTextFor.IdAMan}")" />
-                        </MudList>
+                        @{
+                            var loginFrom = context.User.Identity?.AuthenticationType;
+
+                            if (!string.IsNullOrEmpty(loginFrom) && loginFrom != AuthenticationTypeFor.LocalAuthentication)
+                            {
+                                <MudDivider Class="flex-grow-0" />
+                                <MudList T="string" Dense="true">
+                                    <MudListItem Icon="@Icons.Material.Filled.Badge"
+                                                 Text="@MainDisplayTextFor.MySession"
+                                                 SecondaryText="@($"{CommonDisplayTextFor.View} {MainDisplayTextFor.MySession.ToLower()}")"
+                                                 Href="@MainRouteFor.MySession"
+                                                 OnClick="GoToMyProfile" />
+                                    <MudListItem Icon="@Icons.Material.Filled.SwitchAccount"
+                                                 Text="@($"Switch {CommonDisplayTextFor.Position}")"
+                                                 SecondaryText="@($"Switch to your other {CommonDisplayTextFor.Position.ToLower()}")"
+                                                 OnClick="ShowDialogSwitchPosition" />
+                                    <MudListItem Icon="@Icons.Material.Filled.Login"
+                                                 Href="@_loginRoute"
+                                                 Text="Relogin"
+                                                 SecondaryText="@($"{CommonDisplayTextFor.Login} again to {CommonDisplayTextFor.IdAMan}")" />
+                                </MudList>
+                            }
+                        }
                         <MudSpacer />
                         <div class="pa-4">
                             <ButtonLogout Size="Size.Large"

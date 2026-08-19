@@ -1,0 +1,61 @@
+﻿@inherits DrawerBase
+
+<MudDrawer Variant="DrawerVariant.Temporary"
+           Anchor="Anchor.Right"
+           Width="500px"
+           OverlayAutoClose="false"
+           @bind-Open="IsOpen">
+    <MudDrawerHeader>
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center"
+                  Class="mud-width-full">
+            <MudText Typo="Typo.h3">
+                @CommonDisplayTextFor.Upload @ProjectReqsDisplayTextFor.ProjectReq
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDrawer" />
+        </MudStack>
+    </MudDrawerHeader>
+    <div class="pa-5">
+        @if (ProjectLenderHistories.Count == 0)
+        {
+            <MudAlert Severity="Severity.Info">
+                No history available.
+            </MudAlert>
+        }
+        else
+        {
+            <MudStack Spacing="2">
+                @foreach (var history in OrderedHistories)
+                {
+                    var isLender = IsLenderUser(history);
+                    var style = $"max-width:80%; background-color:{(isLender ? "#212121" : "#0e4727")}";
+
+                    <div class="d-flex @(isLender ? "justify-start" : "justify-end")">
+                        <MudPaper Elevation="1" Class="pa-3" Style="@(style)">
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.caption" Color="Color.Info">
+                                    @history.CreatedBy
+                                </MudText>
+                                <MudText Typo="Typo.body1">
+                                    <span style="color:white !important;">
+                                        @history.Remarks
+                                    </span>
+                                </MudText>
+                                <MudText Typo="Typo.caption" Align="Align.End">
+                                    <span style="color:white !important;">
+                                        @history.Created.ToString("dd MMM yyyy HH:mm")
+                                    </span>
+                                </MudText>
+                            </MudStack>
+                        </MudPaper>
+                    </div>
+                }
+            </MudStack>
+        }
+
+        <BottomButtonPanel>
+            <ButtonCancel OnClick="CloseDrawer" />
+        </BottomButtonPanel>
+    </div>
+</MudDrawer>

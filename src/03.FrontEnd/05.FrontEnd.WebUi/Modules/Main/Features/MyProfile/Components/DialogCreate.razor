@@ -2,8 +2,8 @@
 
 <MudDialog>
     <DialogContent>
-        <LoadingLinear IsVisible="_isLoading" />
-        <ErrorViewer Exception="_exception" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
+        <ErrorViewer Exception="@(_exception)" />
         <FieldDefault>
             <MudCheckBox @bind-Value="_confirm" Label="@_labelConfirm" />
         </FieldDefault>

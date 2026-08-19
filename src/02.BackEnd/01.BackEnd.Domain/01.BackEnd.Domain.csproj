@@ -16,6 +16,6 @@
     <ProjectReference Include="..\..\01.Shared\01.Shared.Enums\01.Shared.Enums.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pertamina.Common.Domain" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Common.Domain" Version="1.0.4" />
   </ItemGroup>
 </Project>

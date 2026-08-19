@@ -54,6 +54,7 @@ public partial class Details
         catch (Exception exception)
         {
             _exception = exception;
+            Snackbar.AddErrors(_exception.GetAllErrorMessages());
         }
         finally
         {

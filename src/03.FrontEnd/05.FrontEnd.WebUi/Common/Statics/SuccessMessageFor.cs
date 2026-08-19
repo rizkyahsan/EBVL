@@ -37,6 +37,16 @@ public static class SuccessMessageFor
         return Action(entityType, entityName, CommonDisplayTextFor.Created);
     }
 
+    public static string Submitted(string entityType, string entityName)
+    {
+        return Action(entityType, entityName, CommonDisplayTextFor.Submitted);
+    }
+
+    public static string Submitted(string entityName)
+    {
+        return Action(entityName, CommonDisplayTextFor.Submitted);
+    }
+
     public static string Updated(string entityType, string entityName)
     {
         return Action(entityType, entityName, CommonDisplayTextFor.Updated);

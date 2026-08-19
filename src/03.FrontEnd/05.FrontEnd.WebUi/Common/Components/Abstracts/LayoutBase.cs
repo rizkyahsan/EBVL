@@ -19,7 +19,14 @@ public abstract class LayoutBase : LayoutComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        _storedPreferences = await PreferencesService.GetPreferencesAsync();
+        try
+        {
+            _storedPreferences = await PreferencesService.GetPreferencesAsync();
+        }
+        catch
+        {
+            _storedPreferences = new StoredPreferences();
+        }
 
         DisplayInfo.IsDarkMode = _storedPreferences.IsDarkMode;
     }

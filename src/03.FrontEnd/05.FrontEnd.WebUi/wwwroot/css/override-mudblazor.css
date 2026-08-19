@@ -49,3 +49,8 @@
 {
     border-bottom-style: dashed !important;
 }
+
+.mud-table-body .mud-table-row .mud-table-cell {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}

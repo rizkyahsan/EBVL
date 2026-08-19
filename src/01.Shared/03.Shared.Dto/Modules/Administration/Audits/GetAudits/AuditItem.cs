@@ -1,3 +1,5 @@
+using EBVL.Shared.Enums;
+
 namespace EBVL.Shared.Dto.Modules.Administration.Audits.GetAudits;
 
 public sealed record AuditItem

@@ -17,8 +17,8 @@
         </MudStack>
     </MudDrawerHeader>
     <div class="pa-5">
-        <ErrorViewer Exception="_exception" />
-        <LoadingLinear IsVisible="_isLoading" />
+        <ErrorViewer Exception="@(_exception)" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
         <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue">
             <MudGrid>
                 <MudItem xs="12">
@@ -34,6 +34,25 @@
                                       For="@(() => _model.Name)"
                                       Required="true"
                                       RequiredError="@ErrorMessageFor.FieldIsRequired(CommonDisplayTextFor.Name)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@CountriesDisplayTextFor.Region"
+                                      @bind-Value="_model.Region"
+                                      For="@(() => _model.Region)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@CountriesDisplayTextFor.PhoneCode"
+                                      @bind-Value="_model.PhoneCode"
+                                      For="@(() => _model.PhoneCode)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(CountriesDisplayTextFor.PhoneCode)" />
+                </MudItem>
+                <MudItem xs="12">
+                    <TextFieldDefault Label="@CountriesDisplayTextFor.CurrencyCode"
+                                      @bind-Value="_model.CurrencyCode"
+                                      For="@(() => _model.CurrencyCode)"
+                                      Required="true"
+                                      RequiredError="@ErrorMessageFor.FieldIsRequired(CountriesDisplayTextFor.CurrencyCode)" />
                 </MudItem>
             </MudGrid>
         </MudForm>

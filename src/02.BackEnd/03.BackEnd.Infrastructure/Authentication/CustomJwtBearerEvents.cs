@@ -10,4 +10,11 @@ public sealed class CustomJwtBearerEvents(ILogger<CustomJwtBearerEvents> logger)
 
         return Task.CompletedTask;
     }
+
+    public override Task MessageReceived(MessageReceivedContext context)
+    {
+        logger.LogInformation("JWT Bearer Message received. Request Path: {RequestPath}", context.HttpContext.Request.Path);
+
+        return Task.CompletedTask;
+    }
 }

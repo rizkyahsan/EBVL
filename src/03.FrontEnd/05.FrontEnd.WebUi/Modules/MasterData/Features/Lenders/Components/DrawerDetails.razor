@@ -1,0 +1,80 @@
+@inherits DrawerBase
+
+<MudDrawer Variant="DrawerVariant.Temporary"
+           Anchor="Anchor.Right"
+           Width="500px"
+           OverlayAutoClose="false"
+           @bind-Open="IsOpen">
+    <MudDrawerHeader>
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center"
+                  Class="mud-width-full">
+            <MudText Typo="Typo.h3">
+                @LendersDisplayTextFor.Lender @CommonDisplayTextFor.Details
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDrawer" />
+        </MudStack>
+    </MudDrawerHeader>
+    <div class="pa-5">
+        <LoadingLinear IsVisible="@(_isLoading)" />
+        @if (Lender is not null)
+        {
+            <MudGrid>
+                <MudItem xs="12">
+                    <FieldDefault Label="@LendersDisplayTextFor.Name">
+                        @Lender.Name
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@LendersDisplayTextFor.Address">
+                        @Lender.Address
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@LendersDisplayTextFor.Country">
+                        @Lender.Country
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@LendersDisplayTextFor.PhoneNumber">
+                        @Lender.FullPhoneNumber
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@LendersDisplayTextFor.EmailAddress">
+                        @Lender.EmailAddress
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@LendersDisplayTextFor.Website">
+                        @Lender.Website
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.Created">
+                        @Lender.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.CreatedBy">
+                        @Lender.CreatedBy
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.Modified">
+                        @Lender.Modified.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.ModifiedBy">
+                        @Lender.ModifiedBy.ToDisplayText()
+                    </FieldDefault>
+                </MudItem>
+            </MudGrid>
+        }
+        <BottomButtonPanel>
+            <ButtonClose OnClick="CloseDrawer" />
+        </BottomButtonPanel>
+    </div>
+</MudDrawer>

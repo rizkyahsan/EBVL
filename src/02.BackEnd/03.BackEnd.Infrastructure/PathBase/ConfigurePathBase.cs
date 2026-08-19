@@ -25,7 +25,10 @@ public static class ConfigurePathBase
             await next();
         });
 
-        app.Logger.LogInformation("This web application is configured with Path Base: {PathBase}.", pathBase);
+        if (app.Logger.IsEnabled(LogLevel.Information))
+        {
+            app.Logger.LogInformation("This web application is configured with Path Base: {PathBase}.", pathBase);
+        }
 
         return app;
     }

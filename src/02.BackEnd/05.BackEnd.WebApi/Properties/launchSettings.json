@@ -1,16 +1,23 @@
 {
-  "$schema": "https://json.schemastore.org/launchsettings.json",
-  "profiles":
-  {
-    "WebApi":
-    {
-      "applicationUrl": "https://localhost:44301",
+  "profiles": {
+    "WebApi": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
-      "environmentVariables":
-      {
+      "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:44421",
+      "dotnetRunMessages": true
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "environmentVariables": {
+        "ASPNETCORE_HTTPS_PORTS": "8081",
+        "ASPNETCORE_HTTP_PORTS": "8080"
+      },
+      "publishAllPorts": true,
+      "useSSL": true
     }
-  }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
 }

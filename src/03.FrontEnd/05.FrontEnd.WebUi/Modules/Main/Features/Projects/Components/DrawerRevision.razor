@@ -1,0 +1,47 @@
+@inherits DrawerBase
+
+<MudDrawer Variant="DrawerVariant.Temporary"
+           Anchor="Anchor.Right"
+           Width="500px"
+           OverlayAutoClose="false"
+           @bind-Open="IsOpen">
+    <MudDrawerHeader>
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center"
+                  Class="mud-width-full">
+            <MudText Typo="Typo.h3">
+                @($"Revision {ProjectLendersDisplayTextFor.ProjectLender}")
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDrawer" />
+        </MudStack>
+    </MudDrawerHeader>
+    <div class="pa-5">
+        <ErrorViewer Exception="@(_exception)" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
+        <MudForm @ref="_form" Model="Model" Validation="_validator.ValidateValue">
+            <MudGrid>
+                <MudItem xs="12">
+                    <FieldDefault Label="Project Stage">
+                        @(StageName)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="Lender Name">
+                        @(LenderName)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <TextFieldAutoGrow Label="@ProjectLenderHistoriesDisplayTextFor.Remarks"
+                                       @bind-Value="Model!.Remarks"
+                                       For="@(() => Model!.Remarks)"
+                                       Required="true" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+        <BottomButtonPanel>
+            <ButtonCancel OnClick="CloseDrawer" />
+            <ButtonSend EntityType="Request" OnClick="SendRevision" Disabled="_isLoading" />
+        </BottomButtonPanel>
+    </div>
+</MudDrawer>

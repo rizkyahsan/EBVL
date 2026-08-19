@@ -48,6 +48,7 @@ public partial class Index
         catch (Exception exception)
         {
             _exception = exception;
+            Snackbar.AddErrors(_exception.GetAllErrorMessages());
         }
         finally
         {
@@ -68,6 +69,16 @@ public partial class Index
         }
 
         if (item.Code.Contains(_searchKeyword, StringComparison.InvariantCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (item.PhoneCode.Contains(_searchKeyword, StringComparison.InvariantCultureIgnoreCase))
+        {
+            return true;
+        }
+
+        if (item.CurrencyCode.Contains(_searchKeyword, StringComparison.InvariantCultureIgnoreCase))
         {
             return true;
         }
@@ -101,6 +112,7 @@ public partial class Index
         catch (Exception exception)
         {
             _exception = exception;
+            Snackbar.AddErrors(_exception.GetAllErrorMessages());
         }
         finally
         {
@@ -114,7 +126,10 @@ public partial class Index
         {
             CountryId = country.Id,
             Name = country.Name,
-            Code = country.Code
+            Code = country.Code,
+            PhoneCode = country.PhoneCode,
+            CurrencyCode = country.CurrencyCode,
+            Region = country.Region
         };
 
         _isDrawerEditOpen = true;

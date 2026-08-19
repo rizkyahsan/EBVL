@@ -5,6 +5,7 @@ using EBVL.Shared.Dto.Modules.Main.Users.GetMyUser;
 
 namespace EBVL.BackEnd.Logics.Modules.Main.Users.GetMyUser;
 
+[AuthorizeRequest]
 public sealed record GetMyUserQuery : IRequest<GetMyUserResponse>
 {
 }
@@ -27,10 +28,10 @@ public sealed class GetMyUserQueryHandler(
             {
                 Id = x.Id,
                 Username = x.Username,
-                Name = x.Name,
+                Name = x.DisplayName,
                 EmailAddress = x.EmailAddress,
                 PhoneNumber = x.PhoneNumber,
-                QrCodeDataUri = $"data:{ContentTypeFor.ImagePng};base64,{Convert.ToBase64String(otpService.GetGraphic(x.OtpUrl))}",
+                QrCodeDataUri = $"data:{ContentTypeFor.ImagePng};base64,{Convert.ToBase64String(otpService.GetGraphic(x.OtpUrl!))}",
                 IsVerified = x.IsVerified
             })
             .SingleOrDefaultAsync(cancellationToken)

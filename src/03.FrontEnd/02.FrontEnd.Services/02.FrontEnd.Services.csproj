@@ -13,6 +13,6 @@
     <InformationalVersion>1.0.3</InformationalVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="RestSharp" Version="113.1.0" />
+    <PackageReference Include="RestSharp" Version="114.0.0" />
   </ItemGroup>
 </Project>

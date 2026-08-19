@@ -17,6 +17,6 @@
     <ProjectReference Include="..\02.Shared.Statics\02.Shared.Statics.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pertamina.Common.Dto" Version="1.0.3" />
+    <PackageReference Include="Pertamina.Common.Dto" Version="1.0.4" />
   </ItemGroup>
 </Project>

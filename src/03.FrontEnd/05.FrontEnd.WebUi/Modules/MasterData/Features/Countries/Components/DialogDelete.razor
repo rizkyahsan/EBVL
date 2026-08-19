@@ -2,8 +2,8 @@
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
-        <ErrorViewer Exception="_exception" />
-        <LoadingLinear IsVisible="_isLoading" />
+        <ErrorViewer Exception="@(_exception)" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
         <MudText>
             Are you sure you want to delete the @CountriesDisplayTextFor.Country <b>@Model.CountryName</b>?
         </MudText>

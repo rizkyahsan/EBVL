@@ -11,20 +11,34 @@
     <AssemblyVersion>1.0.3</AssemblyVersion>
     <FileVersion>1.0.3</FileVersion>
     <InformationalVersion>1.0.3</InformationalVersion>
+    <!-- for enable docker
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..</DockerfileContext>
+    -->
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\..\..</DockerfileContext>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\03.BackEnd.Infrastructure\03.BackEnd.Infrastructure.csproj" />
     <ProjectReference Include="..\04.BackEnd.Logics\04.BackEnd.Logics.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Pertamina.Extensions.FileStream" Version="1.0.3" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+    <PackageReference Include="Pertamina.Extensions.FileStream" Version="1.0.4" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.2">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Scalar.AspNetCore" Version="2.12.13" />
+    <PackageReference Include="Scalar.AspNetCore" Version="2.16.20" />
   </ItemGroup>
   <ItemGroup>
     <None Update="EmailTemplates\Template01.html">

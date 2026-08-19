@@ -1,9 +1,8 @@
-using EBVL.Shared.Dto.Modules.MasterData;
 using EBVL.Shared.Dto.Modules.MasterData.Countries.GetCountries;
 
 namespace EBVL.BackEnd.Logics.Modules.MasterData.Countries.GetCountries;
 
-[AuthorizeRequestByPermission(Permissions.MasterDataCountriesRead)]
+[AuthorizeRequest]
 public sealed record GetCountriesQuery : IRequest<GetCountriesResponse>
 {
 }
@@ -20,7 +19,10 @@ public sealed class GetCountriesQueryHandler(IDatabaseService databaseService)
             {
                 Id = x.Id,
                 Name = x.Name,
-                Code = x.Code
+                Code = x.Code,
+                PhoneCode = x.PhoneCode,
+                CurrencyCode = x.CurrencyCode,
+                Region = x.Region ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 

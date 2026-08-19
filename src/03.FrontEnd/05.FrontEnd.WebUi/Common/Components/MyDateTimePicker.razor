@@ -1,0 +1,26 @@
+﻿<MudGrid>
+    <MudItem xs="12" sm="3">
+        <MudDatePicker Label="@(DateLabel)"
+                       Date="@(_date)"
+                       DateChanged="OnDateChanged"
+                       DateFormat="@(DateFormat)"
+                       MinDate="@(MinDate)"
+                       Required="@(Required)"
+                       RequiredError="@(RequiredError)" />
+    </MudItem>
+
+    <MudItem xs="12" sm="3">
+        <MudTimePicker Label="@($"Time")" 
+                       Time="@(_time)"
+                       TimeChanged="OnTimeChanged"
+                       TimeFormat="@(TimeFormat)"
+                       Required="@(Required)"
+                       RequiredError="@(RequiredError)" />
+    </MudItem>
+
+    <MudItem xs="12" sm="6" Class="d-flex align-end">
+        <MudText Typo="Typo.caption">
+            All dates and times are displayed in WIB (GMT+7).
+        </MudText>
+    </MudItem>
+</MudGrid>

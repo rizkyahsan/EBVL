@@ -2,7 +2,7 @@
 @inherits PageBase
 
 <HtmlHead Title="@MainDisplayTextFor.MySession" />
-<Breadcrumbs Items="_breadcrumbItems" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
 <PageHeader Title="@MainDisplayTextFor.MySession" />
 
 @if (_user is not null)

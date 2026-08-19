@@ -1,12 +1,9 @@
-using EBVL.Shared.Dto.Modules.MasterData;
 using EBVL.Shared.Dto.Modules.MasterData.Countries.AddCountry;
 
 namespace EBVL.BackEnd.Logics.Modules.MasterData.Countries.AddCountry;
 
-[AuthorizeRequestByPermission(Permissions.MasterDataCountriesWrite)]
-public sealed record AddCountryCommand : AddCountryRequest, IRequest<AddCountryResponse>
-{
-}
+[AuthorizeRequest]
+public sealed record AddCountryCommand : AddCountryRequest, IRequest<AddCountryResponse> { }
 
 public sealed class AddCountryCommandValidator : AbstractValidatorBase<AddCountryCommand>
 {
@@ -42,7 +39,10 @@ public sealed class AddCountryCommandHandler(IDatabaseService databaseService)
         var country = new Country
         {
             Name = request.Name,
-            Code = request.Code
+            Code = request.Code,
+            CurrencyCode = request.CurrencyCode,
+            PhoneCode = request.PhoneCode,
+            Region = request.Region
         };
 
         _ = await databaseService.Countries.AddAsync(country, cancellationToken);

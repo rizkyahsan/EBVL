@@ -1,0 +1,11 @@
+[*]
+generated_code = true
+
+# IDE0005: Remove unnecessary using directives
+dotnet_diagnostic.IDE0005.severity = none
+
+# IDE0058: Expression value is never used
+dotnet_diagnostic.IDE0058.severity = none
+
+# IDE0161: Implement interface member
+dotnet_diagnostic.IDE0161.severity = none

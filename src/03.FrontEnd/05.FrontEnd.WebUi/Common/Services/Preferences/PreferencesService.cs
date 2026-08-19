@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace EBVL.FrontEnd.WebUi.Common.Services.Preferences;
@@ -6,9 +7,22 @@ public sealed class PreferencesService(ProtectedLocalStorage protectedLocalStora
 {
     public async Task<StoredPreferences> GetPreferencesAsync()
     {
-        var result = await protectedLocalStorage.GetAsync<StoredPreferences>(StoredPreferences.Key);
+        try
+        {
+            var result = await protectedLocalStorage.GetAsync<StoredPreferences>(StoredPreferences.Key);
 
-        return result.Value ?? new StoredPreferences();
+            if (result.Success && result.Value is not null)
+            {
+                return result.Value;
+            }
+        }
+        catch (CryptographicException)
+        {
+            // Old encryption key no longer exists.
+            await protectedLocalStorage.DeleteAsync(StoredPreferences.Key);
+        }
+
+        return new StoredPreferences();
     }
 
     public async Task SetPreferencesAsync(StoredPreferences preferences)

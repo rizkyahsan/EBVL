@@ -1,0 +1,32 @@
+[
+  {
+    "Name": "Local",
+    "Projects": [
+      {
+        "Path": "src\\02.BackEnd\\05.BackEnd.WebApi\\05.BackEnd.WebApi.csproj",
+        "Action": "Start",
+        "DebugTarget": "WebApi"
+      },
+      {
+        "Path": "src\\03.FrontEnd\\05.FrontEnd.WebUi\\05.FrontEnd.WebUi.csproj",
+        "Action": "Start",
+        "DebugTarget": "WebUi"
+      }
+    ]
+  },
+  {
+    "Name": "Docker",
+    "Projects": [
+      {
+        "Path": "src\\02.BackEnd\\05.BackEnd.WebApi\\05.BackEnd.WebApi.csproj",
+        "Action": "Start",
+        "DebugTarget": "Container (Dockerfile)"
+      },
+      {
+        "Path": "src\\03.FrontEnd\\05.FrontEnd.WebUi\\05.FrontEnd.WebUi.csproj",
+        "Action": "Start",
+        "DebugTarget": "Container (Dockerfile)"
+      }
+    ]
+  }
+]

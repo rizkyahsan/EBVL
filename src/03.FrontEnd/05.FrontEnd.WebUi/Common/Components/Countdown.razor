@@ -1,0 +1,10 @@
+@if (DueDate is null)
+{
+    <span>-</span>
+}
+else
+{
+    <MudChip T="string" Size="Size.Medium" Variant="Variant.Filled" Color="@(_color)">
+        @(_displayText)
+    </MudChip>
+}

@@ -61,7 +61,7 @@ public sealed class EmojisWorldEmojiService : IEmojiService
 
     private static string ConvertEmojiToHtmlCode(string input)
     {
-        if (string.IsNullOrEmpty(input))
+        if (string.IsNullOrWhiteSpace(input))
         {
             return input;
         }

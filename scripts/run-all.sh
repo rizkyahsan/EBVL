@@ -1,42 +1,110 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
 
-repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-api_project="$repository_root/src/02.BackEnd/05.BackEnd.WebApi/05.BackEnd.WebApi.csproj"
-webui_project="$repository_root/src/03.FrontEnd/05.FrontEnd.WebUi/05.FrontEnd.WebUi.csproj"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+api_project="$repo_root/src/02.BackEnd/05.BackEnd.WebApi/05.BackEnd.WebApi.csproj"
+ui_project="$repo_root/src/03.FrontEnd/05.FrontEnd.WebUi/05.FrontEnd.WebUi.csproj"
+api_secrets="$repo_root/src/02.BackEnd/05.BackEnd.WebApi/secrets.json"
+ui_secrets="$repo_root/src/03.FrontEnd/05.FrontEnd.WebUi/secrets.json"
 
-cleanup() {
-  if [[ -n "${api_pid:-}" ]]; then
-    pkill -TERM -P "$api_pid" 2>/dev/null || true
+for secrets_file in "$api_secrets" "$ui_secrets"; do
+  if [[ ! -f "$secrets_file" ]]; then
+    echo "Missing required local configuration: $secrets_file" >&2
+    exit 1
+  fi
+done
+
+if ! docker info >/dev/null 2>&1; then
+  echo "Docker Desktop is not running. Start Docker Desktop and retry this task." >&2
+  exit 1
+fi
+
+if ! docker ps --format '{{.Names}}' | grep -qx 'sqlserver'; then
+  echo "The required SQL Server container named 'sqlserver' is not running." >&2
+  exit 1
+fi
+
+if docker container inspect ebvl-azurite >/dev/null 2>&1; then
+  if [[ "$(docker inspect -f '{{.State.Running}}' ebvl-azurite)" != "true" ]]; then
+    echo "Starting the existing Azurite container ..."
+    docker start ebvl-azurite >/dev/null
+  fi
+else
+  echo "Creating the Azurite container ..."
+  docker run --detach \
+    --name ebvl-azurite \
+    --publish 10000:10000 \
+    mcr.microsoft.com/azure-storage/azurite:latest \
+    azurite-blob --blobHost 0.0.0.0 --skipApiVersionCheck >/dev/null
+fi
+
+for attempt in {1..30}; do
+  if nc -z 127.0.0.1 10000 >/dev/null 2>&1; then
+    break
+  fi
+
+  if [[ "$attempt" -eq 30 ]]; then
+    echo "Azurite did not become ready on port 10000." >&2
+    exit 1
+  fi
+
+  sleep 1
+done
+
+api_pid=""
+ui_pid=""
+
+stop_apps() {
+  trap - EXIT INT TERM
+
+  if [[ -n "$api_pid" ]] && kill -0 "$api_pid" 2>/dev/null; then
     kill "$api_pid" 2>/dev/null || true
   fi
 
-  if [[ -n "${webui_pid:-}" ]]; then
-    pkill -TERM -P "$webui_pid" 2>/dev/null || true
-    kill "$webui_pid" 2>/dev/null || true
+  if [[ -n "$ui_pid" ]] && kill -0 "$ui_pid" 2>/dev/null; then
+    kill "$ui_pid" 2>/dev/null || true
   fi
+
+  wait "$api_pid" "$ui_pid" 2>/dev/null || true
 }
 
-trap cleanup EXIT INT TERM
+trap stop_apps EXIT INT TERM
 
-dotnet build "$repository_root/EBVL.slnx" \
+echo "Restoring packages from the repository feeds ..."
+dotnet restore "$repo_root/EBVL.slnx" \
+  --configfile "$repo_root/NuGet.Offline.Config" \
+  --ignore-failed-sources \
+  -p:NuGetAudit=false
+
+echo "Building the solution ..."
+dotnet build "$repo_root/EBVL.slnx" \
   --no-restore \
-  -p:NuGetAudit=false \
   -m:1
 
+echo "Starting WebApi at https://localhost:44421 ..."
 dotnet run \
   --project "$api_project" \
   --launch-profile WebApi \
   --no-build \
-  --no-restore &
+  --no-restore \
+  &
 api_pid=$!
 
+echo "Starting WebUi at https://localhost:44422/ebvl ..."
 dotnet run \
-  --project "$webui_project" \
+  --project "$ui_project" \
   --launch-profile WebUi \
   --no-build \
-  --no-restore &
-webui_pid=$!
+  --no-restore \
+  &
+ui_pid=$!
 
-wait "$api_pid" "$webui_pid"
+while kill -0 "$api_pid" 2>/dev/null && kill -0 "$ui_pid" 2>/dev/null; do
+  sleep 1
+done
+
+if ! kill -0 "$api_pid" 2>/dev/null; then
+  wait "$api_pid"
+else
+  wait "$ui_pid"
+fi

@@ -4,6 +4,7 @@ using EBVL.Shared.Dto.Modules.Main.Users.UpdateMyUser;
 
 namespace EBVL.BackEnd.Logics.Modules.Main.Users.UpdateMyUser;
 
+[AuthorizeRequest]
 public sealed record UpdateMyUserCommand : UpdateMyUserRequest, IRequest
 {
 }
@@ -37,14 +38,14 @@ public sealed class UpdateMyUserCommandHandler(
             throw new InvalidOperationException($"{UsersDisplayTextFor.User} {user.Username} is not verified.");
         }
 
-        var verificationCodeIsValid = otpService.VerifyCode(user.OtpSecret, request.VerificationCode);
+        var verificationCodeIsValid = otpService.VerifyCode(user.OtpSecret!, request.VerificationCode);
 
         if (!verificationCodeIsValid)
         {
             throw new InvalidOperationException($"{CommonDisplayTextFor.VerificationCode} is invalid.");
         }
 
-        user.Name = request.Name;
+        user.DisplayName = request.Name;
         user.EmailAddress = request.EmailAddress;
         user.PhoneNumber = request.PhoneNumber;
 

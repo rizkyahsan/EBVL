@@ -1,12 +1,9 @@
-using EBVL.Shared.Dto.Modules.MasterData;
 using EBVL.Shared.Dto.Modules.MasterData.Countries.UpdateCountry;
 
 namespace EBVL.BackEnd.Logics.Modules.MasterData.Countries.UpdateCountry;
 
-[AuthorizeRequestByPermission(Permissions.MasterDataCountriesWrite)]
-public sealed record UpdateCountryCommand : UpdateCountryRequest, IRequest
-{
-}
+[AuthorizeRequest]
+public sealed record UpdateCountryCommand : UpdateCountryRequest, IRequest { }
 
 public sealed class UpdateCountryCommandValidator : AbstractValidatorBase<UpdateCountryCommand>
 {
@@ -46,6 +43,9 @@ public sealed class UpdateCountryCommandHandler(IDatabaseService databaseService
 
         country.Name = request.Name;
         country.Code = request.Code;
+        country.PhoneCode = request.PhoneCode;
+        country.CurrencyCode = request.CurrencyCode;
+        country.Region = request.Region;
 
         _ = await databaseService.SaveAsync(nameof(UpdateCountry), cancellationToken);
     }

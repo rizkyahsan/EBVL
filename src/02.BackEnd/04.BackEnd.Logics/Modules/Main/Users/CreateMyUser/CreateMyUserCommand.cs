@@ -5,6 +5,7 @@ using EBVL.Shared.Dto.Modules.Main.Users.CreateMyUser;
 
 namespace EBVL.BackEnd.Logics.Modules.Main.Users.CreateMyUser;
 
+[AuthorizeRequest]
 public sealed record CreateMyUserCommand : IRequest<CreateMyUserResponse>
 {
 }
@@ -36,13 +37,16 @@ public sealed class CreateMyUserCommandHandler(
 
         var user = new User
         {
+            IdentityUserId = Guid.CreateVersion7(),
+            LenderId = Guid.CreateVersion7(),
             Username = username,
-            Name = userProfileResponse.DisplayName,
+            DisplayName = userProfileResponse.DisplayName,
             EmailAddress = userProfileResponse.EmailAddress,
             PhoneNumber = userProfileResponse.PhoneNumber,
             OtpSecret = otp.Secret,
             OtpUrl = otp.Url,
-            IsVerified = false
+            IsVerified = false,
+            IsPicLender = false
         };
 
         _ = await databaseService.Users.AddAsync(user, cancellationToken);

@@ -1,0 +1,75 @@
+@inherits DrawerBase
+
+<MudDrawer Variant="DrawerVariant.Temporary"
+           Anchor="Anchor.Right"
+           Width="500px"
+           OverlayAutoClose="false"
+           @bind-Open="IsOpen">
+    <MudDrawerHeader>
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center"
+                  Class="mud-width-full">
+            <MudText Typo="Typo.h3">
+                @UsersDisplayTextFor.User @CommonDisplayTextFor.Details
+            </MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="CloseDrawer" />
+        </MudStack>
+    </MudDrawerHeader>
+    <div class="pa-5">
+        <LoadingLinear IsVisible="@(_isLoading)" />
+        @if (User is not null)
+        {
+            <MudGrid>
+                <MudItem xs="12">
+                    <FieldDefault Label="@UsersDisplayTextFor.Username">
+                        @User.Username
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@UsersDisplayTextFor.EmailAddress">
+                        @User.EmailAddress
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@UsersDisplayTextFor.Name">
+                        @User.Name
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@UsersDisplayTextFor.Lender">
+                        @User.LenderName
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@UsersDisplayTextFor.PhoneNumber">
+                        @User.FullPhoneNumber
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.Created">
+                        @User.Created.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.CreatedBy">
+                        @User.CreatedBy
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.Modified">
+                        @User.Modified.ToDisplayText(DateTimeFormatFor.LongDateTime)
+                    </FieldDefault>
+                </MudItem>
+                <MudItem xs="12">
+                    <FieldDefault Label="@CommonDisplayTextFor.ModifiedBy">
+                        @User.ModifiedBy.ToDisplayText()
+                    </FieldDefault>
+                </MudItem>
+            </MudGrid>
+        }
+        <BottomButtonPanel>
+            <ButtonClose OnClick="CloseDrawer" />
+        </BottomButtonPanel>
+    </div>
+</MudDrawer>

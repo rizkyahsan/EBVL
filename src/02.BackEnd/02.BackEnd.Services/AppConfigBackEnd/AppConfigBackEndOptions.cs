@@ -7,5 +7,6 @@ public sealed record AppConfigBackEndOptions
     public required string AppNickName { get; init; }
     public required string AppFullName { get; init; }
     public required string PathBase { get; init; }
+    public required string FrontEndBaseUrl { get; init; }
     public required bool IsDataSeedingEnabled { get; init; }
 }

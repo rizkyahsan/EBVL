@@ -2,8 +2,8 @@
 
 <MudDialog>
     <DialogContent>
-        <LoadingLinear IsVisible="_isLoading" />
-        <ErrorViewer Exception="_exception" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
+        <ErrorViewer Exception="@(_exception)" />
         <MudForm @ref="_form" Model="_model" Validation="_validator.ValidateValue">
             <TextFieldDefault Label="@CommonDisplayTextFor.VerificationCode"
                               @bind-Value="_model.VerificationCode"

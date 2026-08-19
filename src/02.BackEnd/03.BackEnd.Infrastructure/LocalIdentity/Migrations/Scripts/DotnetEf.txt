@@ -1,0 +1,17 @@
+dotnet ef migrations add M001InitialIdentity -c AspNetLocalIdentityDatabase -p 03.BackEnd.Infrastructure -s 05.BackEnd.WebApi -o LocalIdentity/Migrations
+
+dotnet ef migrations remove -c AspNetLocalIdentityDatabase -p 03.BackEnd.Infrastructure -s 05.BackEnd.WebApi
+
+dotnet ef database update -c AspNetLocalIdentityDatabase -p 03.BackEnd.Infrastructure -s 05.BackEnd.WebApi
+
+dotnet ef database drop --force -c AspNetLocalIdentityDatabase -p 03.BackEnd.Infrastructure -s 05.BackEnd.WebApi
+
+Or
+
+dotnet ef migrations add M001InitialIdentity -c AspNetLocalIdentityDatabase --project src/02.BackEnd/03.BackEnd.Infrastructure --startup-project src/02.BackEnd/05.BackEnd.WebApi -o LocalIdentity/Migrations
+
+dotnet ef migrations remove -c AspNetLocalIdentityDatabase --project src/02.BackEnd/03.BackEnd.Infrastructure --startup-project src/02.BackEnd/05.BackEnd.WebApi
+
+dotnet ef database update -c AspNetLocalIdentityDatabase --project src/02.BackEnd/03.BackEnd.Infrastructure --startup-project src/02.BackEnd/05.BackEnd.WebApi
+
+dotnet ef database drop --force -c AspNetLocalIdentityDatabase --project src/02.BackEnd/03.BackEnd.Infrastructure --startup-project src/02.BackEnd/05.BackEnd.WebApi

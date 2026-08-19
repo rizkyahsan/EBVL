@@ -1,12 +1,9 @@
-using EBVL.Shared.Dto.Modules.MasterData;
 using EBVL.Shared.Dto.Modules.MasterData.Countries.DeleteCountry;
 
 namespace EBVL.BackEnd.Logics.Modules.MasterData.Countries.DeleteCountry;
 
-[AuthorizeRequestByPermission(Permissions.MasterDataCountriesWrite)]
-public sealed record DeleteCountryCommand : DeleteCountryRequest, IRequest
-{
-}
+[AuthorizeRequest]
+public sealed record DeleteCountryCommand : DeleteCountryRequest, IRequest { }
 
 public sealed class DeleteCountryCommandValidator : AbstractValidatorBase<DeleteCountryCommand>
 {

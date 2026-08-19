@@ -1,8 +1,6 @@
 namespace EBVL.BackEnd.Infrastructure.Database.Seeders;
 
-public sealed class CountrySeeder(
-    IDatabaseService databaseService,
-    ILogger<CountrySeeder> logger)
+public sealed class CountrySeeder(IDatabaseService databaseService)
 {
     public async Task SeedCountries()
     {
@@ -10,9 +8,6 @@ public sealed class CountrySeeder(
         {
             if (!await databaseService.Countries.AnyAsync(x => x.Id == country.Id))
             {
-                logger.LogInformation("Seeding data {EntityType} {EntityName}...",
-                    nameof(Country), country.Name);
-
                 _ = await databaseService.Countries.AddAsync(country);
             }
         }

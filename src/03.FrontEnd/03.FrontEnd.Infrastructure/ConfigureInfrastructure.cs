@@ -20,6 +20,13 @@ public static class ConfigureInfrastructure
 
         _ = builder.Host.AddLoggingService(applicationInsightsConnectionString);
 
+        _ = builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+            options.KnownProxies.Clear();
+            options.RequireHeaderSymmetry = false; // optional, helps with Azure
+        });
+
         _ = builder.Services.AddHttpClient();
         _ = builder.Services.AddHttpContextAccessor();
         _ = builder.Services.AddMemoryCache();

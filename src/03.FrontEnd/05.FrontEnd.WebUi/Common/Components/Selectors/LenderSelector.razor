@@ -1,0 +1,66 @@
+@using EBVL.Shared.Dto.Modules.MasterData.Lenders.GetLenders
+@inherits SelectorBase<Guid>
+
+@if (_isLoading)
+{
+    <SelectDefault T="string" Label="@Label" Placeholder="Loading..."
+                   AnchorOrigin="Origin.BottomCenter" Disabled />
+}
+else if (!_items.Any())
+{
+    <MudAlert Severity="Severity.Warning" Dense>
+        @($"No {LendersDisplayTextFor.Lender} available")
+    </MudAlert>
+}
+else if (IsNoLabel)
+{
+
+    <SelectDefault T="Guid" Value="Value" ValueChanged="OnValueChanged" Required="@Required" Disabled="(_items.Count == 0)"
+                   RequiredError="@RequiredError" ReadOnly="@Readonly">
+        @if (IsAllowNoValue && !ShowAllOption)
+        {
+            <MudSelectItem Value="@(Guid.Empty)" Disabled>
+                Please Select
+            </MudSelectItem>
+        }
+        else if (IsAllowNoValue && ShowAllOption)
+        {
+            <MudSelectItem Value="@(Guid.Empty)">
+                All
+            </MudSelectItem>
+        }
+
+        @foreach (LenderItem item in _items.OrderBy(m => m.Name))
+        {
+            <MudSelectItem Value="@(item.Id)">
+                @($"{item.Name}")
+            </MudSelectItem>
+        }
+    </SelectDefault>
+}
+else
+{
+
+    <SelectDefault T="Guid" Label="@Label" Value="Value" ValueChanged="OnValueChanged" Required="@Required" Disabled="(_items.Count == 0)"
+                   RequiredError="@RequiredError" ReadOnly="@Readonly">
+        @if (IsAllowNoValue && !ShowAllOption)
+        {
+            <MudSelectItem Value="@(Guid.Empty)" Disabled>
+                Please Select
+            </MudSelectItem>
+        }
+        else if (IsAllowNoValue && ShowAllOption)
+        {
+            <MudSelectItem Value="@(Guid.Empty)">
+                All
+            </MudSelectItem>
+        }
+
+        @foreach (LenderItem item in _items.OrderBy(m => m.Name))
+        {
+            <MudSelectItem Value="@(item.Id)">
+                @($"{item.Name}")
+            </MudSelectItem>
+        }
+    </SelectDefault>
+}

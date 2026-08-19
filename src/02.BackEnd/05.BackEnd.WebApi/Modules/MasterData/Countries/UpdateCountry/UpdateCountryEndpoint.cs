@@ -19,10 +19,16 @@ public sealed class UpdateCountryEndpoint : IEndpoint
 
     private static async Task<IResult> Handle(
         [FromRoute] Guid countryId,
+        HttpContext context,
         UpdateCountryCommand command,
         ISender sender,
         CancellationToken cancellationToken)
     {
+        if (!context.User.HasPermission(Permissions.MasterDataCountriesWrite))
+        {
+            //return Results.Forbid();
+        }
+
         if (countryId != command.CountryId)
         {
             throw ExceptionFor.Mismatch(nameof(countryId), countryId, nameof(command.CountryId), command.CountryId);

@@ -2,8 +2,8 @@
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
-        <ErrorViewer Exception="_exception" />
-        <LoadingLinear IsVisible="_isLoading" />
+        <ErrorViewer Exception="@(_exception)" />
+        <LoadingLinear IsVisible="@(_isLoading)" />
         @if (_positions.Count() > 1)
         {
             <MudGrid>

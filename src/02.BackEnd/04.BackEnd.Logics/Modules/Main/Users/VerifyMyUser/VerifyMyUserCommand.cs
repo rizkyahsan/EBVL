@@ -4,6 +4,7 @@ using EBVL.Shared.Dto.Modules.Main.Users.VerifyMyUser;
 
 namespace EBVL.BackEnd.Logics.Modules.Main.Users.VerifyMyUser;
 
+[AuthorizeRequest]
 public sealed record VerifyMyUserCommand : VerifyMyUserRequest, IRequest
 {
 }
@@ -37,7 +38,7 @@ public sealed class VerifyMyUserCommandHandler(
             throw new InvalidOperationException($"{UsersDisplayTextFor.User} {user.Username} is already verified.");
         }
 
-        var verificationCodeIsValid = otpService.VerifyCode(user.OtpSecret, request.VerificationCode);
+        var verificationCodeIsValid = otpService.VerifyCode(user.OtpSecret!, request.VerificationCode);
 
         if (!verificationCodeIsValid)
         {

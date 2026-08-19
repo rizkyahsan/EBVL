@@ -42,6 +42,7 @@ public partial class DrawerEdit
         catch (Exception exception)
         {
             _exception = exception;
+            Snackbar.AddErrors(_exception.GetAllErrorMessages());
         }
         finally
         {

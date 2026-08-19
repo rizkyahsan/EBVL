@@ -19,9 +19,15 @@ public sealed class GetCountryEndpoint : IEndpoint
 
     private static async Task<IResult> Handle(
         [FromRoute] Guid countryId,
+        HttpContext context,
         ISender sender,
         CancellationToken cancellationToken)
     {
+        if (!context.User.HasPermission(Permissions.MasterDataCountriesRead))
+        {
+            //return Results.Forbid();
+        }
+
         var query = new GetCountryQuery
         {
             CountryId = countryId
