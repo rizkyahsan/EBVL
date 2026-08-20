@@ -52,7 +52,7 @@ Setelah SQL Server dan konfigurasi lokal tersedia:
 ./scripts/run-all.sh
 ```
 
-Profil default menjalankan Web API pada `https://localhost:44421/ebvl_api` dan Web UI pada `https://localhost:44422/ebvl`.
+Profil default menjalankan Web API pada `https://localhost:44421/e-bvl_api` dan Web UI pada `https://localhost:44422/e-bvl`.
 
 ## Docker
 

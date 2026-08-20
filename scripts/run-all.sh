@@ -101,7 +101,7 @@ dotnet run \
   &
 api_pid=$!
 
-echo "Starting WebUi at https://localhost:44422/ebvl ..."
+echo "Starting WebUi at https://localhost:44422/e-bvl ..."
 dotnet run \
   --project "$ui_project" \
   --launch-profile WebUi \
