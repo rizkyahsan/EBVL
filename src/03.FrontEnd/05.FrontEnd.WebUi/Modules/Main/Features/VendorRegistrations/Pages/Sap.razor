@@ -1,0 +1,10 @@
+@page "/Vendor-Registration/SAP"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
+
+<HtmlHead Title="Input Nomor SAP Vendor" />
+
+<RegistrationShell>
+    <SapVendorForm Model="_model" OnBack="BackToWelcome" OnNext="OpenStepOne" />
+</RegistrationShell>

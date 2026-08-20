@@ -1,0 +1,31 @@
+.sap-vendor-form {
+    width: 100%;
+    font-size: 14px;
+}
+
+.form-title {
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.form-panel {
+    padding: 20px;
+    border-radius: 15px;
+    background: #f3f3f3;
+}
+
+::deep .mud-input-control,
+::deep .mud-typography-body2,
+::deep .mud-button-root {
+    font-size: 14px;
+}
+
+.form-actions {
+    padding-top: 20px;
+}
+
+@media (max-width: 600px) {
+    .form-panel {
+        padding: 14px;
+    }
+}

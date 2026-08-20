@@ -1,0 +1,53 @@
+.registration-welcome {
+    text-align: center;
+}
+
+h1 {
+    margin: 0;
+    font-size: clamp(26px, 2vw, 34px);
+}
+
+p {
+    margin: 26px 0 27px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.registration-welcome-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 15px;
+    background: #f3f3f3;
+}
+
+.button {
+    min-height: 43px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 3px;
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.button-back {
+    background: #f44336;
+}
+
+.button-register {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #4caf50;
+}
+
+@media (max-width: 520px) {
+    .registration-welcome-actions {
+        flex-wrap: wrap;
+    }
+}

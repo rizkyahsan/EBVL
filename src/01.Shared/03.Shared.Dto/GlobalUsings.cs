@@ -43,3 +43,4 @@ global using StatusesDisplayTextFor = EBVL.Shared.Statics.Statuses.DisplayTextFo
 global using UsersDisplayTextFor = EBVL.Shared.Statics.Users.DisplayTextFor;
 global using UsersMaximumLengthFor = EBVL.Shared.Statics.Users.MaximumLengthFor;
 global using UsersMinimumLengthFor = EBVL.Shared.Statics.Users.MinimumLengthFor;
+global using VendorRegistrationsMaximumLengthFor = EBVL.Shared.Statics.VendorRegistrations.MaximumLengthFor;

@@ -1,0 +1,58 @@
+.pre-registration-form {
+    width: 100%;
+    font-size: 14px;
+}
+
+.form-title {
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.registration-progress {
+    margin: 8px 0 4px;
+}
+
+.form-panel {
+    padding: 20px;
+    border-radius: 15px;
+    background: #f4f4f4;
+}
+
+.sap-panel {
+    width: min(720px, 100%);
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+.form-column {
+    min-height: 100%;
+    box-sizing: border-box;
+}
+
+::deep .sap-field .mud-input-control-input-container {
+    background: #e3f2fd;
+}
+
+::deep .mud-input-control,
+::deep .mud-typography-body2,
+::deep .mud-select,
+::deep .mud-button-root {
+    font-size: 14px;
+}
+
+.form-actions {
+    padding-top: 12px;
+}
+
+@media (max-width: 600px) {
+    .form-header {
+        align-items: flex-start !important;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .form-panel {
+        padding: 14px;
+    }
+}

@@ -1,0 +1,10 @@
+@page "/Vendor-Registration"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
+
+<HtmlHead Title="Registrasi Vendor" />
+
+<RegistrationShell>
+    <RegistrationWelcome OnBack="BackToLogin" OnRegister="OpenSapForm" />
+</RegistrationShell>

@@ -1,0 +1,137 @@
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration
+@using EBVL.Shared.Enums
+
+<EditForm Model="Model" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+
+    <MudStack Spacing="3" Class="pre-registration-form">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="form-header">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <MudIcon Icon="@Icons.Material.Filled.FactCheck" Color="Color.Success" />
+                <MudText Typo="Typo.subtitle1" Class="form-title">KUESIONER PRA-REGISTRASI</MudText>
+            </MudStack>
+            <MudChip T="string" Color="Color.Success" Variant="Variant.Filled">Langkah 1 Dari 3</MudChip>
+        </MudStack>
+
+        <MudProgressLinear Value="33.33" Color="Color.Success" Rounded="true" Size="Size.Large" Class="registration-progress" />
+
+        <MudPaper Elevation="0" Class="form-panel sap-panel">
+            <MudGrid Class="align-center" Spacing="2">
+                <MudItem xs="12" sm="4">
+                    <MudText Typo="Typo.body2">No SAP Vendor</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="8">
+                    <MudTextField T="string" Value="@Model.SapVendorNumber" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" Class="sap-field" />
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+
+        <MudGrid Spacing="3">
+            <MudItem xs="12" lg="6">
+                <MudPaper Elevation="0" Class="form-panel form-column">
+                    <MudGrid Class="align-center" Spacing="2">
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nama Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyName" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Email Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyEmail" InputType="InputType.Email" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Email PIC</MudText></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.PicEmail" InputType="InputType.Email" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nomor Kontak Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyPhoneNumber" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nomor Kontak PIC</MudText></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.PicPhoneNumber" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Website Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.Website" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" lg="6">
+                <MudPaper Elevation="0" Class="form-panel form-column">
+                    <MudGrid Class="align-center" Spacing="2">
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Layanan Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="8">
+                            <MudSelect T="VendorServiceType?" @bind-Value="Model.CompanyService" Placeholder="Pilih Layanan" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense">
+                                <MudSelectItem T="VendorServiceType?" Value="@((VendorServiceType?)VendorServiceType.Product)">@VendorServiceType.Product.GetDisplayText()</MudSelectItem>
+                                <MudSelectItem T="VendorServiceType?" Value="@((VendorServiceType?)VendorServiceType.Service)">@VendorServiceType.Service.GetDisplayText()</MudSelectItem>
+                                <MudSelectItem T="VendorServiceType?" Value="@((VendorServiceType?)VendorServiceType.ProductAndService)">@VendorServiceType.ProductAndService.GetDisplayText()</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Alamat Lokasi Pabrik</MudText></MudItem>
+                        <MudItem xs="12" sm="8">
+                            <MudGrid Spacing="1">
+                                <MudItem xs="12" md="4">
+                                    <MudSelect T="string" @bind-Value="Model.FactoryCountry" Placeholder="Pilih Negara" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense">
+                                        <MudSelectItem Value="@("Indonesia")">Indonesia</MudSelectItem>
+                                        <MudSelectItem Value="@("Luar Indonesia")">Luar Indonesia</MudSelectItem>
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem xs="12" md="8"><MudTextField @bind-Value="Model.FactoryAddress" Placeholder="Masukkan Alamat" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Pemilik / Perwakilan Brand</MudText></MudItem>
+                        <MudItem xs="12" sm="8">
+                            <MudGrid Spacing="1" Class="align-center">
+                                <MudItem xs="12" md="7"><MudTextField @bind-Value="Model.BrandRepresentative" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                                <MudItem xs="12" md="5">
+                                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" OnClick="AddBrand">
+                                        Brand lainnya
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        @for (var index = 0; index < Model.AdditionalBrands.Count; index++)
+                        {
+                            var brandIndex = index;
+                            <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Brand @(brandIndex + 2)</MudText></MudItem>
+                            <MudItem xs="12" sm="8">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                    <MudTextField T="string" Value="@Model.AdditionalBrands[brandIndex]" ValueChanged="value => UpdateBrand(brandIndex, value)" Variant="Variant.Outlined" Margin="Margin.Dense" Class="flex-grow-1" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" OnClick="() => RemoveBrand(brandIndex)" aria-label="Hapus brand" />
+                                </MudStack>
+                            </MudItem>
+                        }
+
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Status Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="8">
+                            <MudSelect T="VendorCompanyStatusType?" @bind-Value="Model.CompanyStatus" Placeholder="Pilih Status Perusahaan" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense">
+                                <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)VendorCompanyStatusType.Manufacture)">@VendorCompanyStatusType.Manufacture.GetDisplayText()</MudSelectItem>
+                                <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)VendorCompanyStatusType.SoleDistributorAgent)">@VendorCompanyStatusType.SoleDistributorAgent.GetDisplayText()</MudSelectItem>
+                                <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)VendorCompanyStatusType.AuthorizedAgent)">@VendorCompanyStatusType.AuthorizedAgent.GetDisplayText()</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="4">
+                            <MudText Typo="Typo.body2">Representative di Indonesia</MudText>
+                            <MudText Typo="Typo.caption"><i>*Manufacture &amp; di Luar Negeri</i></MudText>
+                        </MudItem>
+                        <MudItem xs="12" sm="8">
+                            <MudGrid Spacing="1" Class="align-center">
+                                <MudItem xs="12" md="5">
+                                    <MudRadioGroup T="bool?" @bind-Value="Model.IsRepresentativeInIndonesia">
+                                        <MudRadio T="bool?" Value="@((bool?)true)" Color="Color.Primary">Ya</MudRadio>
+                                        <MudRadio T="bool?" Value="@((bool?)false)" Color="Color.Primary">Tidak</MudRadio>
+                                    </MudRadioGroup>
+                                </MudItem>
+                                <MudItem xs="12" md="7"><MudTextField @bind-Value="Model.RepresentativeName" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="form-actions">
+            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" OnClick="OnBack">BACK</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success">NEXT</MudButton>
+        </MudStack>
+    </MudStack>
+</EditForm>

@@ -6,34 +6,37 @@
 <LoadingOverlay IsVisible="@(_isLoading)" />
 <ErrorViewer Exception="_exception" Class="mt-5" />
 
-<div class="landing-container">
-    <MudContainer Class="pa-20">
-        <Paper25 class="mud-height-full">
-            <div class="illus-container rounded pa-20">
-                <Paper25 Class="pa-10">
-                    <PageHeader Title="@CommonDisplayTextFor.Login" />
-                    <MudGrid>
-                        <MudItem xs="12">
-                            <TextFieldDefault Label="@CommonDisplayTextFor.Email"
-                                              @bind-Value="_model.Username" />
-                        </MudItem>
-                        <MudItem xs="12">
-                            <TextFieldDefault Label="Password" @bind-Value="_model.Password"
-                                              InputType="@(_showPassword ? InputType.Text : InputType.Password)"
-                                              Adornment="Adornment.End"
-                                              AdornmentIcon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
-                                              OnAdornmentClick="@TogglePasswordVisibility" />
-                        </MudItem>
-                        <MudItem xs="12">
-                            <ButtonReturn OnClick="ExecuteReturn" Disabled="@(_isLoading)"></ButtonReturn>
-                            <ButtonPrimary OnClick="ExecuteLogin" Disabled="@(_isLoading)">
-                                @CommonDisplayTextFor.Login
-                            </ButtonPrimary>
-                           
-                        </MudItem>
-                    </MudGrid>
-                </Paper25>
+<main class="login-page">
+    <section class="login-artwork" aria-label="EBVL">
+        <div class="login-card">
+            <h1>Selamat Datang</h1>
+
+            <div class="login-form-panel">
+                <div class="login-field">
+                    <label for="login-username">Email / Username</label>
+                    <input id="login-username" @bind="_model.Username" autocomplete="username" placeholder="Masukkan Email" />
+                </div>
+
+                <div class="login-field">
+                    <div class="login-password-label">
+                        <label for="login-password">Password</label>
+                        <span class="login-link">Lupa password</span>
+                    </div>
+                    <div class="login-password-input">
+                        <input id="login-password" @bind="_model.Password" type="@(_showPassword ? "text" : "password")" autocomplete="current-password" placeholder="Masukkan Password" />
+                        <button type="button" class="password-toggle" aria-label="Tampilkan password" @onclick="TogglePasswordVisibility">
+                            <MudIcon Icon="@(_showPassword ? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)" />
+                        </button>
+                    </div>
+                </div>
+
+                <p class="login-register">Belum punya akun? <a href="Vendor-Registration">Daftar sekarang</a></p>
             </div>
-        </Paper25>
-    </MudContainer>
-</div>
+
+            <div class="login-actions">
+                <button type="button" class="login-button login-button-back" @onclick="ExecuteReturn" disabled="@_isLoading">BACK</button>
+                <button type="button" class="login-button login-button-submit" @onclick="ExecuteLogin" disabled="@_isLoading">LOGIN</button>
+            </div>
+        </div>
+    </section>
+</main>

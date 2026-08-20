@@ -1,0 +1,10 @@
+@page "/Vendor-Registration/Step-1"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
+
+<HtmlHead Title="Kuesioner Pra-Registrasi Vendor" />
+
+<RegistrationShell Wide="true">
+    <PreRegistrationForm Model="_model" OnBack="BackToSap" OnNext="ContinueRegistration" />
+</RegistrationShell>
