@@ -90,6 +90,9 @@ dotnet restore "$repo_root/EBVL.slnx" \
 echo "Building the solution ..."
 dotnet build "$repo_root/EBVL.slnx" \
   --no-restore \
+  --disable-build-servers \
+  -p:UseSharedCompilation=false \
+  -nodeReuse:false \
   -m:1
 
 echo "Starting WebApi at https://localhost:44421 ..."
