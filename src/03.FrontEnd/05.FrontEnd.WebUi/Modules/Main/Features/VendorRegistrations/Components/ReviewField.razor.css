@@ -1,0 +1,14 @@
+.review-field-scope + .review-field-scope {
+    margin-top: 8px;
+}
+
+.review-field-scope ::deep .review-value {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border: 1px solid var(--mud-palette-lines-inputs);
+    border-radius: 4px;
+    background: var(--mud-palette-surface);
+}

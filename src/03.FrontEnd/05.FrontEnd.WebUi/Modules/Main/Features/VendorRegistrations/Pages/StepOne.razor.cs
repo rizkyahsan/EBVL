@@ -1,4 +1,5 @@
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration;
+using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Pages;
@@ -8,11 +9,14 @@ public partial class StepOne
     [Inject]
     public required NavigationManager NavigationManager { get; init; }
 
+    [Inject]
+    public required VendorRegistrationState RegistrationState { get; init; }
+
     [Parameter]
     [SupplyParameterFromQuery]
     public string? SapVendorNumber { get; set; }
 
-    private readonly PreRegistrationRequest _model = new();
+    private PreRegistrationRequest _model = new();
 
     protected override void OnParametersSet()
     {
@@ -22,7 +26,14 @@ public partial class StepOne
             return;
         }
 
-        _model.SapVendorNumber = SapVendorNumber;
+        if (RegistrationState.PreRegistration?.SapVendorNumber == SapVendorNumber)
+        {
+            _model = RegistrationState.PreRegistration;
+        }
+        else
+        {
+            _model.SapVendorNumber = SapVendorNumber;
+        }
     }
 
     private void BackToSap()
@@ -30,9 +41,9 @@ public partial class StepOne
         NavigationManager.NavigateTo(VendorRegistrationRouteFor.Sap);
     }
 
-    private Task ContinueRegistration(PreRegistrationRequest model)
+    private async Task ContinueRegistration(PreRegistrationRequest model)
     {
-        // Step 2 will persist or forward this DTO once its contract is defined.
-        return Task.CompletedTask;
+        await RegistrationState.CompleteStepOneAsync(model);
+        NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepTwo);
     }
 }

@@ -3,7 +3,7 @@
     display: grid;
     place-items: center;
     padding: 7.3vw 12.9vw;
-    background: #fff;
+    background: var(--mud-palette-background);
 }
 
 .login-artwork {
@@ -20,9 +20,9 @@
     width: min(800px, calc(100% - 32px));
     padding: 24px 64px 24px;
     border-radius: 17px;
-    background: rgba(255, 255, 255, .98);
+    background: var(--mud-palette-surface);
     box-shadow: 0 8px 18px rgba(0, 0, 0, .16);
-    color: #444;
+    color: var(--mud-palette-text-primary);
 }
 
 .login-card h1 {
@@ -36,7 +36,7 @@
 .login-form-panel {
     padding: 20px;
     border-radius: 15px;
-    background: #f3f3f3;
+    background: var(--mud-palette-background-gray);
 }
 
 .login-field {
@@ -60,11 +60,11 @@
     min-height: 45px;
     box-sizing: border-box;
     padding: 0 23px;
-    border: 1px solid #bdbdbd;
+    border: 1px solid var(--mud-palette-lines-inputs);
     border-radius: 4px;
     outline: none;
-    background: #fff;
-    color: #444;
+    background: var(--mud-palette-surface);
+    color: var(--mud-palette-text-primary);
     font: inherit;
     font-size: 14px;
 }
@@ -75,7 +75,7 @@
 }
 
 .login-field input::placeholder {
-    color: #bdbdbd;
+    color: var(--mud-palette-text-disabled);
 }
 
 .login-password-label {
@@ -113,7 +113,7 @@
     border: 0;
     transform: translateY(-50%);
     background: transparent;
-    color: #bdbdbd;
+    color: var(--mud-palette-text-disabled);
     cursor: pointer;
 }
 

@@ -1,0 +1,17 @@
+<div class="review-field-scope">
+<MudGrid Spacing="2" Class="review-field align-center">
+    <MudItem xs="12" sm="5"><MudText Typo="Typo.body2">@Label</MudText></MudItem>
+    <MudItem xs="12" sm="7">
+        <MudPaper Elevation="0" Class="review-value">
+            @if (IsLink && !string.IsNullOrWhiteSpace(Value))
+            {
+                <MudLink Href="@Value" Target="_blank">@Value</MudLink>
+            }
+            else
+            {
+                <MudText Typo="Typo.body2"><b>@(Value ?? "-")</b></MudText>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+</div>

@@ -1,0 +1,24 @@
+.send-dialog-scope {
+    padding: 18px;
+}
+
+.send-dialog-scope ::deep .dialog-title {
+    margin-bottom: 28px;
+    font-weight: 700;
+}
+
+.send-dialog-scope ::deep .dialog-panel {
+    padding: 46px 32px;
+    border-radius: 18px;
+    background: var(--mud-palette-background-gray);
+}
+
+.send-dialog-scope ::deep .dialog-actions {
+    padding-top: 30px;
+}
+
+.send-dialog-scope ::deep .dialog-actions .mud-button-root {
+    min-width: 90px;
+    min-height: 48px;
+    font-size: 16px;
+}

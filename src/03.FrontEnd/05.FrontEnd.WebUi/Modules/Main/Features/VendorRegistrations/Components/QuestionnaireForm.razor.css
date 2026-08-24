@@ -1,0 +1,56 @@
+.questionnaire-form-scope {
+    width: 100%;
+}
+
+.questionnaire-form-scope ::deep .questionnaire-form {
+    width: 100%;
+    font-size: 14px;
+}
+
+.questionnaire-form-scope ::deep > .mud-stack {
+    gap: 22px;
+}
+
+.questionnaire-form-scope ::deep .form-title {
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.questionnaire-form-scope ::deep .group-title {
+    margin: 8px 0 -6px;
+    font-weight: 700;
+}
+
+.questionnaire-form-scope ::deep .notes-panel,
+.questionnaire-form-scope ::deep .submit-panel {
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--mud-palette-surface);
+}
+
+.questionnaire-form-scope ::deep .notes-panel ol {
+    margin: 8px 0 0;
+    padding-left: 24px;
+    font-size: 12px;
+}
+
+.questionnaire-form-scope ::deep .submit-panel {
+    text-align: center;
+}
+
+.questionnaire-form-scope ::deep .submit-actions {
+    padding-top: 12px;
+}
+
+.questionnaire-form-scope ::deep .submit-actions .mud-button-root {
+    min-width: 72px;
+}
+
+@media (max-width: 600px) {
+    .questionnaire-form-scope ::deep .form-header {
+        align-items: flex-start !important;
+        flex-direction: column;
+        gap: 12px;
+    }
+}

@@ -1,0 +1,16 @@
+@page "/Vendor-Registration/Step-3"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
+
+<HtmlHead Title="Registrasi Vendor Tahap 3" />
+<LoadingOverlay IsVisible="_isRestoring" />
+
+<RegistrationShell Wide="true">
+    <DocumentEvidenceForm Model="_model"
+                          AvailableFileKeys="@RegistrationState.SelectedFiles.Keys"
+                          OnFileSelected="SelectFile"
+                          OnFileRemoved="RemoveFile"
+                          OnBack="BackToStepTwo"
+                          OnSubmit="SubmitRegistration" />
+</RegistrationShell>

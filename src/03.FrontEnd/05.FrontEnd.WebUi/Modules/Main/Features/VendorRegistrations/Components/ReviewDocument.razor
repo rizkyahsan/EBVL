@@ -1,0 +1,12 @@
+@using EBVL.Shared.Statics.VendorRegistrations
+
+<div class="review-document-scope">
+<MudGrid Spacing="2" Class="review-document align-center">
+    <MudItem xs="12" sm="5"><MudText Typo="Typo.body2">@Definition.Name</MudText></MudItem>
+    <MudItem xs="12" sm="7">
+        <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true" OnClick="Download" Disabled="@string.IsNullOrWhiteSpace(FileName)">
+            <i>@(FileName ?? "File tidak tersedia")</i>
+        </MudButton>
+    </MudItem>
+</MudGrid>
+</div>

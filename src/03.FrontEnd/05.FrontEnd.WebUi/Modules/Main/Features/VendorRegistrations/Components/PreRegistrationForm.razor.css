@@ -16,7 +16,7 @@
 .form-panel {
     padding: 20px;
     border-radius: 15px;
-    background: #f4f4f4;
+    background: var(--mud-palette-background-gray);
 }
 
 .sap-panel {

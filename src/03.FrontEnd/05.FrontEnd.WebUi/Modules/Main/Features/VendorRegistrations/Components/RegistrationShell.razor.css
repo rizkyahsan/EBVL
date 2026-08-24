@@ -3,7 +3,7 @@
     display: grid;
     place-items: center;
     padding: 48px;
-    background: #f7f8fa;
+    background: var(--mud-palette-background);
 }
 
 .registration-artwork {
@@ -19,14 +19,14 @@
     box-sizing: border-box;
     padding: 64px;
     border-radius: 17px;
-    background: #fff;
+    background: var(--mud-palette-surface);
     box-shadow: 0 8px 18px rgba(0, 0, 0, .16);
-    color: #444;
+    color: var(--mud-palette-text-primary);
 }
 
 .registration-card-wide {
-    width: min(1440px, calc(100% - 32px));
-    padding: 50px 64px 30px;
+    width: min(1260px, calc(100% - 32px));
+    padding: 42px 48px 34px;
 }
 
 @media (max-width: 700px) {
@@ -41,5 +41,10 @@
 
     .registration-card {
         padding: 36px 18px;
+    }
+
+    .registration-card-wide {
+        width: 100%;
+        padding: 24px 14px;
     }
 }

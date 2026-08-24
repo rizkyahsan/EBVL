@@ -1,0 +1,102 @@
+.document-evidence-scope,
+.document-evidence-scope ::deep .document-evidence-form {
+    width: 100%;
+}
+
+.document-evidence-scope ::deep .form-title {
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 700;
+}
+
+.document-evidence-scope ::deep .evidence-card {
+    padding: 42px;
+    border-radius: 14px;
+    background: var(--mud-palette-surface);
+}
+
+.document-evidence-scope ::deep .evidence-title {
+    margin-bottom: 28px;
+    font-weight: 700;
+}
+
+.document-evidence-scope ::deep .evidence-panel {
+    padding: 24px;
+    border-radius: 14px;
+    background: var(--mud-palette-background-gray);
+}
+
+.document-title {
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.document-title span {
+    color: var(--mud-palette-error);
+}
+
+.primary-document-title {
+    color: var(--mud-palette-success);
+    font-style: italic;
+}
+
+.upload-card {
+    position: relative;
+    min-height: 110px;
+    border: 2px dashed var(--mud-palette-lines-inputs);
+    border-radius: 12px;
+    background: var(--mud-palette-surface);
+    color: var(--mud-palette-text-secondary);
+}
+
+.upload-card-selected {
+    border-color: var(--mud-palette-success);
+    color: var(--mud-palette-success);
+}
+
+::deep .evidence-file-input {
+    display: none;
+}
+
+.upload-card-content {
+    min-height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 13px;
+}
+
+.document-evidence-scope ::deep .remove-file {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+}
+
+.document-evidence-scope ::deep .evidence-note {
+    display: block;
+    margin-top: 18px;
+}
+
+.document-evidence-scope ::deep .form-actions {
+    padding-top: 28px;
+}
+
+@media (max-width: 600px) {
+    .document-evidence-scope ::deep .form-header {
+        align-items: flex-start !important;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .document-evidence-scope ::deep .evidence-card,
+    .document-evidence-scope ::deep .evidence-panel {
+        padding: 16px;
+    }
+}

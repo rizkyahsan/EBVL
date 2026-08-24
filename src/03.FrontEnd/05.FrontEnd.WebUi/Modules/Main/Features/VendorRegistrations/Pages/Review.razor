@@ -1,0 +1,14 @@
+@page "/Vendor-Registration/Review"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
+
+<HtmlHead Title="Review Registrasi Vendor" />
+<LoadingOverlay IsVisible="_isRestoring" />
+
+<RegistrationShell Wide="true">
+    <VendorRegistrationReview PreRegistration="_preRegistration"
+                              DocumentEvidence="_documentEvidence"
+                              OnDownload="DownloadDocument"
+                              OnSendForVerification="SendForVerification" />
+</RegistrationShell>

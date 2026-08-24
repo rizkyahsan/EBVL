@@ -1,0 +1,11 @@
+@page "/Vendor-Registration/Step-2"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
+
+<HtmlHead Title="Kuesioner Pra-Registrasi Vendor Tahap 2" />
+
+<LoadingOverlay IsVisible="_isRestoring" />
+<RegistrationShell Wide="true">
+    <QuestionnaireForm Model="_model" OnReject="RejectQuestionnaire" OnNext="ContinueRegistration" OnChanged="PersistProgress" />
+</RegistrationShell>

@@ -20,7 +20,7 @@ p {
     gap: 16px;
     padding: 20px;
     border-radius: 15px;
-    background: #f3f3f3;
+    background: var(--mud-palette-background-gray);
 }
 
 .button {

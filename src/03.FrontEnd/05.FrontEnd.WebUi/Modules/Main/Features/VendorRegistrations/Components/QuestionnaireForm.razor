@@ -1,0 +1,66 @@
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire
+@using EBVL.Shared.Statics.VendorRegistrations
+
+<MudForm @ref="_form" Model="Model" Validation="_validator.ValidateValue">
+    <div class="questionnaire-form-scope">
+    <MudStack Spacing="3" Class="questionnaire-form">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="form-header">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <MudIcon Icon="@Icons.Material.Filled.FactCheck" Color="Color.Success" />
+                <MudText Typo="Typo.subtitle1" Class="form-title">KUESIONER PRA-REGISTRASI</MudText>
+            </MudStack>
+            <MudChip T="string" Color="Color.Success" Variant="Variant.Filled">Langkah 2 Dari 3</MudChip>
+        </MudStack>
+
+        <MudProgressLinear Value="66.67" Color="Color.Success" Rounded="true" Size="Size.Large" />
+
+        <MudGrid Spacing="3">
+            <MudItem xs="12" lg="6">
+                <MudStack Spacing="3">
+                    <QuestionnaireSection Title="@QuestionnaireFor.GeneralInformation" Questions="@GeneralInformationQuestions" Model="Model" OnChanged="NotifyChanged" />
+                    <MudText Typo="Typo.h4" Class="group-title">B. PRODUCT QUALITY</MudText>
+                    <QuestionnaireSection Title="@QuestionnaireFor.ProductQualityGeneral" Questions="@ProductQualityGeneralQuestions" Model="Model" OnChanged="NotifyChanged" />
+                    <QuestionnaireSection Title="@QuestionnaireFor.ProductQualitySpecific" Questions="@ProductQualitySpecificQuestions" Model="Model" OnChanged="NotifyChanged" />
+                </MudStack>
+            </MudItem>
+
+            <MudItem xs="12" lg="6">
+                <MudStack Spacing="3">
+                    <QuestionnaireSection Title="@QuestionnaireFor.VendorRepresentativeOffice" Questions="@VendorRepresentativeQuestions" Model="Model" OnChanged="NotifyChanged" />
+                    <QuestionnaireSection Title="@QuestionnaireFor.SoleAgent" Questions="@SoleAgentQuestions" Model="Model" Disabled="@Model.IsNotSoleAgent" OnChanged="NotifyChanged">
+                        <HeaderContent>
+                            <MudCheckBox T="bool" Value="@Model.IsNotSoleAgent" ValueChanged="SoleAgentChanged" Label="Bukan Sole Agent" Color="Color.Primary" />
+                        </HeaderContent>
+                    </QuestionnaireSection>
+                    <QuestionnaireSection Title="@QuestionnaireFor.ProductPositioning" Questions="@ProductPositioningQuestions" Model="Model" OnChanged="NotifyChanged" />
+
+                    <MudPaper Elevation="0" Class="notes-panel">
+                        <MudText Typo="Typo.subtitle2">Note:</MudText>
+                        <ol>
+                            <li>Brand Vendor Equipment Questionnaire Form shall be filled by Vendor/Sole Agent/RO.</li>
+                            <li>Questionnaire Form shall be signed by Director of Manufacture (Principal).</li>
+                            <li>Questionnaire Form shall be attached with all evidence support document.</li>
+                            <li>(*) Mandatory.</li>
+                            <li>(**) Required but not mandatory and affects assessment.</li>
+                        </ol>
+                    </MudPaper>
+
+                    <MudPaper Elevation="1" Class="submit-panel">
+                        <MudText Typo="Typo.subtitle1">Submit Questionnaire</MudText>
+                        <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="submit-actions">
+                            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" OnClick="Submit">Ya</MudButton>
+                            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" OnClick="Reject">Tidak</MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+
+        @if (!string.IsNullOrWhiteSpace(_validationError))
+        {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">@_validationError</MudAlert>
+        }
+
+    </MudStack>
+    </div>
+</MudForm>

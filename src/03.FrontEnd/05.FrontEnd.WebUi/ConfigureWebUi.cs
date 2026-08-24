@@ -8,6 +8,7 @@ using EBVL.FrontEnd.WebUi.Common.Services.Clipboard;
 using EBVL.FrontEnd.WebUi.Common.Services.Preferences;
 using EBVL.FrontEnd.WebUi.Layouts.Models;
 using EBVL.FrontEnd.WebUi.Common.Services.Clock;
+using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
 
 namespace EBVL.FrontEnd.WebUi;
 
@@ -44,6 +45,7 @@ public static class ConfigureWebUi
         _ = builder.Services.AddScoped<ClipboardService>();
         _ = builder.Services.AddScoped<PreferencesService>();
         _ = builder.Services.AddSingleton<ClockService>();
+        _ = builder.Services.AddScoped<VendorRegistrationState>();
         _ = builder.Services.AddCascadingValue(serviceProvider => CascadingValueHelper.CreateNotifying(new DisplayInfo()));
         _ = builder.Services.AddMudServices();
 

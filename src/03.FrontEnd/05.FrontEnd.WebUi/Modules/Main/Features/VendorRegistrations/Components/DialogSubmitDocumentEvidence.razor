@@ -1,0 +1,19 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <div class="submit-dialog-scope">
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="dialog-title">SUBMIT DOCUMENT EVIDENCE</MudText>
+            <MudPaper Elevation="0" Class="dialog-panel">
+                <MudText Align="Align.Center">
+                    Anda akan melakukan Submit Document Evidence,<br />apakah anda yakin?
+                </MudText>
+                <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="dialog-actions">
+                    <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="Confirm">Ya</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseDialog">Tidak</MudButton>
+                </MudStack>
+            </MudPaper>
+        </div>
+    </DialogContent>
+</MudDialog>
+

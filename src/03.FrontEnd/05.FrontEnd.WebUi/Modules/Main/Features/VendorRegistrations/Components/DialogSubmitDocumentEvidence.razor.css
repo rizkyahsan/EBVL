@@ -1,0 +1,31 @@
+.submit-dialog-scope {
+    padding: 18px;
+}
+
+.submit-dialog-scope ::deep .dialog-title {
+    margin-bottom: 28px;
+    font-weight: 700;
+}
+
+.submit-dialog-scope ::deep .dialog-panel {
+    padding: 46px 32px;
+    border-radius: 18px;
+    background: var(--mud-palette-background-gray);
+}
+
+.submit-dialog-scope ::deep .dialog-actions {
+    padding-top: 30px;
+}
+
+.submit-dialog-scope ::deep .dialog-actions .mud-button-root {
+    min-width: 90px;
+    min-height: 48px;
+    font-size: 16px;
+}
+
+@media (max-width: 600px) {
+    .submit-dialog-scope,
+    .submit-dialog-scope ::deep .dialog-panel {
+        padding: 18px;
+    }
+}

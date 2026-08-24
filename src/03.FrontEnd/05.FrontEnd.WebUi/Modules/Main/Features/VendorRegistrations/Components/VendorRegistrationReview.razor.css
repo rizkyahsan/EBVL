@@ -1,0 +1,42 @@
+.vendor-review-scope,
+.vendor-review-scope ::deep .vendor-review {
+    width: 100%;
+}
+
+.vendor-review-scope ::deep .vendor-review {
+    padding: 40px;
+    border-radius: 14px;
+    background: var(--mud-palette-surface);
+}
+
+.vendor-review-scope ::deep .review-title {
+    font-weight: 700;
+}
+
+.vendor-review-scope ::deep .review-subtitle {
+    margin: 18px 0 28px;
+}
+
+.vendor-review-scope ::deep .review-panel {
+    min-height: 100%;
+    box-sizing: border-box;
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--mud-palette-background-gray);
+}
+
+.vendor-review-scope ::deep .document-note {
+    display: block;
+    margin-top: 12px;
+}
+
+.vendor-review-scope ::deep .review-actions {
+    padding-top: 34px;
+}
+
+@media (max-width: 600px) {
+    .vendor-review-scope ::deep .vendor-review,
+    .vendor-review-scope ::deep .review-panel {
+        padding: 14px;
+    }
+}

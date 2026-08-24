@@ -1,0 +1,9 @@
+.review-document-scope + .review-document-scope {
+    margin-top: 8px;
+}
+
+.review-document-scope ::deep .mud-button-root {
+    min-height: 46px;
+    justify-content: flex-start;
+    text-transform: none;
+}

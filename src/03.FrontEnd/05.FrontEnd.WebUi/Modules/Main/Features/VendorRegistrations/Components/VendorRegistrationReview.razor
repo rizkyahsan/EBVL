@@ -1,0 +1,61 @@
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration
+@using EBVL.Shared.Statics.VendorRegistrations
+
+<div class="vendor-review-scope">
+    <MudPaper Elevation="1" Class="vendor-review">
+        <MudText Typo="Typo.h3" Align="Align.Center" Class="review-title">DETAIL INFORMASI VENDOR</MudText>
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="review-subtitle">
+            @PreRegistration.CompanyName - @PreRegistration.FactoryAddress
+        </MudText>
+
+        <MudGrid Spacing="3">
+            <MudItem xs="12" lg="6">
+                <MudPaper Elevation="0" Class="review-panel">
+                    <ReviewField Label="Email Perusahaan" Value="@PreRegistration.CompanyEmail" />
+                    <ReviewField Label="Email PIC" Value="@PreRegistration.PicEmail" />
+                    <ReviewField Label="Nomor Kontak Perusahaan" Value="@PreRegistration.CompanyPhoneNumber" />
+                    <ReviewField Label="Nomor Kontak PIC" Value="@PreRegistration.PicPhoneNumber" />
+                    <ReviewField Label="Website Perusahaan" Value="@PreRegistration.Website" IsLink="true" />
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" lg="6">
+                <MudPaper Elevation="0" Class="review-panel">
+                    <ReviewField Label="Layanan Perusahaan" Value="@PreRegistration.CompanyService?.GetDisplayText()" />
+                    <ReviewField Label="Alamat Lokasi Pabrik" Value="@($"{PreRegistration.FactoryCountry} - {PreRegistration.FactoryAddress}")" />
+                    <ReviewField Label="Pemilik / Perwakilan Brand" Value="@GetBrands()" />
+                    <ReviewField Label="Status Perusahaan" Value="@PreRegistration.CompanyStatus?.GetDisplayText()" />
+                    <ReviewField Label="NO SAP Vendor" Value="@PreRegistration.SapVendorNumber" />
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" lg="6">
+                <MudPaper Elevation="0" Class="review-panel">
+                    @foreach (var definition in DocumentEvidenceFor.All.Take(3))
+                    {
+                        <ReviewDocument Definition="definition" FileName="@GetFileName(definition.Key)" OnDownload="OnDownload" />
+                    }
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" lg="6">
+                <MudPaper Elevation="0" Class="review-panel">
+                    @foreach (var definition in DocumentEvidenceFor.All.Skip(3))
+                    {
+                        <ReviewDocument Definition="definition" FileName="@GetFileName(definition.Key)" OnDownload="OnDownload" />
+                    }
+                    <MudText Typo="Typo.caption" Align="Align.Center" Class="document-note">
+                        <i>Manufacture (Brand Certificate); Agen Distributor Tunggal (STP Kemendag); Agen Resmi (Authorized Letter)</i>
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        <MudStack Row="true" Justify="Justify.Center" Class="review-actions">
+            <MudButton Variant="Variant.Filled" Color="Color.Tertiary" EndIcon="@Icons.Material.Filled.Send" OnClick="OnSendForVerification">
+                SEND FOR VERIFICATION
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+</div>
