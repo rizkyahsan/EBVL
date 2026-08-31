@@ -1,0 +1,1 @@
+.preview-panel { min-height: 360px; display: grid; place-content: center; justify-items: center; gap: 14px; text-align: center; background: var(--mud-palette-background-gray); }

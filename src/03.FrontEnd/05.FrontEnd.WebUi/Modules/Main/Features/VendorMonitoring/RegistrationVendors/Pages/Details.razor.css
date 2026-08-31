@@ -1,0 +1,16 @@
+.detail-card { padding: 28px; margin-bottom: 24px; border-radius: 14px; }
+.detail-heading { margin-bottom: 18px; font-weight: 700; }
+.vendor-address { margin-bottom: 24px; font-weight: 400; }
+.detail-grid, .document-grid, .questionnaire-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.field-panel, .question-list { display: grid; gap: 10px; padding: 18px; border-radius: 12px; background: var(--mud-palette-background-gray); }
+.document-grid { margin-top: 22px; }
+.document-row { display: grid; grid-template-columns: minmax(150px, .8fr) minmax(140px, 1fr) auto auto; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: var(--mud-palette-background-gray); }
+.questionnaire-grid { align-items: start; }
+.question-section { padding: 14px; border: 1px solid var(--mud-palette-lines-default); border-radius: 12px; }
+.section-title { margin-bottom: 12px; font-weight: 700; }
+.question-row { display: grid; grid-template-columns: minmax(170px, 1.1fr) minmax(140px, 1fr) auto; align-items: center; gap: 8px; }
+.question-row ::deep .attachment-link { font-size: 12px; font-style: italic; cursor: pointer; }
+.evaluation-panel { display: flex; align-items: center; justify-content: flex-end; gap: 14px; margin: 24px 0 0 auto; padding: 18px; max-width: 520px; background: var(--mud-palette-background-gray); }
+.evaluation-panel ::deep .mud-input-control { max-width: 120px; }
+@media (max-width: 900px) { .detail-grid, .document-grid, .questionnaire-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .detail-card { padding: 16px; } .document-row, .question-row { grid-template-columns: 1fr; } .evaluation-panel { align-items: stretch; flex-direction: column; } }

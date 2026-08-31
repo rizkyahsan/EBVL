@@ -8,10 +8,6 @@ public partial class LayoutLanding
 
     private static MudTheme NewTheme()
     {
-        var theme = ThemeFor.Default.Clone();
-
-        theme.LayoutProperties.AppbarHeight = "0px";
-
-        return theme;
+        return ThemeFor.Default.Clone();
     }
 }

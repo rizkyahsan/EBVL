@@ -8,8 +8,63 @@
 
 <CascadingValue Value="DisplayInfo">
     <MudLayout>
-        <MudMainContent @ondblclick="ToggleDarkMode">
+        <MudAppBar Elevation="0" Class="@($"landing-appbar{(DisplayInfo.IsDarkMode ? " landing-appbar-dark" : string.Empty)}")">
+            <MudLink Href="/Landing" Class="landing-logo-link" aria-label="EBVL landing page">
+                <MudImage Src="@DisplayInfo.SrcLogo"
+                          Alt="Logo Pertamina"
+                          Class="mb-2 pa-4"
+                          Style="height: var(--mud-appbar-height);" />
+            </MudLink>
+            <MudSpacer />
+            <nav class="landing-navigation" aria-label="Main navigation">
+                <MudIconButton Color="Color.Inherit"
+                               Icon="@DisplayInfo.IconForDarkMode"
+                               Size="Size.Small"
+                               Class="landing-theme-button"
+                               aria-label="Toggle dark mode"
+                               OnClick="ToggleDarkMode" />
+                <MudButton Href="/Landing#faq" Variant="Variant.Text" Class="landing-nav-button">Need Help?</MudButton>
+                <MudButton Href="/Landing#track" Variant="Variant.Text" Class="landing-nav-button">Track</MudButton>
+                <MudButton Href="/Vendor-Registration" Variant="Variant.Text" Class="landing-nav-button">Join Us!</MudButton>
+                <MudButton Href="/Authentication/Local-Login"
+                           Variant="Variant.Filled"
+                           DropShadow="false"
+                           Class="landing-login-button">
+                    Log In
+                </MudButton>
+            </nav>
+        </MudAppBar>
+        <MudMainContent Class="landing-content">
             @Body
         </MudMainContent>
+        <footer class="landing-footer">
+            <div class="footer-left">
+                <MudImage Src="img/logo-pertamina-white-ppn.svg"
+                          Alt="Logo Pertamina Patra Niaga"
+                          Class="footer-pertamina-logo" />
+                <address class="footer-address">
+                    Gedung Wisma Tugu II Lt. 2<br />
+                    Jl. HR. Rasuna Said Kav. C7-9 Setiabudi,<br />
+                    Kuningan, Jakarta Selatan
+                </address>
+                <div class="footer-copyright">
+                    Copyright &copy; @DateTime.Now.Year | Pertamina Patra Niaga. All Rights Reserved.
+                </div>
+            </div>
+            <div class="footer-right">
+                <div class="vendor-contact">
+                    <MudText Typo="Typo.subtitle2" Class="footer-contact-title">Jalur Komunikasi Vendor</MudText>
+                    <MudText Typo="Typo.body2">
+                        Call Center Pertamina telepon ke 135<br />
+                        Menu Utama 2 opsi 4<br />
+                        Layanan Shared Service Center<br />
+                        Email: <MudLink Href="mailto:cp@pertamina.com" Class="footer-link" Style="color: #fff;">cp@pertamina.com</MudLink>
+                    </MudText>
+                </div>
+                <MudImage Src="img/energizing-white.svg"
+                          Alt="Energizing You"
+                          Class="footer-energizing-logo" />
+            </div>
+        </footer>
     </MudLayout>
 </CascadingValue>

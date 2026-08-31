@@ -1,0 +1,22 @@
+<div class="detail-field">
+    <MudText Typo="Typo.caption" Class="detail-label">@Label</MudText>
+    @if (IsLink)
+    {
+        <MudLink Href="@Value" Target="_blank" Class="detail-value">@Value</MudLink>
+    }
+    else
+    {
+        <MudText Typo="Typo.body2" Class="detail-value">@Value</MudText>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public required string Label { get; init; }
+
+    [Parameter, EditorRequired]
+    public required string Value { get; init; }
+
+    [Parameter]
+    public bool IsLink { get; init; }
+}

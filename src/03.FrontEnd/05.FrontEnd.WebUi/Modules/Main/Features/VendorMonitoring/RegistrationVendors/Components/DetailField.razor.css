@@ -1,0 +1,23 @@
+.detail-field {
+    display: grid;
+    grid-template-columns: minmax(130px, .8fr) minmax(180px, 1.4fr);
+    align-items: center;
+    gap: 16px;
+}
+
+.detail-field ::deep .detail-value {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    border: 1px solid var(--mud-palette-lines-inputs);
+    border-radius: 4px;
+    background: var(--mud-palette-surface);
+}
+
+@media (max-width: 600px) {
+    .detail-field {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+}

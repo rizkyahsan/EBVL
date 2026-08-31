@@ -2,58 +2,102 @@
 @layout Layouts.LayoutLanding
 @attribute [AllowAnonymous]
 
-<HtmlHead Title="Login" />
-<div class="landing-container">
-    <div class="pa-8 rounded text-center">
-        <div class="d-flex flex-column justify-center gap-3 mud-height-full">
-            <div class="d-flex flex-column align-center gap-1">
-                <!-- Logo Row -->
-                <MudImage Src="@DisplayInfo.SrcLogo"
-                          Alt="App Logo"
-                          Style="display:block; margin:0 auto; width:100%; max-width:200px; height:auto;" />
+<HtmlHead Title="e-BVL" />
 
-                 <br/>
-                <!-- App Nickname Row -->
-                <MudText Typo="Typo.h1" Align="Align.Center">
-                    Welcome to @AppConfigFrontEndOptions.Value.AppNickName
-                </MudText>
+<main class="public-landing">
+    <section class="hero-section" aria-label="e-BVL highlights">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <MudText Typo="Typo.overline" Class="hero-eyebrow">ELECTRONIC BRAND VENDOR LIST</MudText>
+            <MudText Typo="Typo.h1" Class="hero-title">@_slides[_activeSlide].Title</MudText>
+            <MudText Typo="Typo.subtitle1" Class="hero-description">@_slides[_activeSlide].Description</MudText>
+            <MudButton Href="@_slides[_activeSlide].ActionUrl"
+                       Variant="Variant.Filled"
+                       DropShadow="false"
+                       Class="hero-action">
+                @_slides[_activeSlide].ActionText
+            </MudButton>
+        </div>
+        <button type="button" class="carousel-button carousel-previous" aria-label="Previous headline" @onclick="PreviousSlide">
+            <MudIcon Icon="@Icons.Material.Filled.ChevronLeft" />
+        </button>
+        <button type="button" class="carousel-button carousel-next" aria-label="Next headline" @onclick="NextSlide">
+            <MudIcon Icon="@Icons.Material.Filled.ChevronRight" />
+        </button>
+        <div class="carousel-indicators" aria-label="Select headline">
+            @for (var index = 0; index < _slides.Length; index++)
+            {
+                var slideIndex = index;
+                <button type="button"
+                        class="@($"carousel-indicator{(_activeSlide == slideIndex ? " active" : string.Empty)}")"
+                        aria-label="@($"Show headline {slideIndex + 1}")"
+                        @onclick="@(() => SelectSlide(slideIndex))"></button>
+            }
+        </div>
+    </section>
 
-                <!-- Login Instructions -->
-                <MudText Typo="Typo.body1" Class="mb-4" Align="Align.Center">
-                    Please <b>log in</b> with your account to get started.
-                </MudText>
+    <section class="landing-section opportunity-section" aria-labelledby="opportunity-title">
+        <div class="section-heading">
+            <MudText Typo="Typo.h2" id="opportunity-title">Building the nation together with us</MudText>
+            <MudText Typo="Typo.body1">Register now and grow through transparent, trusted vendor opportunities.</MudText>
+        </div>
+        <div class="opportunity-grid">
+            @foreach (var item in _opportunities)
+            {
+                <article class="opportunity-card">
+                    <div class="card-icon"><MudIcon Icon="@item.Icon" /></div>
+                    <MudText Typo="Typo.h5">@item.Title</MudText>
+                    <MudText Typo="Typo.body2">@item.Description</MudText>
+                    <MudLink Href="@item.ActionUrl" Class="card-link">@item.ActionText <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" /></MudLink>
+                </article>
+            }
+        </div>
+    </section>
 
-                <!-- Login Buttons -->
-                <MudStack Row="true">
-                    <a href="@_loginRoute" class="rounded border px-5 py-4 mud-border-lines-default button-login">
-                        <div class="d-flex align-center gap-2">
-                            <img src="img/logo-p.jpg" alt="@CommonDisplayTextFor.IdAMan" width="24" height="24" />
-                            <span>
-                                @($"{CommonDisplayTextFor.Login} Internal")
-                            </span>
-                        </div>
-                    </a>
-                    <MudDivider Vertical="true" FlexItem="true" />
-                    <a href="@_localLoginRoute" class="rounded border px-5 py-4 mud-border-lines-default button-login">
-                        <div class="d-flex align-center gap-2">
-                            <span>
-                                @($"{CommonDisplayTextFor.Login} External")
-                            </span>
-                        </div>
-                    </a>
-                </MudStack>
+    <section id="faq" class="landing-section faq-section" aria-labelledby="faq-title">
+        <div class="section-heading">
+            <MudText Typo="Typo.h2" id="faq-title">Frequently Asked Questions</MudText>
+            <MudText Typo="Typo.body1">Find quick answers about registration and verification in e-BVL.</MudText>
+        </div>
+        <MudExpansionPanels MultiExpansion="true" Class="faq-panels">
+            @foreach (var faq in _faqs)
+            {
+                <MudExpansionPanel Text="@faq.Question" Class="faq-panel">
+                    <MudText Typo="Typo.body2">@faq.Answer</MudText>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </section>
+
+    <section id="track" class="landing-section tracking-section" aria-labelledby="tracking-title">
+        <div class="tracking-card">
+            <div class="tracking-copy">
+                <MudText Typo="Typo.overline">VENDOR REGISTRATION</MudText>
+                <MudText Typo="Typo.h2" id="tracking-title">Track your registration status</MudText>
+                <MudText Typo="Typo.body1">Enter the SAP vendor number used during registration to see its latest progress.</MudText>
+            </div>
+            <div class="tracking-form">
+                <MudTextField @bind-Value="_sapVendorNumber"
+                              Label="SAP Vendor Number"
+                              Placeholder="Example: 647122345"
+                              Variant="Variant.Outlined"
+                              Immediate="true"
+                              MaxLength="20"
+                              Error="@(!string.IsNullOrEmpty(_trackingError))"
+                              ErrorText="@_trackingError" />
+                <MudButton Variant="Variant.Filled"
+                           DropShadow="false"
+                           Class="tracking-button"
+                           OnClick="TrackRegistration">
+                    Track Now
+                </MudButton>
+                @if (_trackingResult is not null)
+                {
+                    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="tracking-result">
+                        @_trackingResult
+                    </MudAlert>
+                }
             </div>
         </div>
-    </div>
-    <div class="pa-4">
-        <Paper25 class="mud-height-full">
-            <div class="illus-container rounded">
-                <div class="d-flex flex-column mud-height-full justify-start pa-8">
-                    <p class="landing-title">
-                        @AppConfigFrontEndOptions.Value.AppNickName
-                    </p>
-                </div>
-            </div>
-        </Paper25>
-    </div>
-</div>
+    </section>
+</main>

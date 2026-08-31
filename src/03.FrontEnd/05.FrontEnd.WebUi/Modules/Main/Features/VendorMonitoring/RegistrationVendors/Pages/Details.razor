@@ -1,0 +1,86 @@
+@page "/VendorMonitoring/RegistrationVendors/{VendorRegistrationId:guid}"
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorMonitoring.RegistrationVendors.Components
+@using EBVL.Shared.Statics.VendorRegistrations
+@inherits PageBase
+@attribute [Authorize]
+
+<HtmlHead Title="@VendorMonitoringRegistrationVendorsDisplayTextFor.DetailRegistrationVendor" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<ErrorViewer Exception="@(_exception)" />
+<LoadingOverlay IsVisible="@_isLoading" />
+
+@if (_item is not null)
+{
+    <MudPaper Elevation="1" Class="detail-card vendor-summary">
+        <MudText Typo="Typo.h4" Class="detail-heading">@VendorMonitoringRegistrationVendorsDisplayTextFor.DetailRegistrationVendor</MudText>
+        <MudText Typo="Typo.h6" Class="vendor-address">@_item.CompanyName - @_item.FactoryAddress</MudText>
+
+        <div class="detail-grid">
+            <div class="field-panel">
+                <DetailField Label="Email Perusahaan" Value="@_item.CompanyEmail" />
+                <DetailField Label="Email PIC" Value="@_item.PicEmail" />
+                <DetailField Label="Nomor Kontak Perusahaan" Value="@_item.CompanyPhoneNumber" />
+                <DetailField Label="Nomor Kontak PIC" Value="@_item.PicPhoneNumber" />
+                <DetailField Label="Website Perusahaan" Value="@_item.Website" IsLink="true" />
+            </div>
+            <div class="field-panel">
+                <DetailField Label="Layanan Perusahaan" Value="@_item.CompanyService" />
+                <DetailField Label="Alamat Lokasi Pabrik" Value="@_item.FactoryAddress" />
+                <DetailField Label="Pemilik / Perwakilan Brand" Value="@_item.BrandRepresentative" />
+                <DetailField Label="Status Perusahaan" Value="@_item.CompanyStatus" />
+                <DetailField Label="NO SAP Vendor" Value="@_item.SapVendorNumber" />
+                <DetailField Label="NO NPWP Vendor" Value="@_item.TaxNumber" />
+            </div>
+        </div>
+
+        <div class="document-grid">
+            @foreach (var document in _documents)
+            {
+                <div class="document-row">
+                    <MudText Typo="Typo.caption">@document.Name</MudText>
+                    <MudLink OnClick="@(() => PreviewDocument(document.FileName))">@document.FileName</MudLink>
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Warning" Variant="Variant.Filled"
+                                   aria-label="@($"View {document.Name}")" OnClick="@(() => PreviewDocument(document.FileName))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Secondary" Variant="Variant.Filled"
+                                   aria-label="@($"Download {document.Name}")" OnClick="@(() => DownloadDocument(document.FileName))" />
+                </div>
+            }
+        </div>
+    </MudPaper>
+
+    <MudPaper Elevation="1" Class="detail-card questionnaire-card">
+        <MudText Typo="Typo.h4" Class="detail-heading">HASIL QUESTIONNAIRE VENDOR</MudText>
+        <div class="questionnaire-grid">
+            @foreach (var section in QuestionnaireFor.All.GroupBy(question => question.Section))
+            {
+                <section class="question-section">
+                    <MudText Typo="Typo.h5" Class="section-title">@section.Key</MudText>
+                    <div class="question-list">
+                        @foreach (var question in section)
+                        {
+                            <div class="question-row">
+                                <MudText Typo="Typo.caption">@question.Number. @(question.IsRequired ? "*" : string.Empty) @question.Label</MudText>
+                                <MudTextField Value="@GetAnswer(question.Number)" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudLink Class="attachment-link" OnClick="@(() => PreviewDocument(GetQuestionFileName(question.Number)))">attached</MudLink>
+                            </div>
+                        }
+                    </div>
+                </section>
+            }
+        </div>
+
+        <MudPaper Elevation="0" Class="evaluation-panel">
+            @if (_isSeniorManager)
+            {
+                <MudText>Nilai evaluasi vendor: <strong>@_evaluationScore</strong></MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="SubmitApproval">APPROVE VENDOR</MudButton>
+            }
+            else
+            {
+                <MudText Typo="Typo.caption">NILAI EVALUASI VENDOR</MudText>
+                <MudNumericField T="int?" @bind-Value="_evaluationScore" Min="0" Max="100" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Disabled="@(_evaluationScore is null)" OnClick="SubmitEvaluation">SUBMIT EVALUASI</MudButton>
+            }
+        </MudPaper>
+    </MudPaper>
+}

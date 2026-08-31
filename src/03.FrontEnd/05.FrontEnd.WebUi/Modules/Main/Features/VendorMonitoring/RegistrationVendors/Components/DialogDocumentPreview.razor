@@ -1,0 +1,17 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6" Class="mb-4">@FileName</MudText>
+        <MudPaper Elevation="0" Class="preview-panel">
+            <MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" Color="Color.Error" Size="Size.Large" />
+            <MudText>Preview dokumen @FileName</MudText>
+            <MudText Typo="Typo.caption">Konten file akan ditampilkan di sini setelah terhubung ke file storage backend.</MudText>
+        </MudPaper>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [Parameter, EditorRequired]
+    public required string FileName { get; init; }
+}

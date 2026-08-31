@@ -34,7 +34,7 @@ public partial class DocumentEvidenceForm
 
     private static int GetDocumentNumber(string key)
     {
-        return EBVL.Shared.Statics.VendorRegistrations.DocumentEvidenceFor.All
+        return Shared.Statics.VendorRegistrations.DocumentEvidenceFor.All
             .Select((document, index) => new { document.Key, Number = index + 1 })
             .Single(document => document.Key == key).Number;
     }

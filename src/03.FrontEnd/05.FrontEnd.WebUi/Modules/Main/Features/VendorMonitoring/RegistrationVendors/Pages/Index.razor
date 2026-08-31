@@ -1,0 +1,46 @@
+@page "/VendorMonitoring/RegistrationVendors"
+@using EBVL.Shared.Dto.Modules.Main.VendorMonitoring.GetVendorRegistrations
+@inherits PageBase
+@attribute [Authorize]
+
+<HtmlHead Title="@VendorMonitoringRegistrationVendorsDisplayTextFor.RegistrationVendor" />
+<Breadcrumbs Items="@(_breadcrumbItems)" />
+<PageHeader Title="@VendorMonitoringRegistrationVendorsDisplayTextFor.RegistrationVendor" />
+<ErrorViewer Exception="@(_exception)" />
+<LoadingOverlay IsVisible="@_isLoading" />
+
+<section class="vendor-monitoring-content">
+    <TableDefault Items="_items"
+                  Loading="@(_isLoading)"
+                  Filter="FilterItems"
+                  Class="vendor-registration-table"
+                  RowsPerPage="10">
+        <ToolBarContent>
+            <MudSpacer />
+                <TextFieldSearch @bind-Value="_searchKeyword" Placeholder="Search Vendor" />
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh Class="number-column">@VendorMonitoringRegistrationVendorsDisplayTextFor.Number</MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<VendorRegistrationItem, object>(item => item.VendorName)" InitialDirection="SortDirection.Ascending">@VendorMonitoringRegistrationVendorsDisplayTextFor.VendorName</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<VendorRegistrationItem, object>(item => item.SubmittedBy)">@VendorMonitoringRegistrationVendorsDisplayTextFor.SubmittedBy</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<VendorRegistrationItem, object>(item => item.Brand)">@VendorMonitoringRegistrationVendorsDisplayTextFor.Brand</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<VendorRegistrationItem, object>(item => item.ServiceType)">@VendorMonitoringRegistrationVendorsDisplayTextFor.ServiceType</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<VendorRegistrationItem, object>(item => item.Status)">@VendorMonitoringRegistrationVendorsDisplayTextFor.Status</MudTableSortLabel></MudTh>
+            <MudTh Class="action-column">@CommonDisplayTextFor.Action</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="@VendorMonitoringRegistrationVendorsDisplayTextFor.Number" Class="number-column">@context.Number</MudTd>
+            <MudTd DataLabel="@VendorMonitoringRegistrationVendorsDisplayTextFor.VendorName"><MudHighlighter Text="@context.VendorName" HighlightedText="@_searchKeyword" /></MudTd>
+            <MudTd DataLabel="@VendorMonitoringRegistrationVendorsDisplayTextFor.SubmittedBy"><MudHighlighter Text="@context.SubmittedBy" HighlightedText="@_searchKeyword" /></MudTd>
+            <MudTd DataLabel="@VendorMonitoringRegistrationVendorsDisplayTextFor.Brand"><MudHighlighter Text="@context.Brand" HighlightedText="@_searchKeyword" /></MudTd>
+            <MudTd DataLabel="@VendorMonitoringRegistrationVendorsDisplayTextFor.ServiceType">@context.ServiceType</MudTd>
+            <MudTd DataLabel="@VendorMonitoringRegistrationVendorsDisplayTextFor.Status">@context.Status</MudTd>
+            <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="action-column">
+                <ButtonDetails Size="Size.Small" OnClick="@(() => ShowDetails(context.Id))" />
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="@(new[] { 10, 25, 50 })" />
+        </PagerContent>
+    </TableDefault>
+</section>

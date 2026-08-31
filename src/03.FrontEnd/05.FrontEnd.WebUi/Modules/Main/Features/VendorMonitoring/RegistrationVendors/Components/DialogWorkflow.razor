@@ -1,0 +1,36 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <div class="workflow-dialog">
+            <MudText Typo="Typo.h4" Align="Align.Center" Class="workflow-title">@Title</MudText>
+            <MudPaper Elevation="0" Class="workflow-panel">
+                <MudText Typo="Typo.h6" Align="Align.Center">@Message</MudText>
+                <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="workflow-actions">
+                    <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="Confirm">@ConfirmText</MudButton>
+                    @if (ShowCancel)
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="CloseDialog">Tidak</MudButton>
+                    }
+                </MudStack>
+            </MudPaper>
+        </div>
+    </DialogContent>
+</MudDialog>
+
+@code {
+    [Parameter, EditorRequired]
+    public required string Title { get; init; }
+
+    [Parameter, EditorRequired]
+    public required string Message { get; init; }
+
+    [Parameter]
+    public string ConfirmText { get; init; } = "Back";
+
+    [Parameter]
+    public bool ShowCancel { get; init; }
+
+    private void Confirm() => Dialog.Close(DialogResult.Ok(true));
+    private void CloseDialog() => Dialog.Cancel();
+}

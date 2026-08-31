@@ -1,0 +1,5 @@
+.workflow-dialog { padding: 18px; }
+.workflow-dialog ::deep .workflow-title { margin-bottom: 28px; font-weight: 700; }
+.workflow-dialog ::deep .workflow-panel { padding: 42px 28px; border-radius: 18px; background: var(--mud-palette-background-gray); }
+.workflow-dialog ::deep .workflow-actions { padding-top: 30px; }
+.workflow-dialog ::deep .mud-button-root { min-width: 86px; }
