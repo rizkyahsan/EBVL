@@ -8,9 +8,6 @@ public partial class SapVendorForm
     public required SapVendorRequest Model { get; init; }
 
     [Parameter]
-    public required EventCallback OnBack { get; init; }
-
-    [Parameter]
     public required EventCallback<SapVendorRequest> OnNext { get; init; }
 
     private MudForm _form = default!;

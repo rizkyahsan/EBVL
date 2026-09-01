@@ -2,39 +2,25 @@
 @using EBVL.Shared.Statics.VendorRegistrations
 
 <div class="question-section-scope">
-<MudPaper Elevation="1" Class="question-section">
-    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="section-header">
-        <MudText Typo="Typo.h5" Class="section-title">@Title</MudText>
-        @HeaderContent
-    </MudStack>
-
-    <MudPaper Elevation="0" Class="question-panel">
-        <MudGrid Spacing="2" Class="align-center">
+        <MudGrid Spacing="3">
             @foreach (var question in Questions)
             {
                 var answer = GetAnswer(question.Number);
-                <MudItem xs="12" sm="5">
-                    <MudText Typo="Typo.body2">
-                        @question.Number. @(question.IsRequired ? "*" : string.Empty) @question.Label
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.body2" Class="question-label">
+                        @question.Label <span class="question-mark">@(question.IsRequired ? "*" : "**")</span>
                     </MudText>
-                    @if (!string.IsNullOrWhiteSpace(question.Hint))
-                    {
-                        <MudText Typo="Typo.caption" Color="Color.Secondary"><i>@question.Hint</i></MudText>
-                    }
-                </MudItem>
-                <MudItem xs="12" sm="7">
                     @if (question.IsFileUpload)
                     {
                         var fileInputId = $"question-file-{question.Number}";
                         <div class="file-upload-control @(Disabled ? "file-upload-disabled" : null)">
-                            <InputFile id="@fileInputId" class="file-input" OnChange="eventArgs => UploadFile(question.Number, eventArgs)" disabled="@Disabled" />
+                            <InputFile id="@fileInputId" class="file-input" OnChange="eventArgs => UploadFile(question.Number, eventArgs)" accept="application/pdf,.pdf" disabled="@Disabled" />
                             <label for="@fileInputId" class="file-browser">
-                                <MudIcon Icon="@Icons.Material.Filled.Search" />
-                                <span>@(answer.FileName ?? "browse in folder")</span>
+                                <span>@(answer.FileName ?? "Upload File")</span>
                             </label>
-                            <label for="@fileInputId" class="file-upload-button">
-                                <MudIcon Icon="@Icons.Material.Filled.Upload" />
-                                <span>Upload File</span>
+                            <label for="@fileInputId" class="file-upload-button mud-button-root mud-button-size-medium">
+                                <MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Small" />
+                                <span>Upload</span>
                             </label>
                         </div>
                     }
@@ -54,6 +40,4 @@
                 </MudItem>
             }
         </MudGrid>
-    </MudPaper>
-</MudPaper>
 </div>

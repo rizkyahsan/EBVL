@@ -9,7 +9,7 @@ public partial class QuestionnaireForm
     public required QuestionnaireRequest Model { get; init; }
 
     [Parameter]
-    public required EventCallback<QuestionnaireRequest> OnReject { get; init; }
+    public required EventCallback OnBack { get; init; }
 
     [Parameter]
     public required EventCallback<QuestionnaireRequest> OnNext { get; init; }
@@ -21,16 +21,24 @@ public partial class QuestionnaireForm
     private readonly QuestionnaireRequestValidator _validator = new();
     private string? _validationError;
 
-    private static IReadOnlyList<VendorQuestionDefinition> GeneralInformationQuestions => QuestionsFor(QuestionnaireFor.GeneralInformation);
-    private static IReadOnlyList<VendorQuestionDefinition> VendorRepresentativeQuestions => QuestionsFor(QuestionnaireFor.VendorRepresentativeOffice);
-    private static IReadOnlyList<VendorQuestionDefinition> SoleAgentQuestions => QuestionsFor(QuestionnaireFor.SoleAgent);
-    private static IReadOnlyList<VendorQuestionDefinition> ProductQualityGeneralQuestions => QuestionsFor(QuestionnaireFor.ProductQualityGeneral);
-    private static IReadOnlyList<VendorQuestionDefinition> ProductQualitySpecificQuestions => QuestionsFor(QuestionnaireFor.ProductQualitySpecific);
-    private static IReadOnlyList<VendorQuestionDefinition> ProductPositioningQuestions => QuestionsFor(QuestionnaireFor.ProductPositioning);
+    private static IReadOnlyList<VendorQuestionDefinition> VendorRepresentativeQuestions => QuestionsFor(QuestionnaireFor.VendorRepresentativeOffice, [14, 17, 15, 18, 16, 19]);
+    private static IReadOnlyList<VendorQuestionDefinition> SoleAgentQuestions => QuestionsFor(QuestionnaireFor.SoleAgent, [20, 24, 21, 25, 22, 26, 23]);
+    private static IReadOnlyList<VendorQuestionDefinition> ProductQualityGeneralQuestions => QuestionsFor(QuestionnaireFor.ProductQualityGeneral, [27, 30, 28, 31, 29, 32]);
+    private static IReadOnlyList<VendorQuestionDefinition> ProductQualitySpecificQuestions => QuestionsFor(QuestionnaireFor.ProductQualitySpecific, [33, 39, 34, 40, 35, 41, 36, 42, 37, 43, 38, 44]);
+    private static IReadOnlyList<VendorQuestionDefinition> ProductPositioningQuestions => QuestionsFor(QuestionnaireFor.ProductPositioning, [45, 48, 46, 49, 47, 50]);
 
-    private static IReadOnlyList<VendorQuestionDefinition> QuestionsFor(string section)
+    private static IReadOnlyList<VendorQuestionDefinition> QuestionsFor(string section, IReadOnlyList<int> order)
     {
-        return [.. QuestionnaireFor.All.Where(question => question.Section == section)];
+        var positions = order
+            .Select((number, index) => new { number, index })
+            .ToDictionary(item => item.number, item => item.index);
+
+        return
+        [
+            .. QuestionnaireFor.All
+                .Where(question => question.Section == section)
+                .OrderBy(question => positions[question.Number])
+        ];
     }
 
     private Task NotifyChanged()
@@ -47,7 +55,6 @@ public partial class QuestionnaireForm
     private async Task Submit()
     {
         _validationError = null;
-        Model.IsSubmitQuestionnaire = true;
         await _form.Validate();
         var validationResult = await _validator.ValidateAsync(Model);
 
@@ -57,13 +64,7 @@ public partial class QuestionnaireForm
             return;
         }
 
+        Model.IsSubmitQuestionnaire = true;
         await OnNext.InvokeAsync(Model);
-    }
-
-    private async Task Reject()
-    {
-        Model.IsSubmitQuestionnaire = false;
-        await OnChanged.InvokeAsync(Model);
-        await OnReject.InvokeAsync(Model);
     }
 }

@@ -3,8 +3,56 @@
 @attribute [AllowAnonymous]
 @using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
 
-<HtmlHead Title="Kuesioner Pra-Registrasi Vendor" />
+<HtmlHead Title="Process Register" />
 
-<RegistrationShell Wide="true">
-    <PreRegistrationForm Model="_model" OnBack="BackToSap" OnNext="ContinueRegistration" />
-</RegistrationShell>
+<main class="registration-step-page">
+    <MudText Typo="Typo.h1" Align="Align.Center" Class="process-title">Process Register</MudText>
+
+    <MudButton Variant="Variant.Text"
+               Color="Color.Inherit"
+               StartIcon="@Icons.Material.Filled.ArrowBack"
+               Class="guidance-back"
+               OnClick="BackToGuidance">
+        Back to guidance
+    </MudButton>
+
+    <nav class="registration-steps" aria-label="Registration progress">
+        <div class="registration-step active">
+            <span>1</span>
+            <p>Company<br />Profile</p>
+        </div>
+        <div class="registration-step">
+            <span>2</span>
+            <p>Document<br />Evidence</p>
+        </div>
+        <div class="registration-step">
+            <span>3</span>
+            <p>Questionnaire</p>
+        </div>
+        <div class="registration-step">
+            <span>4</span>
+            <p>Review</p>
+        </div>
+    </nav>
+
+    <section class="registration-sections">
+        <MudExpansionPanels MultiExpansion="true" Elevation="0">
+            <MudExpansionPanel Text="Check SAP Number"
+                               Expanded="_sapExpanded"
+                               ExpandedChanged="SetSapExpanded"
+                               Class="registration-panel">
+                <SapVendorForm Model="_sapModel" OnNext="FindSapVendor" />
+            </MudExpansionPanel>
+
+            @if (_sapFound)
+            {
+                <MudExpansionPanel Text="Company Profile"
+                                   Expanded="_profileExpanded"
+                                   ExpandedChanged="SetProfileExpanded"
+                                   Class="registration-panel">
+                    <PreRegistrationForm Model="_model" OnNext="ContinueRegistration" />
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </section>
+</main>

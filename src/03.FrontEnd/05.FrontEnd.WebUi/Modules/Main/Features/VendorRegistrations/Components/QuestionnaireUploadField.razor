@@ -1,0 +1,10 @@
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire
+
+<div class="questionnaire-upload-field">
+    <label class="upload-label">@Label @if (!string.IsNullOrWhiteSpace(Mark)) { <span>@Mark</span> }</label>
+    <div class="upload-control">
+        <InputFile id="@InputId" class="upload-input" OnChange="UploadFile" accept="application/pdf,.pdf" />
+        <label for="@InputId" class="upload-file-name">@(Answer.FileName ?? "Upload File")</label>
+        <label for="@InputId" class="upload-button mud-button-root mud-button-size-medium">Upload</label>
+    </div>
+</div>

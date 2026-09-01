@@ -39,9 +39,15 @@ public partial class Review
 
         await RegistrationState.RestoreAsync();
 
-        if (RegistrationState.PreRegistration is null ||
-            RegistrationState.DocumentEvidence is null ||
-            RegistrationState.DocumentEvidence.Documents.Any(document => string.IsNullOrWhiteSpace(document.FileName)))
+        if (!RegistrationState.IsStepTwoCompleted)
+        {
+            NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepTwo);
+            return;
+        }
+
+        if (!RegistrationState.IsStepThreeCompleted ||
+            RegistrationState.PreRegistration is null ||
+            RegistrationState.DocumentEvidence is null)
         {
             NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepThree);
             return;

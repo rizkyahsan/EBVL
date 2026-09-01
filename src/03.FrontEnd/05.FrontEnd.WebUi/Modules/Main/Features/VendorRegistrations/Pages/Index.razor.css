@@ -1,0 +1,191 @@
+.register-guidance {
+    padding: clamp(64px, 8vw, 120px) clamp(24px, 6vw, 100px);
+    background: var(--mud-palette-background);
+    color: var(--mud-palette-text-primary);
+    font-family: Roboto, Arial, sans-serif;
+}
+
+.guidance-intro {
+    max-width: 1050px;
+    margin: 0 auto clamp(48px, 7vw, 84px);
+    text-align: center;
+}
+
+.guidance-intro ::deep .guidance-eyebrow {
+    color: #2196f3;
+    font-weight: 700;
+    letter-spacing: .16em;
+}
+
+.guidance-intro ::deep .guidance-title {
+    margin: 8px 0 20px;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 300;
+    line-height: 1.05;
+}
+
+.guidance-intro ::deep .guidance-description {
+    max-width: 920px;
+    margin: auto;
+    color: var(--mud-palette-text-secondary);
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    line-height: 1.65;
+}
+
+.guidance-grid {
+    width: min(1500px, 100%);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(20px, 3vw, 40px);
+    margin: auto;
+}
+
+.guidance-card {
+    min-height: 430px;
+    display: flex;
+    flex-direction: column;
+    padding: clamp(24px, 3vw, 40px);
+    border: 2px solid #64b5f6;
+    border-radius: 4px;
+    background: color-mix(in srgb, #64b5f6 17%, var(--mud-palette-surface));
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.guidance-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 40px rgba(33, 150, 243, .16);
+}
+
+.guidance-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 22px;
+    margin-bottom: 28px;
+}
+
+.guidance-number {
+    flex: 0 0 auto;
+    color: var(--mud-palette-text-secondary);
+    font-size: clamp(4rem, 6vw, 6rem);
+    font-weight: 300;
+    line-height: .85;
+}
+
+.guidance-card-title {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 4px;
+    align-items: end;
+}
+
+.guidance-card-title ::deep .mud-icon-root {
+    color: #2196f3;
+    font-size: 34px;
+}
+
+.guidance-card-title ::deep .mud-typography {
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.guidance-card ::deep .guidance-card-description {
+    color: var(--mud-palette-text-secondary);
+    line-height: 1.7;
+}
+
+.guidance-checklist {
+    display: grid;
+    gap: 12px;
+    margin: auto 0 0;
+    padding: 28px 0 0;
+    list-style: none;
+}
+
+.guidance-checklist li {
+    position: relative;
+    padding-left: 26px;
+    color: var(--mud-palette-text-secondary);
+    font-size: .875rem;
+    line-height: 1.5;
+}
+
+.guidance-checklist li::before {
+    content: "";
+    position: absolute;
+    top: 7px;
+    left: 2px;
+    width: 9px;
+    height: 5px;
+    border-bottom: 2px solid #2196f3;
+    border-left: 2px solid #2196f3;
+    transform: rotate(-45deg);
+}
+
+.guidance-action {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(40px, 6vw, 72px);
+}
+
+.guidance-action ::deep .guidance-start-button {
+    min-width: 190px;
+    min-height: 64px;
+    border-color: #2196f3;
+    color: #2196f3;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: none;
+}
+
+@media (max-width: 1050px) {
+    .guidance-grid {
+        grid-template-columns: 1fr;
+        max-width: 720px;
+    }
+
+    .guidance-card {
+        min-height: 340px;
+    }
+
+    .guidance-number {
+        font-size: 5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .register-guidance {
+        padding: 48px 18px 56px;
+    }
+
+    .guidance-intro {
+        margin-bottom: 38px;
+    }
+
+    .guidance-intro ::deep .guidance-title {
+        font-size: 2.8rem;
+    }
+
+    .guidance-card {
+        min-height: 0;
+        padding: 24px 20px;
+    }
+
+    .guidance-card-header {
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .guidance-number {
+        font-size: 4rem;
+    }
+
+    .guidance-card-title ::deep .mud-typography {
+        font-size: 1.45rem;
+    }
+
+    .guidance-action ::deep .guidance-start-button {
+        width: 100%;
+    }
+}

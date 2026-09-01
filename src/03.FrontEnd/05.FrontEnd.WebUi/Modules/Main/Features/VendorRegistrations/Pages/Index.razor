@@ -1,10 +1,82 @@
 @page "/Vendor-Registration"
 @layout Layouts.LayoutLanding
 @attribute [AllowAnonymous]
-@using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
 
-<HtmlHead Title="Registrasi Vendor" />
+<HtmlHead Title="Register Guidance" />
 
-<RegistrationShell>
-    <RegistrationWelcome OnBack="BackToLogin" OnRegister="OpenSapForm" />
-</RegistrationShell>
+<main class="register-guidance">
+    <section class="guidance-intro">
+        <MudText Typo="Typo.overline" Class="guidance-eyebrow">ELECTRONIC BRAND VENDOR LIST</MudText>
+        <MudText Typo="Typo.h1" Class="guidance-title">Register Guidance</MudText>
+        <MudText Typo="Typo.subtitle1" Class="guidance-description">
+            Complete these three registration stages to submit your company and brand for evaluation.
+            Prepare accurate information and PDF evidence before starting the process.
+        </MudText>
+    </section>
+
+    <section class="guidance-grid" aria-label="Vendor registration stages">
+        <article class="guidance-card">
+            <div class="guidance-card-header">
+                <span class="guidance-number">1</span>
+                <div class="guidance-card-title">
+                    <MudIcon Icon="@Icons.Material.Filled.Apartment" />
+                    <MudText Typo="Typo.h4">Detail Company Information</MudText>
+                </div>
+            </div>
+            <MudText Typo="Typo.body1" Class="guidance-card-description">
+                Provide the official identity and contact details of your company, PIC, factory, and represented brand.
+            </MudText>
+            <ul class="guidance-checklist">
+                <li>SAP vendor number and company profile</li>
+                <li>Company and PIC contact information</li>
+                <li>Service, factory, and brand information</li>
+            </ul>
+        </article>
+
+        <article class="guidance-card">
+            <div class="guidance-card-header">
+                <span class="guidance-number">2</span>
+                <div class="guidance-card-title">
+                    <MudIcon Icon="@Icons.Material.Filled.FolderCopy" />
+                    <MudText Typo="Typo.h4">Document Evidence</MudText>
+                </div>
+            </div>
+            <MudText Typo="Typo.body1" Class="guidance-card-description">
+                Upload supporting evidence so the evaluation team can verify the company and brand registration data.
+            </MudText>
+            <ul class="guidance-checklist">
+                <li>Brand registration and company profile</li>
+                <li>Product catalogue and experience list</li>
+                <li>NPWP and primary certificate in PDF</li>
+            </ul>
+        </article>
+
+        <article class="guidance-card">
+            <div class="guidance-card-header">
+                <span class="guidance-number">3</span>
+                <div class="guidance-card-title">
+                    <MudIcon Icon="@Icons.Material.Filled.FactCheck" />
+                    <MudText Typo="Typo.h4">Questionnaire</MudText>
+                </div>
+            </div>
+            <MudText Typo="Typo.body1" Class="guidance-card-description">
+                Answer the vendor questionnaire completely and attach evidence to all applicable questions.
+            </MudText>
+            <ul class="guidance-checklist">
+                <li>General company information</li>
+                <li>Product quality and certification</li>
+                <li>Market positioning and technical support</li>
+            </ul>
+        </article>
+    </section>
+
+    <div class="guidance-action">
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Info"
+                   EndIcon="@Icons.Material.Filled.ArrowForward"
+                   Class="guidance-start-button"
+                   OnClick="OpenSapForm">
+            Start
+        </MudButton>
+    </div>
+</main>

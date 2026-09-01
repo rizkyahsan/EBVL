@@ -1,0 +1,31 @@
+<MudDialog>
+    <DialogContent>
+        <div class="sign-in-dialog">
+            <MudText Typo="Typo.h3" Align="Align.Center" Class="sign-in-title">Sign In</MudText>
+            <div class="sign-in-options">
+                <div class="sign-in-option">
+                    <MudText Typo="Typo.h6">Sign in as Pertamina Officer</MudText>
+                    <MudButton Href="@AuthenticationRouteFor.Login()"
+                               Variant="Variant.Outlined"
+                               Color="Color.Info"
+                               Class="sign-in-button">
+                        <span class="idaman-button-content">
+                            <img src="img/logo-p.jpg" alt="IDAMAN" />
+                            IDAMAN
+                        </span>
+                    </MudButton>
+                </div>
+                <div class="sign-in-option">
+                    <MudText Typo="Typo.h6">Sign in as Vendor</MudText>
+                    <MudButton Href="@AuthenticationRouteFor.VendorLoginPage()"
+                               Variant="Variant.Outlined"
+                               Color="Color.Info"
+                               StartIcon="@Icons.Material.Filled.AccountCircle"
+                               Class="sign-in-button">
+                        Vendor
+                    </MudButton>
+                </div>
+            </div>
+        </div>
+    </DialogContent>
+</MudDialog>

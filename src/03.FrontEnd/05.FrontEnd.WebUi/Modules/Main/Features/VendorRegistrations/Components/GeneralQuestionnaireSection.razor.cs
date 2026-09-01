@@ -1,18 +1,12 @@
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire;
-using EBVL.Shared.Statics.VendorRegistrations;
+using System.Text.Json;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components;
 
-public partial class QuestionnaireSection
+public partial class GeneralQuestionnaireSection
 {
     [Parameter]
-    public required IReadOnlyList<VendorQuestionDefinition> Questions { get; init; }
-
-    [Parameter]
     public required QuestionnaireRequest Model { get; init; }
-
-    [Parameter]
-    public bool Disabled { get; init; }
 
     [Parameter]
     public EventCallback OnChanged { get; init; }
@@ -28,9 +22,9 @@ public partial class QuestionnaireSection
         await OnChanged.InvokeAsync();
     }
 
-    private async Task UploadFile(int questionNumber, InputFileChangeEventArgs eventArgs)
+    private async Task AddressChanged(int questionNumber, QuestionnaireAddressRequest address)
     {
-        GetAnswer(questionNumber).FileName = eventArgs.File.Name;
+        GetAnswer(questionNumber).Value = JsonSerializer.Serialize(address);
         await OnChanged.InvokeAsync();
     }
 }

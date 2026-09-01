@@ -3,14 +3,50 @@
 @attribute [AllowAnonymous]
 @using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
 
-<HtmlHead Title="Registrasi Vendor Tahap 3" />
+<HtmlHead Title="Questionnaire" />
 <LoadingOverlay IsVisible="_isRestoring" />
 
-<RegistrationShell Wide="true">
-    <DocumentEvidenceForm Model="_model"
-                          AvailableFileKeys="@RegistrationState.SelectedFiles.Keys"
-                          OnFileSelected="SelectFile"
-                          OnFileRemoved="RemoveFile"
-                          OnBack="BackToStepTwo"
-                          OnSubmit="SubmitRegistration" />
-</RegistrationShell>
+<main class="registration-step-page">
+    <MudText Typo="Typo.h1" Align="Align.Center" Class="process-title">Process Register</MudText>
+
+    <MudButton Variant="Variant.Text"
+               Color="Color.Inherit"
+               Size="Size.Medium"
+               StartIcon="@Icons.Material.Filled.ArrowBack"
+               Class="guidance-back"
+               OnClick="BackToGuidance">
+        Back to guidance
+    </MudButton>
+
+    <nav class="registration-steps" aria-label="Registration progress">
+        <div class="registration-step completed"><span>1</span><p>Company<br />Profile</p></div>
+        <div class="registration-step completed"><span>2</span><p>Document<br />Evidence</p></div>
+        <div class="registration-step active"><span>3</span><p>Questionnaire</p></div>
+        <div class="registration-step"><span>4</span><p>Review</p></div>
+    </nav>
+
+    <section class="questionnaire-content">
+        <MudExpansionPanels Elevation="0">
+            <MudExpansionPanel Text="Notes:" Expanded="true" Class="notes-panel">
+                <ol>
+                    <li>The Brand Vendor Equipment Questionnaire Form shall be filled out by the Vendor / Sole Agent / RO.</li>
+                    <li>The Brand Vendor Equipment Questionnaire Form shall be signed by the Director of Manufacture (Principal).</li>
+                    <li>The Brand Vendor Equipment Questionnaire Form shall be attached with all supporting evidence documents.</li>
+                    <li>Authentication: Must include a color signature and a color stamp.</li>
+                </ol>
+                <div class="questionnaire-legend">
+                    <p>Legend / Marks:</p>
+                    <ul>
+                        <li><span>(*)</span> : Mandatory</li>
+                        <li><span>(**)</span> : Required but not mandatory (affects the assessment)</li>
+                    </ul>
+                </div>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+
+        <QuestionnaireForm Model="_model"
+                           OnBack="BackToStepTwo"
+                           OnNext="ContinueRegistration"
+                           OnChanged="PersistProgress" />
+    </section>
+</main>

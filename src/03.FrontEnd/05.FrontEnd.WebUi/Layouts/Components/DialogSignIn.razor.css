@@ -1,0 +1,59 @@
+.sign-in-dialog {
+    padding: 8px 12px 28px;
+}
+
+.sign-in-dialog ::deep .sign-in-title {
+    margin-bottom: 40px;
+    font-weight: 400;
+}
+
+.sign-in-options {
+    display: grid;
+    gap: 28px;
+}
+
+.sign-in-option {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 140px;
+    align-items: center;
+    gap: 24px;
+}
+
+.sign-in-option ::deep .mud-typography {
+    font-weight: 400;
+}
+
+.sign-in-option ::deep .sign-in-button {
+    min-height: 52px;
+    border-color: #2196f3;
+    color: #2196f3;
+    font-size: .875rem;
+    text-transform: none;
+}
+
+.idaman-button-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.idaman-button-content img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+@media (max-width: 480px) {
+    .sign-in-dialog {
+        padding-inline: 0;
+    }
+
+    .sign-in-option {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .sign-in-option ::deep .sign-in-button {
+        width: 100%;
+    }
+}

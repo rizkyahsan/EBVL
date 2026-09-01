@@ -2,25 +2,14 @@
     width: 100%;
 }
 
-.question-section-scope ::deep .question-section {
-    padding: 18px;
-    border-radius: 12px;
-    background: var(--mud-palette-surface);
+.question-section-scope ::deep .question-label {
+    min-height: 22px;
+    margin-bottom: 8px;
+    color: var(--mud-palette-text-secondary);
 }
 
-.question-section-scope ::deep .section-header {
-    min-height: 40px;
-    margin-bottom: 14px;
-}
-
-.question-section-scope ::deep .section-title {
-    font-weight: 700;
-}
-
-.question-section-scope ::deep .question-panel {
-    padding: 20px;
-    border-radius: 10px;
-    background: var(--mud-palette-background-gray);
+.question-mark {
+    color: #f44336;
 }
 
 .question-section-scope ::deep .mud-input-control,
@@ -28,12 +17,16 @@
     font-size: 14px;
 }
 
+.question-section-scope ::deep .mud-input-slot {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
 .file-upload-control {
     min-height: 40px;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 130px;
-    gap: 10px;
-    box-sizing: border-box;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
 }
 
 .question-section-scope ::deep .file-input {
@@ -48,17 +41,14 @@
     box-sizing: border-box;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .file-browser {
     min-width: 0;
-    gap: 10px;
-    padding: 0 14px;
+    padding: 10px 14px;
     border: 1px solid var(--mud-palette-lines-inputs);
-    background: var(--mud-palette-surface);
     color: var(--mud-palette-text-disabled);
-    font-style: italic;
 }
 
 .file-browser span {
@@ -69,25 +59,24 @@
 
 .file-upload-button {
     justify-content: center;
-    gap: 8px;
+    gap: 5px;
     padding: 0 14px;
-    background: var(--mud-palette-success);
-    color: var(--mud-palette-success-text);
-    font-weight: 700;
+    border: 1px solid #2196f3;
+    color: #2196f3;
+}
+
+.file-upload-button:hover {
+    background: rgba(33, 150, 243, .08);
 }
 
 .file-upload-disabled {
-    cursor: not-allowed;
+    pointer-events: none;
     opacity: .5;
 }
 
 @media (max-width: 600px) {
-    .question-section-scope ::deep .question-section,
-    .question-section-scope ::deep .question-panel {
-        padding: 14px;
-    }
-
     .file-upload-control {
         grid-template-columns: 1fr;
+        gap: 8px;
     }
 }

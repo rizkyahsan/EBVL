@@ -5,27 +5,6 @@
     <DataAnnotationsValidator />
 
     <MudStack Spacing="3" Class="pre-registration-form">
-        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="form-header">
-            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                <MudIcon Icon="@Icons.Material.Filled.FactCheck" Color="Color.Success" />
-                <MudText Typo="Typo.subtitle1" Class="form-title">KUESIONER PRA-REGISTRASI</MudText>
-            </MudStack>
-            <MudChip T="string" Color="Color.Success" Variant="Variant.Filled">Langkah 1 Dari 3</MudChip>
-        </MudStack>
-
-        <MudProgressLinear Value="33.33" Color="Color.Success" Rounded="true" Size="Size.Large" Class="registration-progress" />
-
-        <MudPaper Elevation="0" Class="form-panel sap-panel">
-            <MudGrid Class="align-center" Spacing="2">
-                <MudItem xs="12" sm="4">
-                    <MudText Typo="Typo.body2">No SAP Vendor</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8">
-                    <MudTextField T="string" Value="@Model.SapVendorNumber" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" Class="sap-field" />
-                </MudItem>
-            </MudGrid>
-        </MudPaper>
-
         <MudGrid Spacing="3">
             <MudItem xs="12" lg="6">
                 <MudPaper Elevation="0" Class="form-panel form-column">
@@ -130,8 +109,7 @@
         </MudGrid>
 
         <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="form-actions">
-            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" OnClick="OnBack">BACK</MudButton>
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success">NEXT</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Info" Class="next-button">Next</MudButton>
         </MudStack>
     </MudStack>
 </EditForm>

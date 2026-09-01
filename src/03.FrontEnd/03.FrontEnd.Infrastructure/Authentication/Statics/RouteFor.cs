@@ -10,9 +10,9 @@ public static class RouteFor
         return $"{PrefixFor.Authentication}/{BaseRouteFor.Login}?{QueryStringFor.ReturnUrl}={returnUrl}";
     }
 
-    public static string LocalLoginPage(string? returnUrl = null)
+    public static string VendorLoginPage(string? returnUrl = null)
     {
-        return $"{PrefixFor.Authentication}/{BaseRouteFor.LocalLoginPage}?{QueryStringFor.ReturnUrl}={returnUrl}";
+        return $"{PrefixFor.Authentication}/{BaseRouteFor.VendorLoginPage}?{QueryStringFor.ReturnUrl}={returnUrl}";
     }
 
     public static string Logout(string? returnUrl = null)

@@ -1,0 +1,42 @@
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire
+
+<div class="general-section">
+    <div class="general-column">
+        <div class="general-field">
+            <MudText Typo="Typo.body1">Brand Name <span>*</span></MudText>
+            <MudTextField T="string" Value="@GetAnswer(1).Value" ValueChanged="value => UpdateAnswer(1, value)" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        </div>
+        <div class="general-field">
+            <MudText Typo="Typo.body1">Product <span>*</span></MudText>
+            <MudSelect T="string" Value="@GetAnswer(2).Value" ValueChanged="value => UpdateAnswer(2, value)" Placeholder="Select" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense">
+                <MudSelectItem Value="@("Product")">Product</MudSelectItem>
+                <MudSelectItem Value="@("Service")">Service</MudSelectItem>
+                <MudSelectItem Value="@("Product and Service")">Product and Service</MudSelectItem>
+            </MudSelect>
+        </div>
+        <div class="general-field">
+            <MudText Typo="Typo.body1">Vendor / Company Name <span>*</span></MudText>
+            <MudTextField T="string" Value="@GetAnswer(3).Value" ValueChanged="value => UpdateAnswer(3, value)" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        </div>
+        <div class="general-field">
+            <MudText Typo="Typo.body1">Company Establishment <span>*</span></MudText>
+            <MudTextField T="string" Value="@GetAnswer(4).Value" ValueChanged="value => UpdateAnswer(4, value)" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        </div>
+
+        <QuestionnaireAddressForm Title="Headquarter information" Model="Model.HeadquarterAddress" Required="true" OnChanged="() => AddressChanged(6, Model.HeadquarterAddress)" />
+        <QuestionnaireAddressForm Title="Representative Office information" Model="Model.RepresentativeOfficeAddress" OnChanged="() => AddressChanged(8, Model.RepresentativeOfficeAddress)" />
+    </div>
+
+    <div class="general-column">
+        <div class="general-field">
+            <MudText Typo="Typo.body1">Initial Production <span>*</span></MudText>
+            <MudTextField T="string" Value="@GetAnswer(5).Value" ValueChanged="value => UpdateAnswer(5, value)" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+        </div>
+        <QuestionnaireUploadField Label="Vendor Company Profile" Mark="*" Answer="@GetAnswer(10)" OnChanged="OnChanged" />
+        <QuestionnaireUploadField Label="Sole Agent Company Profile" Answer="@GetAnswer(12)" OnChanged="OnChanged" />
+        <QuestionnaireUploadField Label="The Latest Company Annual Report" Mark="**" Answer="@GetAnswer(13)" OnChanged="OnChanged" />
+
+        <QuestionnaireAddressForm Title="Manufacturing information" Model="Model.ManufacturingAddress" Required="true" OnChanged="() => AddressChanged(7, Model.ManufacturingAddress)" />
+        <QuestionnaireAddressForm Title="Sole Agent Office information" Model="Model.SoleAgentOfficeAddress" OnChanged="() => AddressChanged(9, Model.SoleAgentOfficeAddress)" />
+    </div>
+</div>

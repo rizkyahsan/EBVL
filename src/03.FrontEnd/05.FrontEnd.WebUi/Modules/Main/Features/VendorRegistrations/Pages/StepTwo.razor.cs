@@ -1,5 +1,5 @@
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
-using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire;
+using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Pages;
@@ -12,7 +12,7 @@ public partial class StepTwo
     [Inject]
     public required VendorRegistrationState RegistrationState { get; init; }
 
-    private QuestionnaireRequest _model = new();
+    private DocumentEvidenceRequest _model = new();
     private bool _isRestoring = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -26,11 +26,11 @@ public partial class StepTwo
 
         if (!RegistrationState.IsStepOneCompleted || RegistrationState.PreRegistration is null)
         {
-            NavigationManager.NavigateTo(VendorRegistrationRouteFor.Sap);
+            NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepOne);
             return;
         }
 
-        _model = RegistrationState.Questionnaire ?? new QuestionnaireRequest
+        _model = RegistrationState.DocumentEvidence ?? new DocumentEvidenceRequest
         {
             SapVendorNumber = RegistrationState.PreRegistration.SapVendorNumber
         };
@@ -39,28 +39,34 @@ public partial class StepTwo
         await InvokeAsync(StateHasChanged);
     }
 
-    private void NavigateToStepOne()
+    private void BackToGuidance()
+    {
+        NavigationManager.NavigateTo(VendorRegistrationRouteFor.Index);
+    }
+
+    private void BackToStepOne()
     {
         var sapVendorNumber = RegistrationState.PreRegistration?.SapVendorNumber;
         NavigationManager.NavigateTo(string.IsNullOrWhiteSpace(sapVendorNumber)
-            ? VendorRegistrationRouteFor.Sap
+            ? VendorRegistrationRouteFor.StepOne
             : VendorRegistrationRouteFor.StepOneWith(sapVendorNumber));
     }
 
-    private async Task ContinueRegistration(QuestionnaireRequest model)
+    private async Task SelectFile(string key, IBrowserFile file)
+    {
+        await RegistrationState.SetDocumentAsync(key, file);
+        _model = RegistrationState.DocumentEvidence!;
+    }
+
+    private async Task RemoveFile(string key)
+    {
+        await RegistrationState.RemoveDocumentAsync(key);
+        _model = RegistrationState.DocumentEvidence!;
+    }
+
+    private async Task ContinueRegistration(DocumentEvidenceRequest model)
     {
         await RegistrationState.CompleteStepTwoAsync(model);
         NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepThree);
-    }
-
-    private async Task RejectQuestionnaire(QuestionnaireRequest model)
-    {
-        await RegistrationState.UpdateStepTwoAsync(model);
-        NavigateToStepOne();
-    }
-
-    private Task PersistProgress(QuestionnaireRequest model)
-    {
-        return RegistrationState.UpdateStepTwoAsync(model);
     }
 }

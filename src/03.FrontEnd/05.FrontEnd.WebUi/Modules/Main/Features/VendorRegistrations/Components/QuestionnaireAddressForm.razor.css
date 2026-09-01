@@ -1,0 +1,33 @@
+.address-form {
+    display: grid;
+    gap: 10px;
+    padding-top: 20px;
+}
+
+.address-form ::deep .address-title {
+    margin-bottom: 4px;
+    color: var(--mud-palette-text-secondary);
+}
+
+.address-form span {
+    color: #f44336;
+}
+
+.address-row {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+}
+
+.address-row ::deep .mud-input-slot {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+@media (max-width: 500px) {
+    .address-row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+}

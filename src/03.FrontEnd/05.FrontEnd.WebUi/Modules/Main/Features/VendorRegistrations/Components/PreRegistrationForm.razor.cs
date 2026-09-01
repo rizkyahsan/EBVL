@@ -8,9 +8,6 @@ public partial class PreRegistrationForm
     public required PreRegistrationRequest Model { get; init; }
 
     [Parameter]
-    public required EventCallback OnBack { get; init; }
-
-    [Parameter]
     public required EventCallback<PreRegistrationRequest> OnNext { get; init; }
 
     private void AddBrand()

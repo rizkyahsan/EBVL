@@ -4,11 +4,10 @@ namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Componen
 
 public partial class DocumentEvidenceForm
 {
-    [Parameter]
-    public required DocumentEvidenceRequest Model { get; init; }
+    private const long MaximumFileSize = 25 * 1024 * 1024;
 
     [Parameter]
-    public required IEnumerable<string> AvailableFileKeys { get; init; }
+    public required DocumentEvidenceRequest Model { get; init; }
 
     [Parameter]
     public required Func<string, IBrowserFile, Task> OnFileSelected { get; init; }
@@ -24,42 +23,42 @@ public partial class DocumentEvidenceForm
 
     private readonly DocumentEvidenceRequestValidator _validator = new();
     private string? _validationError;
-    private bool IsComplete => Model.Documents.All(document =>
-        !string.IsNullOrWhiteSpace(document.FileName) && AvailableFileKeys.Contains(document.Key));
+    private bool IsComplete => Model.Documents.All(document => !string.IsNullOrWhiteSpace(document.FileName));
 
     private DocumentEvidenceItemRequest GetDocument(string key)
     {
         return Model.Documents.Single(document => document.Key == key);
     }
 
-    private static int GetDocumentNumber(string key)
-    {
-        return Shared.Statics.VendorRegistrations.DocumentEvidenceFor.All
-            .Select((document, index) => new { document.Key, Number = index + 1 })
-            .Single(document => document.Key == key).Number;
-    }
-
-    private static string GetDocumentTitleClass(bool isPrimaryCertificate)
-    {
-        return isPrimaryCertificate ? "document-title primary-document-title" : "document-title";
-    }
-
-    private static string GetIcon(string key)
+    private static string GetDisplayName(string key, string defaultName)
     {
         return key switch
         {
-            "BrandRegistrationLetter" => Icons.Material.Filled.ContactPage,
-            "CompanyProfile" => Icons.Material.Filled.Business,
-            "ProductCatalog" => Icons.Material.Filled.MenuBook,
-            "ProductExperienceList" => Icons.Material.Filled.History,
-            "CompanyTaxCard" => Icons.Material.Filled.CreditCard,
-            _ => Icons.Material.Filled.VerifiedUser
+            "ProductExperienceList" => "Project Portfolio",
+            "CompanyTaxCard" => "Company Tax Card",
+            "PrimaryCertificate" => "Certificate",
+            _ => defaultName
         };
     }
 
     private async Task SelectFile(string key, InputFileChangeEventArgs eventArgs)
     {
-        await OnFileSelected(key, eventArgs.File);
+        var file = eventArgs.File;
+        if (!string.Equals(Path.GetExtension(file.Name), ".pdf", StringComparison.OrdinalIgnoreCase) ||
+            !string.Equals(file.ContentType, "application/pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            _validationError = "Only PDF files are allowed.";
+            return;
+        }
+
+        if (file.Size > MaximumFileSize)
+        {
+            _validationError = "The maximum file size is 25 MB.";
+            return;
+        }
+
+        _validationError = null;
+        await OnFileSelected(key, file);
     }
 
     private Task RemoveFile(string key)

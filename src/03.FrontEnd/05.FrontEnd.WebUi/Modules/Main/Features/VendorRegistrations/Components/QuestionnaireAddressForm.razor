@@ -1,0 +1,23 @@
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire
+
+<div class="address-form">
+    <MudText Typo="Typo.body1" Class="address-title">
+        @Title @if (Required) { <span>*</span> }
+    </MudText>
+
+    <div class="address-row">
+        <MudText Typo="Typo.body2">Country @if (Required) { <span>*</span> }</MudText>
+        <MudSelect T="string" Value="Model.Country" ValueChanged="value => Update(value, nameof(Model.Country))" Placeholder="Select" Required="Required" Variant="Variant.Outlined" Margin="Margin.Dense">
+            <MudSelectItem Value="@("Indonesia")">Indonesia</MudSelectItem>
+            <MudSelectItem Value="@("Outside Indonesia")">Outside Indonesia</MudSelectItem>
+        </MudSelect>
+    </div>
+    <div class="address-row"><MudText Typo="Typo.body2">Building @if (Required) { <span>*</span> }</MudText><MudTextField T="string" Value="Model.Building" ValueChanged="value => Update(value, nameof(Model.Building))" Required="Required" Variant="Variant.Outlined" Margin="Margin.Dense" /></div>
+    <div class="address-row"><MudText Typo="Typo.body2">Street @if (Required) { <span>*</span> }</MudText><MudTextField T="string" Value="Model.Street" ValueChanged="value => Update(value, nameof(Model.Street))" Required="Required" Variant="Variant.Outlined" Margin="Margin.Dense" /></div>
+    <div class="address-row"><MudText Typo="Typo.body2">Number @if (Required) { <span>*</span> }</MudText><MudTextField T="string" Value="Model.Number" ValueChanged="value => Update(value, nameof(Model.Number))" Required="Required" Variant="Variant.Outlined" Margin="Margin.Dense" /></div>
+    <div class="address-row"><MudText Typo="Typo.body2">City @if (Required) { <span>*</span> }</MudText><MudTextField T="string" Value="Model.City" ValueChanged="value => Update(value, nameof(Model.City))" Required="Required" Variant="Variant.Outlined" Margin="Margin.Dense" /></div>
+    <div class="address-row"><MudText Typo="Typo.body2">Phone @if (Required) { <span>*</span> }</MudText><MudTextField T="string" Value="Model.Phone" ValueChanged="value => Update(value, nameof(Model.Phone))" Required="Required" Variant="Variant.Outlined" Margin="Margin.Dense" /></div>
+    <div class="address-row"><MudText Typo="Typo.body2">Fax @if (Required) { <span>*</span> }</MudText><MudTextField T="string" Value="Model.Fax" ValueChanged="value => Update(value, nameof(Model.Fax))" Required="Required" Variant="Variant.Outlined" Margin="Margin.Dense" /></div>
+    <div class="address-row"><MudText Typo="Typo.body2">eMail @if (Required) { <span>*</span> }</MudText><MudTextField T="string" Value="Model.Email" ValueChanged="value => Update(value, nameof(Model.Email))" Required="Required" InputType="InputType.Email" Variant="Variant.Outlined" Margin="Margin.Dense" /></div>
+    <div class="address-row"><MudText Typo="Typo.body2">Website @if (Required) { <span>*</span> }</MudText><MudTextField T="string" Value="Model.Website" ValueChanged="value => Update(value, nameof(Model.Website))" Required="Required" Variant="Variant.Outlined" Margin="Margin.Dense" /></div>
+</div>

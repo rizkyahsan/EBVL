@@ -1,6 +1,5 @@
-using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
-using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence;
+using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Pages;
@@ -13,10 +12,7 @@ public partial class StepThree
     [Inject]
     public required VendorRegistrationState RegistrationState { get; init; }
 
-    [Inject]
-    public required IDialogService DialogService { get; init; }
-
-    private DocumentEvidenceRequest _model = new();
+    private QuestionnaireRequest _model = new();
     private bool _isRestoring = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -28,13 +24,13 @@ public partial class StepThree
 
         await RegistrationState.RestoreAsync();
 
-        if (RegistrationState.Questionnaire?.IsSubmitQuestionnaire is not true || RegistrationState.PreRegistration is null)
+        if (!RegistrationState.IsStepTwoCompleted || RegistrationState.PreRegistration is null)
         {
             NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepTwo);
             return;
         }
 
-        _model = RegistrationState.DocumentEvidence ?? new DocumentEvidenceRequest
+        _model = RegistrationState.Questionnaire ?? new QuestionnaireRequest
         {
             SapVendorNumber = RegistrationState.PreRegistration.SapVendorNumber
         };
@@ -43,16 +39,15 @@ public partial class StepThree
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task SelectFile(string key, IBrowserFile file)
+    private async Task ContinueRegistration(QuestionnaireRequest model)
     {
-        await RegistrationState.SetDocumentAsync(key, file);
-        _model = RegistrationState.DocumentEvidence!;
+        await RegistrationState.CompleteStepThreeAsync(model);
+        NavigationManager.NavigateTo(VendorRegistrationRouteFor.Review);
     }
 
-    private async Task RemoveFile(string key)
+    private void BackToGuidance()
     {
-        await RegistrationState.RemoveDocumentAsync(key);
-        _model = RegistrationState.DocumentEvidence!;
+        NavigationManager.NavigateTo(VendorRegistrationRouteFor.Index);
     }
 
     private void BackToStepTwo()
@@ -60,21 +55,8 @@ public partial class StepThree
         NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepTwo);
     }
 
-    private async Task SubmitRegistration(DocumentEvidenceRequest model)
+    private Task PersistProgress(QuestionnaireRequest model)
     {
-        var dialog = await DialogService.ShowAsync<DialogSubmitDocumentEvidence>(string.Empty, new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseButton = true
-        });
-        var result = await dialog.Result;
-
-        if (result is null || result.Canceled)
-        {
-            return;
-        }
-
-        NavigationManager.NavigateTo(VendorRegistrationRouteFor.Review);
+        return RegistrationState.UpdateStepThreeAsync(model);
     }
 }

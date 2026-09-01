@@ -19,10 +19,18 @@ public sealed class CustomOpenIdConnectEvents(
     : OpenIdConnectEvents
 {
     private const string SignInCallbackPath = "/signin-oidc";
+    private const string SignOutCallbackPath = "/signout-callback-oidc";
 
     public override Task RedirectToIdentityProvider(RedirectContext context)
     {
         context.ProtocolMessage.RedirectUri = $"{context.Request.Scheme}://{context.Request.Host}{SignInCallbackPath}";
+
+        return Task.CompletedTask;
+    }
+
+    public override Task RedirectToIdentityProviderForSignOut(RedirectContext context)
+    {
+        context.ProtocolMessage.PostLogoutRedirectUri = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{SignOutCallbackPath}";
 
         return Task.CompletedTask;
     }

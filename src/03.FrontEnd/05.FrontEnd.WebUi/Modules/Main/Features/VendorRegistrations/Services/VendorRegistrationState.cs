@@ -17,32 +17,42 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
     public DocumentEvidenceRequest? DocumentEvidence { get; private set; }
     public IReadOnlyDictionary<string, IBrowserFile> SelectedFiles => _selectedFiles;
     public bool IsStepOneCompleted => PreRegistration is not null;
+    public bool IsStepTwoCompleted => DocumentEvidence is not null &&
+        DocumentEvidence.Documents.All(document => !string.IsNullOrWhiteSpace(document.FileName));
+    public bool IsStepThreeCompleted => Questionnaire?.IsSubmitQuestionnaire is true;
     private readonly Dictionary<string, IBrowserFile> _selectedFiles = [];
 
     public async Task CompleteStepOneAsync(PreRegistrationRequest request)
     {
         PreRegistration = request;
-        Questionnaire ??= new QuestionnaireRequest
-        {
-            SapVendorNumber = request.SapVendorNumber
-        };
-
-        await PersistAsync();
-    }
-
-    public async Task CompleteStepTwoAsync(QuestionnaireRequest request)
-    {
-        Questionnaire = request;
         DocumentEvidence ??= new DocumentEvidenceRequest
         {
             SapVendorNumber = request.SapVendorNumber
         };
+
         await PersistAsync();
     }
 
-    public Task UpdateStepTwoAsync(QuestionnaireRequest request)
+    public async Task CompleteStepTwoAsync(DocumentEvidenceRequest request)
     {
-        return CompleteStepTwoAsync(request);
+        DocumentEvidence = request;
+        Questionnaire ??= new QuestionnaireRequest
+        {
+            SapVendorNumber = request.SapVendorNumber
+        };
+        await PersistAsync();
+    }
+
+    public async Task CompleteStepThreeAsync(QuestionnaireRequest request)
+    {
+        Questionnaire = request;
+        await PersistAsync();
+    }
+
+    public async Task UpdateStepThreeAsync(QuestionnaireRequest request)
+    {
+        Questionnaire = request;
+        await PersistAsync();
     }
 
     public async Task RestoreAsync()

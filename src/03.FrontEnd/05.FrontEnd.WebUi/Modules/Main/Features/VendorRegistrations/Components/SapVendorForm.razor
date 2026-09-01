@@ -1,17 +1,10 @@
 @using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.SapVendor
 
 <MudForm @ref="_form" Model="Model" Validation="_validator.ValidateValue">
-    <MudStack Spacing="3" Class="sap-vendor-form">
-        <MudText Typo="Typo.h4" Align="Align.Center" Class="form-title">
-            Input nomor SAP Vendor
-        </MudText>
-
-        <MudPaper Elevation="0" Class="form-panel">
-            <MudGrid Class="align-center" Spacing="2">
-                <MudItem xs="12" sm="4">
-                    <MudText Typo="Typo.body2">NO SAP Vendor</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8">
+    <MudStack Spacing="2" Class="sap-vendor-form">
+        <MudText Typo="Typo.body1" Align="Align.Center">SAP Vendor Number</MudText>
+        <MudStack Row="true" Justify="Justify.Center" AlignItems="AlignItems.Start" Spacing="2" Class="sap-find-row">
+            <div class="sap-input">
                     <MudTextField T="string"
                                   @bind-Value="Model.SapVendorNumber"
                                   For="@(() => Model.SapVendorNumber)"
@@ -20,22 +13,13 @@
                                   Variant="Variant.Outlined"
                                   Margin="Margin.Dense"
                                   Immediate="true" />
-                </MudItem>
-            </MudGrid>
-        </MudPaper>
-
-        <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="form-actions">
+            </div>
             <MudButton ButtonType="ButtonType.Button"
-                       Variant="Variant.Filled"
-                       Color="Color.Error"
-                       OnClick="OnBack">
-                BACK
-            </MudButton>
-            <MudButton ButtonType="ButtonType.Button"
-                       Variant="Variant.Filled"
-                       Color="Color.Success"
+                       Variant="Variant.Outlined"
+                       Color="Color.Info"
+                       Class="find-button" Style="margin-top: 6px;"
                        OnClick="Submit">
-                NEXT
+                Find
             </MudButton>
         </MudStack>
     </MudStack>

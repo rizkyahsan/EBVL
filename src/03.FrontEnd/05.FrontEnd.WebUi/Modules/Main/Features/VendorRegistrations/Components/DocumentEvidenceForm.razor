@@ -3,58 +3,49 @@
 
 <div class="document-evidence-scope">
     <MudStack Spacing="3" Class="document-evidence-form">
-        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="form-header">
-            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                <MudIcon Icon="@Icons.Material.Filled.FactCheck" Color="Color.Success" />
-                <MudText Typo="Typo.subtitle1" Class="form-title">KUESIONER PRA-REGISTRASI</MudText>
-            </MudStack>
-            <MudChip T="string" Color="Color.Success" Variant="Variant.Filled">Langkah 3 Dari 3</MudChip>
-        </MudStack>
-
-        <MudProgressLinear Value="100" Color="Color.Success" Rounded="true" Size="Size.Large" />
-
-        <MudPaper Elevation="1" Class="evidence-card">
-            <MudText Typo="Typo.h3" Align="Align.Center" Class="evidence-title">Document Evidence</MudText>
-
-            <MudPaper Elevation="0" Class="evidence-panel">
-                <MudGrid Spacing="3">
-                    @foreach (var definition in DocumentEvidenceFor.All)
-                    {
-                        var document = GetDocument(definition.Key);
-                        var inputId = $"evidence-{definition.Key}";
-                        <MudItem xs="12" md="6" lg="4">
-                            <MudText Typo="Typo.subtitle2" Class="@GetDocumentTitleClass(definition.IsPrimaryCertificate)">
-                                @(GetDocumentNumber(definition.Key)). @definition.Name <span>*</span>
-                            </MudText>
-                            <div class="upload-card @(document.FileName is not null ? "upload-card-selected" : null)">
-                                <InputFile id="@inputId" class="evidence-file-input" OnChange="eventArgs => SelectFile(definition.Key, eventArgs)" accept=".pdf,.jpg,.jpeg,.png" />
-                                <label for="@inputId" class="upload-card-content">
-                                    <MudIcon Icon="@GetIcon(definition.Key)" Size="Size.Large" />
-                                    <span>@(document.FileName ?? definition.Instruction)</span>
-                                </label>
-                                @if (document.FileName is not null)
-                                {
-                                    <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" Size="Size.Small" Class="remove-file" OnClick="() => RemoveFile(definition.Key)" />
-                                }
-                            </div>
-                        </MudItem>
-                    }
-                </MudGrid>
-
-                <MudText Typo="Typo.caption" Align="Align.Center" Class="evidence-note">
-                    <i>Manufacture (Brand Certificate); Agen Distributor Tunggal (STP Kemendag); Agen Resmi (Authorized Letter)</i>
-                </MudText>
-            </MudPaper>
-
-            @if (!string.IsNullOrWhiteSpace(_validationError))
+        <MudGrid Spacing="3">
+            @foreach (var definition in DocumentEvidenceFor.All)
             {
-                <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">@_validationError</MudAlert>
+                var document = GetDocument(definition.Key);
+                var inputId = $"evidence-{definition.Key}";
+                <MudItem xs="12" md="6">
+                    <div class="document-upload-row">
+                        <MudText Typo="Typo.body1" Class="document-label">@GetDisplayName(definition.Key, definition.Name)</MudText>
+                        <div class="upload-control">
+                            <div class="file-name @(document.FileName is not null ? "file-selected" : null)" title="@document.FileName">
+                                @(document.FileName ?? "Upload File")
+                            </div>
+                            <InputFile id="@inputId"
+                                       class="evidence-file-input"
+                                       OnChange="eventArgs => SelectFile(definition.Key, eventArgs)"
+                                       accept="application/pdf,.pdf" />
+                            <label for="@inputId" class="upload-button">
+                                <MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Small" />
+                                <span>Upload</span>
+                            </label>
+                            @if (document.FileName is not null)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline"
+                                               Color="Color.Error"
+                                               Size="Size.Small"
+                                               Class="remove-file"
+                                               OnClick="() => RemoveFile(definition.Key)"
+                                               aria-label="@($"Remove {definition.Name}")" />
+                            }
+                        </div>
+                    </div>
+                </MudItem>
             }
+        </MudGrid>
 
-            <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="form-actions">
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" OnClick="OnBack">BACK</MudButton>
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Disabled="@(!IsComplete)" OnClick="Submit">SUBMIT</MudButton>
-            </MudStack>
-        </MudPaper>
+        @if (!string.IsNullOrWhiteSpace(_validationError))
+        {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">@_validationError</MudAlert>
+        }
+
+        <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="form-actions">
+            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Warning" Class="navigation-button" OnClick="OnBack">Previous</MudButton>
+            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Info" Class="navigation-button" Disabled="@(!IsComplete)" OnClick="Submit">Next</MudButton>
+        </MudStack>
     </MudStack>
 </div>

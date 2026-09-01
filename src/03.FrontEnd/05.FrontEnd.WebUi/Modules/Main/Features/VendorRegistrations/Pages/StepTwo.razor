@@ -3,9 +3,45 @@
 @attribute [AllowAnonymous]
 @using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components
 
-<HtmlHead Title="Kuesioner Pra-Registrasi Vendor Tahap 2" />
+<HtmlHead Title="Document Evidence" />
 
 <LoadingOverlay IsVisible="_isRestoring" />
-<RegistrationShell Wide="true">
-    <QuestionnaireForm Model="_model" OnReject="RejectQuestionnaire" OnNext="ContinueRegistration" OnChanged="PersistProgress" />
-</RegistrationShell>
+<main class="registration-step-page">
+    <MudText Typo="Typo.h1" Align="Align.Center" Class="process-title">Process Register</MudText>
+
+    <MudButton Variant="Variant.Text"
+               Color="Color.Inherit"
+               StartIcon="@Icons.Material.Filled.ArrowBack"
+               Class="guidance-back"
+               OnClick="BackToGuidance">
+        Back to guidance
+    </MudButton>
+
+    <nav class="registration-steps" aria-label="Registration progress">
+        <div class="registration-step completed"><span>1</span><p>Company<br />Profile</p></div>
+        <div class="registration-step active"><span>2</span><p>Document<br />Evidence</p></div>
+        <div class="registration-step"><span>3</span><p>Questionnaire</p></div>
+        <div class="registration-step"><span>4</span><p>Review</p></div>
+    </nav>
+
+    <section class="registration-content">
+        <aside class="upload-guidelines">
+            <MudText Typo="Typo.h5">Upload Guidelines</MudText>
+            <ol>
+                <li>Only PDF files are allowed.</li>
+                <li>Maximum 1 file per document type.</li>
+                <li>Uploading a new file will overwrite the existing one.</li>
+            </ol>
+        </aside>
+
+        <MudExpansionPanels Elevation="0">
+            <MudExpansionPanel Text="Document Evidence" Expanded="true" Class="document-panel">
+                <DocumentEvidenceForm Model="_model"
+                                      OnFileSelected="SelectFile"
+                                      OnFileRemoved="RemoveFile"
+                                      OnBack="BackToStepOne"
+                                      OnSubmit="ContinueRegistration" />
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    </section>
+</main>

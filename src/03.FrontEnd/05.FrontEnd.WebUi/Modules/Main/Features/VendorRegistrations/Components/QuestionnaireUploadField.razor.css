@@ -1,0 +1,48 @@
+.questionnaire-upload-field {
+    display: grid;
+    gap: 10px;
+}
+
+.upload-label {
+    color: var(--mud-palette-text-secondary);
+}
+
+.upload-label span {
+    margin-left: 4px;
+    color: #f44336;
+}
+
+.upload-control {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+}
+
+::deep .upload-input {
+    display: none;
+}
+
+.upload-file-name,
+.upload-button {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.upload-file-name {
+    overflow: hidden;
+    padding: 10px 14px;
+    border: 1px solid var(--mud-palette-lines-inputs);
+    color: var(--mud-palette-text-disabled);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.upload-button {
+    padding: 0 16px;
+    border: 1px solid #2196f3;
+    color: #2196f3;
+}
