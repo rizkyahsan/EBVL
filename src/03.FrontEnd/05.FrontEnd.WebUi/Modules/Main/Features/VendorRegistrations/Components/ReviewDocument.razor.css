@@ -3,7 +3,7 @@
 }
 
 .review-document-scope ::deep .mud-button-root {
-    min-height: 46px;
+    height: 40px;
     justify-content: flex-start;
     text-transform: none;
 }

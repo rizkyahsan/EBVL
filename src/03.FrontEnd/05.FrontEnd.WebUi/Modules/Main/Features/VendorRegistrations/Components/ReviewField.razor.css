@@ -3,7 +3,7 @@
 }
 
 .review-field-scope ::deep .review-value {
-    min-height: 46px;
+    height: 40px;
     display: flex;
     align-items: center;
     box-sizing: border-box;

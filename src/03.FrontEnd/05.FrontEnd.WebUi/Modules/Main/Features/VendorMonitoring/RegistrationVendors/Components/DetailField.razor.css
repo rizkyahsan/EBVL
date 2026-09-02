@@ -6,7 +6,7 @@
 }
 
 .detail-field ::deep .detail-value {
-    min-height: 42px;
+    height: 40px;
     display: flex;
     align-items: center;
     padding: 10px 14px;
