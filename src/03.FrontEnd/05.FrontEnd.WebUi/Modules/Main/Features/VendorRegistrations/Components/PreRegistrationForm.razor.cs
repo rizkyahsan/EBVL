@@ -10,6 +10,8 @@ public partial class PreRegistrationForm
     [Parameter]
     public required EventCallback<PreRegistrationRequest> OnNext { get; init; }
 
+    private EditForm _form = default!;
+
     private void AddBrand()
     {
         Model.AdditionalBrands.Add(string.Empty);
@@ -25,8 +27,11 @@ public partial class PreRegistrationForm
         Model.AdditionalBrands.RemoveAt(index);
     }
 
-    private Task Submit()
+    public async Task SubmitAsync()
     {
-        return OnNext.InvokeAsync(Model);
+        if (_form.EditContext?.Validate() is true)
+        {
+            await OnNext.InvokeAsync(Model);
+        }
     }
 }

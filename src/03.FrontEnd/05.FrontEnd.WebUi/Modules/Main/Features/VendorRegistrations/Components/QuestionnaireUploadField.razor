@@ -6,5 +6,13 @@
         <InputFile id="@InputId" class="upload-input" OnChange="UploadFile" accept="application/pdf,.pdf" />
         <label for="@InputId" class="upload-file-name">@(Answer.FileName ?? "Upload File")</label>
         <label for="@InputId" class="upload-button mud-button-root mud-button-size-medium">Upload</label>
+        @if (!string.IsNullOrWhiteSpace(Answer.FileName))
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline"
+                           Color="Color.Error"
+                           Size="Size.Medium"
+                           OnClick="RemoveFile"
+                           aria-label="@($"Remove {Label}")" />
+        }
     </div>
 </div>

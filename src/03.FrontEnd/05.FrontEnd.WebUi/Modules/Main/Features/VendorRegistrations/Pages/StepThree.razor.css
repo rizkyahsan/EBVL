@@ -35,7 +35,7 @@
 .registration-steps::after {
     content: "";
     position: absolute;
-    top: 34px;
+    top: 24px;
     left: 12.5%;
     height: 2px;
 }

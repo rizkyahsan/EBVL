@@ -1,5 +1,6 @@
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.SapVendor;
+using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
 
@@ -22,6 +23,7 @@ public partial class StepOne
     private bool _sapExpanded = true;
     private bool _profileExpanded;
     private bool _sapFound;
+    private PreRegistrationForm? _preRegistrationForm;
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,5 +93,10 @@ public partial class StepOne
     {
         await RegistrationState.CompleteStepOneAsync(model);
         NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepTwo);
+    }
+
+    private Task SubmitCompanyProfile()
+    {
+        return _preRegistrationForm?.SubmitAsync() ?? Task.CompletedTask;
     }
 }

@@ -50,9 +50,16 @@
                                    Expanded="_profileExpanded"
                                    ExpandedChanged="SetProfileExpanded"
                                    Class="registration-panel">
-                    <PreRegistrationForm Model="_model" OnNext="ContinueRegistration" />
+                    <PreRegistrationForm @ref="_preRegistrationForm" Model="_model" OnNext="ContinueRegistration" />
                 </MudExpansionPanel>
             }
         </MudExpansionPanels>
+        @if (_sapFound)
+        {
+            <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="page-actions">
+                <MudButton Variant="Variant.Outlined" Color="Color.Warning" Size="Size.Medium" Class="navigation-button" OnClick="BackToGuidance">Previous</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Info" Size="Size.Medium" Class="navigation-button" OnClick="SubmitCompanyProfile">Next</MudButton>
+            </MudStack>
+        }
     </section>
 </main>

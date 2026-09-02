@@ -80,6 +80,16 @@
     margin: auto;
 }
 
+.page-actions {
+    padding-top: 38px;
+}
+
+.page-actions ::deep .navigation-button {
+    min-width: 150px;
+    min-height: 54px;
+    text-transform: none;
+}
+
 .registration-sections ::deep .mud-expand-panel {
     margin-bottom: 28px;
     border: 2px solid var(--mud-palette-text-primary);
@@ -142,5 +152,13 @@
 
     .registration-sections ::deep .mud-expand-panel-content {
         padding: 8px 18px 22px;
+    }
+
+    .page-actions {
+        flex-direction: column;
+    }
+
+    .page-actions ::deep .navigation-button {
+        width: 100%;
     }
 }

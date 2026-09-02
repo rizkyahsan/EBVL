@@ -1,4 +1,5 @@
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
+using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
 
@@ -14,6 +15,7 @@ public partial class StepTwo
 
     private DocumentEvidenceRequest _model = new();
     private bool _isRestoring = true;
+    private DocumentEvidenceForm? _documentEvidenceForm;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -68,5 +70,10 @@ public partial class StepTwo
     {
         await RegistrationState.CompleteStepTwoAsync(model);
         NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepThree);
+    }
+
+    private Task SubmitDocumentEvidence()
+    {
+        return _documentEvidenceForm?.SubmitAsync() ?? Task.CompletedTask;
     }
 }

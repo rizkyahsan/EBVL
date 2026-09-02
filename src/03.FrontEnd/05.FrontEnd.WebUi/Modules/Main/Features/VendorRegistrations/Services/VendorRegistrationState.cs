@@ -11,6 +11,8 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
     private const string PreRegistrationKey = "ebvl.vendor-registration.step-one";
     private const string QuestionnaireKey = "ebvl.vendor-registration.step-two";
     private const string DocumentEvidenceKey = "ebvl.vendor-registration.step-three";
+    private const string VerificationSentKey = "ebvl.vendor-registration.verification-sent";
+    private const string EmailVerifiedKey = "ebvl.vendor-registration.email-verified";
 
     public PreRegistrationRequest? PreRegistration { get; private set; }
     public QuestionnaireRequest? Questionnaire { get; private set; }
@@ -20,6 +22,8 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
     public bool IsStepTwoCompleted => DocumentEvidence is not null &&
         DocumentEvidence.Documents.All(document => !string.IsNullOrWhiteSpace(document.FileName));
     public bool IsStepThreeCompleted => Questionnaire?.IsSubmitQuestionnaire is true;
+    public bool IsVerificationSent { get; private set; }
+    public bool IsEmailVerified { get; private set; }
     private readonly Dictionary<string, IBrowserFile> _selectedFiles = [];
 
     public async Task CompleteStepOneAsync(PreRegistrationRequest request)
@@ -60,6 +64,11 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
         var preRegistrationJson = await jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", PreRegistrationKey);
         var questionnaireJson = await jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", QuestionnaireKey);
         var documentEvidenceJson = await jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", DocumentEvidenceKey);
+        var verificationSent = await jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", VerificationSentKey);
+        var emailVerified = await jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", EmailVerifiedKey);
+
+        IsVerificationSent = bool.TryParse(verificationSent, out var isSent) && isSent;
+        IsEmailVerified = bool.TryParse(emailVerified, out var isVerified) && isVerified;
 
         if (!string.IsNullOrWhiteSpace(preRegistrationJson))
         {
@@ -75,6 +84,18 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
         {
             DocumentEvidence = JsonSerializer.Deserialize<DocumentEvidenceRequest>(documentEvidenceJson);
         }
+    }
+
+    public async Task MarkVerificationSentAsync()
+    {
+        IsVerificationSent = true;
+        await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", VerificationSentKey, bool.TrueString);
+    }
+
+    public async Task MarkEmailVerifiedAsync()
+    {
+        IsEmailVerified = true;
+        await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", EmailVerifiedKey, bool.TrueString);
     }
 
     public async Task SetDocumentAsync(string key, IBrowserFile file)

@@ -34,7 +34,7 @@
 .registration-steps::before {
     content: "";
     position: absolute;
-    top: 34px;
+    top: 24px;
     right: 12.5%;
     left: 12.5%;
     height: 2px;
@@ -44,7 +44,7 @@
 .registration-steps::after {
     content: "";
     position: absolute;
-    top: 34px;
+    top: 24px;
     left: 12.5%;
     width: 25%;
     height: 2px;
@@ -88,6 +88,16 @@
 .registration-content {
     width: min(1180px, 100%);
     margin: auto;
+}
+
+.page-actions {
+    padding-top: 38px;
+}
+
+.page-actions ::deep .navigation-button {
+    min-width: 150px;
+    min-height: 54px;
+    text-transform: none;
 }
 
 .upload-guidelines {
@@ -169,5 +179,13 @@
 
     .registration-content ::deep .mud-expand-panel-content {
         padding: 12px 18px 24px;
+    }
+
+    .page-actions {
+        flex-direction: column;
+    }
+
+    .page-actions ::deep .navigation-button {
+        width: 100%;
     }
 }

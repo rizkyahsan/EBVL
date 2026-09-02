@@ -23,4 +23,10 @@ public partial class QuestionnaireUploadField
         Answer.FileName = eventArgs.File.Name;
         await OnChanged.InvokeAsync();
     }
+
+    private async Task RemoveFile()
+    {
+        Answer.FileName = null;
+        await OnChanged.InvokeAsync();
+    }
 }

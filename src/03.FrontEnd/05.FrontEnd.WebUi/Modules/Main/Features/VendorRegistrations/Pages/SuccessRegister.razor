@@ -1,0 +1,16 @@
+@page "/Vendor-Registration/Success"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+
+<HtmlHead Title="Success Register" />
+<LoadingOverlay IsVisible="_isRestoring" />
+
+<main class="success-page">
+    <MudText Typo="Typo.h1" Align="Align.Center" Class="success-title">Success Register</MudText>
+    <section class="success-card">
+        <MudText Typo="Typo.h3" Class="card-title">Data Submitted <span>Successfully!</span></MudText>
+        <MudText Typo="Typo.h4">Thank you for completing your vendor profile.<br />Your registration application has been saved to the e-BVL system.</MudText>
+        <MudText Typo="Typo.h4" Class="next-title">What happens next?</MudText>
+        <MudText Typo="Typo.h5">Your submitted data and documents are currently under review.<br />Our verification team will assess your application shortly.<br />You can monitor your verification status from the Track menu.</MudText>
+    </section>
+</main>

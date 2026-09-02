@@ -11,7 +11,7 @@ public record QuestionnaireRequest
     public QuestionnaireAddressRequest SoleAgentOfficeAddress { get; set; } = new();
     public List<QuestionnaireAnswerRequest> Answers { get; set; } =
     [
-        .. EBVL.Shared.Statics.VendorRegistrations.QuestionnaireFor.All.Select(question => new QuestionnaireAnswerRequest
+        .. Statics.VendorRegistrations.QuestionnaireFor.All.Select(question => new QuestionnaireAnswerRequest
         {
             QuestionNumber = question.Number
         })
@@ -23,7 +23,6 @@ public sealed class QuestionnaireRequestValidator : AbstractValidatorBase<Questi
     public QuestionnaireRequestValidator()
     {
         _ = RuleFor(x => x.SapVendorNumber).NotEmpty();
-        _ = RuleFor(x => x.IsSubmitQuestionnaire).NotNull();
         _ = RuleFor(x => x.Answers).Must((request, answers) =>
         {
             var mandatoryNumbers = EBVL.Shared.Statics.VendorRegistrations.QuestionnaireFor.All

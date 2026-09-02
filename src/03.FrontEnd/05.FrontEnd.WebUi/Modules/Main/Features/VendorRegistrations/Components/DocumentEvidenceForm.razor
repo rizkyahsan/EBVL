@@ -43,9 +43,5 @@
             <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">@_validationError</MudAlert>
         }
 
-        <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="form-actions">
-            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Warning" Class="navigation-button" OnClick="OnBack">Previous</MudButton>
-            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Info" Class="navigation-button" Disabled="@(!IsComplete)" OnClick="Submit">Next</MudButton>
-        </MudStack>
     </MudStack>
 </div>

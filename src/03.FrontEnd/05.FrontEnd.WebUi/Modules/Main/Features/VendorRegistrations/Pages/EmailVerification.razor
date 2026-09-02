@@ -1,0 +1,16 @@
+@page "/Vendor-Registration/Email-Verification"
+@layout Layouts.LayoutLanding
+@attribute [AllowAnonymous]
+
+<HtmlHead Title="Verify this transaction" />
+<LoadingOverlay IsVisible="_isRestoring" />
+
+<main class="verification-page">
+    <MudText Typo="Typo.h1" Align="Align.Center" Class="verification-title">Verify this transaction!</MudText>
+    <section class="verification-card">
+        <MudText Typo="Typo.h3" Class="card-title">Check your inbox!</MudText>
+        <MudText Typo="Typo.h4">We've sent a verification link to <span>@_email</span>.</MudText>
+        <MudText Typo="Typo.h5">Please check your inbox (and spam folder) and follow the instructions to complete your registration.</MudText>
+        <MudButton Variant="Variant.Outlined" Color="Color.Warning" Size="Size.Medium" Class="verify-button" OnClick="VerifyEmail">Simulate Email Verification</MudButton>
+    </section>
+</main>

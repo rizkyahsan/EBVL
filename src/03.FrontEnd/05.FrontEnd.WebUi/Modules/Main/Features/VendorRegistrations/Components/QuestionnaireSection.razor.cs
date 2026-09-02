@@ -33,4 +33,10 @@ public partial class QuestionnaireSection
         GetAnswer(questionNumber).FileName = eventArgs.File.Name;
         await OnChanged.InvokeAsync();
     }
+
+    private async Task RemoveFile(int questionNumber)
+    {
+        GetAnswer(questionNumber).FileName = null;
+        await OnChanged.InvokeAsync();
+    }
 }

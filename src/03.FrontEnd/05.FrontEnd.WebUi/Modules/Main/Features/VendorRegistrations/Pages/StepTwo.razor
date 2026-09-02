@@ -36,12 +36,16 @@
 
         <MudExpansionPanels Elevation="0">
             <MudExpansionPanel Text="Document Evidence" Expanded="true" Class="document-panel">
-                <DocumentEvidenceForm Model="_model"
+                <DocumentEvidenceForm @ref="_documentEvidenceForm"
+                                      Model="_model"
                                       OnFileSelected="SelectFile"
                                       OnFileRemoved="RemoveFile"
-                                      OnBack="BackToStepOne"
                                       OnSubmit="ContinueRegistration" />
             </MudExpansionPanel>
         </MudExpansionPanels>
+        <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="page-actions">
+            <MudButton Variant="Variant.Outlined" Color="Color.Warning" Size="Size.Medium" Class="navigation-button" OnClick="BackToStepOne">Previous</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Info" Size="Size.Medium" Class="navigation-button" OnClick="SubmitDocumentEvidence">Next</MudButton>
+        </MudStack>
     </section>
 </main>

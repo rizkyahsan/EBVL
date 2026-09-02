@@ -1,7 +1,7 @@
 @using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration
 @using EBVL.Shared.Enums
 
-<EditForm Model="Model" OnValidSubmit="Submit">
+<EditForm @ref="_form" Model="Model">
     <DataAnnotationsValidator />
 
     <MudStack Spacing="3" Class="pre-registration-form">
@@ -108,8 +108,5 @@
             </MudItem>
         </MudGrid>
 
-        <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="form-actions">
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Outlined" Color="Color.Info" Class="next-button">Next</MudButton>
-        </MudStack>
     </MudStack>
 </EditForm>

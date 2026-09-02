@@ -1,0 +1,8 @@
+.success-page { padding: clamp(50px, 7vw, 100px) clamp(20px, 10vw, 200px); }
+.success-page ::deep .success-title { color: var(--mud-palette-text-secondary); font-size: clamp(2rem, 5vw, 4rem); font-weight: 300; }
+.success-card { max-width: 1500px; margin: 60px auto 0; padding: clamp(32px, 5vw, 70px); border: 4px solid #4caf50; border-radius: 6px; color: var(--mud-palette-text-secondary); }
+.success-card ::deep .card-title { margin-bottom: 30px; font-weight: 700; }
+.success-card ::deep .card-title span { color: #4caf50; }
+.success-card ::deep .mud-typography-h4, .success-card ::deep .mud-typography-h5 { line-height: 1.4; }
+.success-card ::deep .next-title { margin: 30px 0; font-weight: 700; }
+@media (max-width: 600px) { .success-page { min-height: 700px; padding: 45px 16px; } .success-card { margin-top: 45px; } }

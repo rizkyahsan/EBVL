@@ -16,15 +16,10 @@ public partial class DocumentEvidenceForm
     public required Func<string, Task> OnFileRemoved { get; init; }
 
     [Parameter]
-    public required EventCallback OnBack { get; init; }
-
-    [Parameter]
     public required EventCallback<DocumentEvidenceRequest> OnSubmit { get; init; }
 
     private readonly DocumentEvidenceRequestValidator _validator = new();
     private string? _validationError;
-    private bool IsComplete => Model.Documents.All(document => !string.IsNullOrWhiteSpace(document.FileName));
-
     private DocumentEvidenceItemRequest GetDocument(string key)
     {
         return Model.Documents.Single(document => document.Key == key);
@@ -66,7 +61,7 @@ public partial class DocumentEvidenceForm
         return OnFileRemoved(key);
     }
 
-    private async Task Submit()
+    public async Task SubmitAsync()
     {
         var result = await _validator.ValidateAsync(Model);
 

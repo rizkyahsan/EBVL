@@ -22,6 +22,14 @@
                                 <MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Small" />
                                 <span>Upload</span>
                             </label>
+                            @if (!string.IsNullOrWhiteSpace(answer.FileName))
+                            {
+                                <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline"
+                                               Color="Color.Error"
+                                               Size="Size.Medium"
+                                               OnClick="() => RemoveFile(question.Number)"
+                                               aria-label="@($"Remove {question.Label}")" />
+                            }
                         </div>
                     }
                     else

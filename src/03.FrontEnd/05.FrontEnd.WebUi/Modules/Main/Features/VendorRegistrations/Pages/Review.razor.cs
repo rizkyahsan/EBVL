@@ -2,6 +2,7 @@ using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration;
+using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire;
 using Microsoft.JSInterop;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
 
@@ -28,6 +29,7 @@ public partial class Review
 
     private PreRegistrationRequest _preRegistration = new();
     private DocumentEvidenceRequest _documentEvidence = new();
+    private QuestionnaireRequest _questionnaire = new();
     private bool _isRestoring = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -47,7 +49,8 @@ public partial class Review
 
         if (!RegistrationState.IsStepThreeCompleted ||
             RegistrationState.PreRegistration is null ||
-            RegistrationState.DocumentEvidence is null)
+            RegistrationState.DocumentEvidence is null ||
+            RegistrationState.Questionnaire is null)
         {
             NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepThree);
             return;
@@ -55,6 +58,7 @@ public partial class Review
 
         _preRegistration = RegistrationState.PreRegistration;
         _documentEvidence = RegistrationState.DocumentEvidence;
+        _questionnaire = RegistrationState.Questionnaire;
         _isRestoring = false;
         await InvokeAsync(StateHasChanged);
     }
@@ -89,6 +93,17 @@ public partial class Review
             return;
         }
 
-        Snackbar.AddSuccess("Data vendor berhasil dikirim untuk verifikasi.");
+        await RegistrationState.MarkVerificationSentAsync();
+        NavigationManager.NavigateTo(VendorRegistrationRouteFor.EmailVerification);
+    }
+
+    private void BackToGuidance()
+    {
+        NavigationManager.NavigateTo(VendorRegistrationRouteFor.Index);
+    }
+
+    private void BackToStepThree()
+    {
+        NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepThree);
     }
 }

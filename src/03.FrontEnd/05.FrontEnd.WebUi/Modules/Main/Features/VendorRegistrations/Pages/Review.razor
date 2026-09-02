@@ -6,9 +6,19 @@
 <HtmlHead Title="Review Registrasi Vendor" />
 <LoadingOverlay IsVisible="_isRestoring" />
 
-<RegistrationShell Wide="true">
+<main class="review-page">
+    <MudText Typo="Typo.h1" Align="Align.Center" Class="process-title">Process Register</MudText>
+    <MudButton Variant="Variant.Text" Color="Color.Inherit" Size="Size.Medium" StartIcon="@Icons.Material.Filled.ArrowBack" Class="guidance-back" OnClick="BackToGuidance">Back to guidance</MudButton>
+    <nav class="registration-steps" aria-label="Registration progress">
+        <div class="registration-step completed"><span>1</span><p>Company<br />Profile</p></div>
+        <div class="registration-step completed"><span>2</span><p>Document<br />Evidence</p></div>
+        <div class="registration-step completed"><span>3</span><p>Questionnaire</p></div>
+        <div class="registration-step active"><span>4</span><p>Review</p></div>
+    </nav>
     <VendorRegistrationReview PreRegistration="_preRegistration"
-                              DocumentEvidence="_documentEvidence"
-                              OnDownload="DownloadDocument"
-                              OnSendForVerification="SendForVerification" />
-</RegistrationShell>
+                               DocumentEvidence="_documentEvidence"
+                               Questionnaire="_questionnaire"
+                               OnDownload="DownloadDocument"
+                               OnPrevious="BackToStepThree"
+                               OnSendForVerification="SendForVerification" />
+</main>

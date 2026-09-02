@@ -7,6 +7,8 @@ public static class RouteFor
     public const string StepTwo = $"{Index}/Step-2";
     public const string StepThree = $"{Index}/Step-3";
     public const string Review = $"{Index}/Review";
+    public const string EmailVerification = $"{Index}/Email-Verification";
+    public const string Success = $"{Index}/Success";
 
     public static string StepOneWith(string sapVendorNumber)
     {
