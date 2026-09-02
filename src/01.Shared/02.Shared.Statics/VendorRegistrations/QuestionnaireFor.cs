@@ -76,4 +76,10 @@ public static class QuestionnaireFor
         new(49, "Product Technology Leader/Follower", ProductPositioning, Placeholder: "example: Leader Technology (Not License from other Brand)"),
         new(50, "After sales service office/vendor", ProductPositioning, false, Placeholder: "example: Local owned by PT. Contromatic Prima Mandiri")
     ];
+
+    public static IReadOnlyList<VendorQuestionDefinition> GetSection(string section, IReadOnlyList<int> order)
+    {
+        var positions = order.Select((number, index) => new { number, index }).ToDictionary(item => item.number, item => item.index);
+        return [.. All.Where(question => question.Section == section).OrderBy(question => positions[question.Number])];
+    }
 }

@@ -36,24 +36,7 @@
     </nav>
 
     <section class="registration-sections">
-        <MudExpansionPanels MultiExpansion="true" Elevation="0">
-            <MudExpansionPanel Text="Check SAP Number"
-                               Expanded="_sapExpanded"
-                               ExpandedChanged="SetSapExpanded"
-                               Class="registration-panel">
-                <SapVendorForm Model="_sapModel" OnNext="FindSapVendor" />
-            </MudExpansionPanel>
-
-            @if (_sapFound)
-            {
-                <MudExpansionPanel Text="Company Profile"
-                                   Expanded="_profileExpanded"
-                                   ExpandedChanged="SetProfileExpanded"
-                                   Class="registration-panel">
-                    <PreRegistrationForm @ref="_preRegistrationForm" Model="_model" OnNext="ContinueRegistration" />
-                </MudExpansionPanel>
-            }
-        </MudExpansionPanels>
+        <CompanyProfileForm @ref="_companyProfileForm" Model="_model" OnSapFound="SapFound" OnNext="ContinueRegistration" />
         @if (_sapFound)
         {
             <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="page-actions">

@@ -8,6 +8,14 @@ public sealed record LoginExternalUserCommand : LoginExternalUserRequest, IReque
 {
 }
 
+public sealed class LoginExternalUserCommandValidator : AbstractValidatorBase<LoginExternalUserCommand>
+{
+    public LoginExternalUserCommandValidator()
+    {
+        Include(new LoginExternalUserRequestValidator());
+    }
+}
+
 public sealed class LoginExternalUserCommandHandler(IDatabaseService databaseService,
     ILocalIdentityService localIdentityService)
     : IRequestHandler<LoginExternalUserCommand, LoginExternalUserResponse>
@@ -46,7 +54,11 @@ public sealed class LoginExternalUserCommandHandler(IDatabaseService databaseSer
 
         var user = await databaseService.Users
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.IdentityUserId == identityUserId, cancellationToken);
+            .Include(x => x.Lender)
+            .FirstOrDefaultAsync(x => !x.IsDeleted
+                && x.IsVerified
+                && !x.Lender.IsDeleted
+                && x.IdentityUserId == identityUserId, cancellationToken);
 
         if (user is null)
         {

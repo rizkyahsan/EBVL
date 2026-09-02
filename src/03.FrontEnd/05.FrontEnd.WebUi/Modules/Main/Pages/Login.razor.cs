@@ -29,9 +29,9 @@ public partial class Login
             Password = string.Empty
         };
 
-        if (!Uri.IsWellFormedUriString(ReturnUrl, UriKind.Relative))
+        if (!IsSafeLocalReturnUrl(ReturnUrl))
         {
-            ReturnUrl = MainRouteFor.Landing;
+            ReturnUrl = null;
         }
     }
 
@@ -42,6 +42,11 @@ public partial class Login
 
     private async Task ExecuteLogin()
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         try
         {
             _isLoading = true;
@@ -56,7 +61,7 @@ public partial class Login
 
             if (response.Item.RequireOtp && response.Item.ExternalLoginId.HasValue)
             {
-                NavigationManager.NavigateTo(MainRouteFor.LoginOtp($"{response.Item.ExternalLoginId}"), forceLoad: true);
+                NavigationManager.NavigateTo(MainRouteFor.LoginOtp($"{response.Item.ExternalLoginId}", ReturnUrl), forceLoad: true);
             }
         }
         catch (Exception exception)
@@ -67,6 +72,16 @@ public partial class Login
         {
             _isLoading = false;
         }
+    }
+
+    private static bool IsSafeLocalReturnUrl(string? returnUrl)
+    {
+        return !string.IsNullOrWhiteSpace(returnUrl)
+            && returnUrl[0] == '/'
+            && !returnUrl.StartsWith("//", StringComparison.Ordinal)
+            && !returnUrl.StartsWith("/\\", StringComparison.Ordinal)
+            && !returnUrl.Contains('\\')
+            && Uri.IsWellFormedUriString(returnUrl, UriKind.Relative);
     }
 
     private void ExecuteReturn()

@@ -1,6 +1,23 @@
 @using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.SapVendor
 @using EBVL.Shared.Enums
 
+<MudExpansionPanels MultiExpansion="true" Elevation="0">
+    <MudExpansionPanel Text="Check SAP Number" Expanded="_sapExpanded" ExpandedChanged="SetSapExpanded" Class="registration-panel">
+        <MudForm @ref="_sapForm" Model="_sapModel" Validation="_sapValidator.ValidateValue">
+            <MudStack Spacing="2" Class="sap-vendor-form">
+                <MudText Typo="Typo.body1" Align="Align.Center">SAP Vendor Number</MudText>
+                <MudStack Row="true" Justify="Justify.Center" AlignItems="AlignItems.Start" Spacing="2" Class="sap-find-row">
+                    <MudTextField T="string" @bind-Value="_sapModel.SapVendorNumber" For="@(() => _sapModel.SapVendorNumber)" Required="true" RequiredError="Nomor SAP Vendor wajib diisi." Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" Class="sap-input" />
+                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Info" Size="Size.Medium" Class="find-button" Disabled="_isFindingSap" OnClick="FindSapVendor">Find</MudButton>
+                </MudStack>
+            </MudStack>
+        </MudForm>
+    </MudExpansionPanel>
+
+    @if (_sapFound)
+    {
+    <MudExpansionPanel Text="Company Profile" Expanded="_profileExpanded" ExpandedChanged="SetProfileExpanded" Class="registration-panel">
 <EditForm @ref="_form" Model="Model">
     <DataAnnotationsValidator />
 
@@ -110,3 +127,6 @@
 
     </MudStack>
 </EditForm>
+    </MudExpansionPanel>
+    }
+</MudExpansionPanels>

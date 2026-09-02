@@ -116,6 +116,23 @@ public class AspNetLocalIdentityService(UserManager<AspNetCoreUser> userManager,
             return LoginResult.Failed("User not found");
         }
 
+        if (user.IsDeactivated || !user.EmailConfirmed || await userManager.IsLockedOutAsync(user))
+        {
+            return LoginResult.Failed("User is not permitted to log in");
+        }
+
+        var applicationUserIsActive = await databaseService.Users
+            .AsNoTracking()
+            .AnyAsync(x => !x.IsDeleted
+                && x.IsVerified
+                && !x.Lender.IsDeleted
+                && x.IdentityUserId == user.Id);
+
+        if (!applicationUserIsActive)
+        {
+            return LoginResult.Failed("User is not permitted to log in");
+        }
+
         var passwordIsCorrect = await userManager.CheckPasswordAsync(user, password);
 
         if (!passwordIsCorrect)
@@ -124,6 +141,15 @@ public class AspNetLocalIdentityService(UserManager<AspNetCoreUser> userManager,
         }
 
         return LoginResult.Success(user.Id);
+    }
+
+    public async Task<bool> IsUserEligibleAsync(string username)
+    {
+        var user = await userManager.FindByNameAsync(username);
+        return user is not null &&
+            !user.IsDeactivated &&
+            user.EmailConfirmed &&
+            !await userManager.IsLockedOutAsync(user);
     }
 
     public async Task<Guid> UpdatePasswordAsync(Guid id, string password)
@@ -190,10 +216,18 @@ public class AspNetLocalIdentityService(UserManager<AspNetCoreUser> userManager,
             return LoginResult.Failed("User not found");
         }
 
+        if (userIdentity.IsDeactivated || !userIdentity.EmailConfirmed || await userManager.IsLockedOutAsync(userIdentity))
+        {
+            return LoginResult.Failed("User is not permitted to log in");
+        }
+
         var user = await databaseService.Users
             .AsNoTracking()
             .Include(m => m.Lender)
-            .Where(x => x.IdentityUserId == userIdentity.Id)
+            .Where(x => !x.IsDeleted
+                && x.IsVerified
+                && !x.Lender.IsDeleted
+                && x.IdentityUserId == userIdentity.Id)
             .SingleOrDefaultAsync();
 
         if (user is null)

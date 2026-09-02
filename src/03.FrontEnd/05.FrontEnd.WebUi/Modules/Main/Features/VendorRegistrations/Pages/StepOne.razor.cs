@@ -1,5 +1,4 @@
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration;
-using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.SapVendor;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
@@ -18,12 +17,9 @@ public partial class StepOne
     [SupplyParameterFromQuery]
     public string? SapVendorNumber { get; set; }
 
-    private readonly SapVendorRequest _sapModel = new();
     private PreRegistrationRequest _model = new();
-    private bool _sapExpanded = true;
-    private bool _profileExpanded;
     private bool _sapFound;
-    private PreRegistrationForm? _preRegistrationForm;
+    private CompanyProfileForm? _companyProfileForm;
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,8 +36,6 @@ public partial class StepOne
             return;
         }
 
-        _sapModel.SapVendorNumber = sapVendorNumber;
-
         if (RegistrationState.PreRegistration?.SapVendorNumber == sapVendorNumber)
         {
             _model = RegistrationState.PreRegistration;
@@ -51,7 +45,7 @@ public partial class StepOne
             _model.SapVendorNumber = sapVendorNumber;
         }
 
-        ShowCompanyProfile();
+        _sapFound = true;
     }
 
     private void BackToGuidance()
@@ -59,34 +53,17 @@ public partial class StepOne
         NavigationManager.NavigateTo(VendorRegistrationRouteFor.Index);
     }
 
-    private void FindSapVendor(SapVendorRequest model)
+    private void SapFound(string sapVendorNumber)
     {
-        if (_model.SapVendorNumber != model.SapVendorNumber)
+        if (!string.Equals(_model.SapVendorNumber, sapVendorNumber, StringComparison.Ordinal))
         {
             _model = new PreRegistrationRequest
             {
-                SapVendorNumber = model.SapVendorNumber
+                SapVendorNumber = sapVendorNumber
             };
         }
 
-        ShowCompanyProfile();
-    }
-
-    private void ShowCompanyProfile()
-    {
         _sapFound = true;
-        _sapExpanded = true;
-        _profileExpanded = true;
-    }
-
-    private void SetSapExpanded(bool expanded)
-    {
-        _sapExpanded = expanded;
-    }
-
-    private void SetProfileExpanded(bool expanded)
-    {
-        _profileExpanded = expanded;
     }
 
     private async Task ContinueRegistration(PreRegistrationRequest model)
@@ -97,6 +74,6 @@ public partial class StepOne
 
     private Task SubmitCompanyProfile()
     {
-        return _preRegistrationForm?.SubmitAsync() ?? Task.CompletedTask;
+        return _companyProfileForm?.SubmitAsync() ?? Task.CompletedTask;
     }
 }

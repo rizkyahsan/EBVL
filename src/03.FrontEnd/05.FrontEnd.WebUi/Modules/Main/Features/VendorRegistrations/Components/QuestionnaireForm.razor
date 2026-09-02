@@ -5,23 +5,22 @@
     <div class="questionnaire-form-scope">
         <MudExpansionPanels MultiExpansion="true" Elevation="0" Class="questionnaire-panels">
             <MudExpansionPanel Text="General" Expanded="true" Class="questionnaire-panel">
-                <GeneralQuestionnaireSection Model="Model" OnChanged="NotifyChanged" />
+                <QuestionnaireGeneralForm Model="Model" OnChanged="NotifyChanged" />
             </MudExpansionPanel>
             <MudExpansionPanel Text="Vendor / RO (Representative Office)" Class="questionnaire-panel">
-                <QuestionnaireSection Questions="@VendorRepresentativeQuestions" Model="Model" OnChanged="NotifyChanged" />
+                <QuestionnaireVendorROForm Model="Model" OnChanged="NotifyChanged" />
             </MudExpansionPanel>
             <MudExpansionPanel Text="Sole Agent" Class="questionnaire-panel">
-                <MudCheckBox T="bool" Value="@Model.IsNotSoleAgent" ValueChanged="SoleAgentChanged" Label="Not a Sole Agent" Color="Color.Primary" Class="sole-agent-toggle" />
-                <QuestionnaireSection Questions="@SoleAgentQuestions" Model="Model" Disabled="@Model.IsNotSoleAgent" OnChanged="NotifyChanged" />
+                <QuestionnaireSoleAgentForm Model="Model" OnChanged="NotifyChanged" />
             </MudExpansionPanel>
             <MudExpansionPanel Text="Product Quality - General" Class="questionnaire-panel">
-                <QuestionnaireSection Questions="@ProductQualityGeneralQuestions" Model="Model" OnChanged="NotifyChanged" />
+                <QuestionnaireProductQualityGeneralForm Model="Model" OnChanged="NotifyChanged" />
             </MudExpansionPanel>
             <MudExpansionPanel Text="Product Quality - Spesific" Class="questionnaire-panel">
-                <QuestionnaireSection Questions="@ProductQualitySpecificQuestions" Model="Model" OnChanged="NotifyChanged" />
+                <QuestionnaireProductQualitySpesificForm Model="Model" OnChanged="NotifyChanged" />
             </MudExpansionPanel>
             <MudExpansionPanel Text="Product Positioning &amp; Technical Support" Class="questionnaire-panel">
-                <QuestionnaireSection Questions="@ProductPositioningQuestions" Model="Model" OnChanged="NotifyChanged" />
+                <QuestionnaireProductPositioningQuestionsForm Model="Model" OnChanged="NotifyChanged" />
             </MudExpansionPanel>
         </MudExpansionPanels>
 

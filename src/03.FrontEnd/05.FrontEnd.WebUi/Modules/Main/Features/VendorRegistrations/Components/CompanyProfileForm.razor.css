@@ -3,6 +3,24 @@
     font-size: 14px;
 }
 
+.sap-vendor-form {
+    width: min(520px, 100%);
+    margin: 12px auto 32px;
+}
+
+.sap-find-row {
+    width: 100%;
+}
+
+.sap-find-row ::deep .sap-input {
+    width: min(330px, 100%);
+}
+
+.sap-find-row ::deep .find-button {
+    min-width: 86px;
+    margin-top: 4px;
+}
+
 .form-panel {
     padding: 20px;
     border-radius: 0;

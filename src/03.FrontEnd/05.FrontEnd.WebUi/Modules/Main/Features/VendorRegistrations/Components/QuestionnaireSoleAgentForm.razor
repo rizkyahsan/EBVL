@@ -1,0 +1,18 @@
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire
+@using EBVL.Shared.Statics.VendorRegistrations
+
+<MudCheckBox T="bool" Value="@Model.IsNotSoleAgent" ValueChanged="SoleAgentChanged" Label="Not a Sole Agent" Color="Color.Primary" Class="sole-agent-toggle" />
+<QuestionnaireSection Questions="Questions" Model="Model" Disabled="@Model.IsNotSoleAgent" OnChanged="OnChanged" />
+
+@code {
+    private static readonly IReadOnlyList<VendorQuestionDefinition> Questions = QuestionnaireFor.GetSection(QuestionnaireFor.SoleAgent, [20, 24, 21, 25, 22, 26, 23]);
+
+    [Parameter] public required QuestionnaireRequest Model { get; init; }
+    [Parameter] public EventCallback OnChanged { get; init; }
+
+    private async Task SoleAgentChanged(bool value)
+    {
+        Model.IsNotSoleAgent = value;
+        await OnChanged.InvokeAsync();
+    }
+}

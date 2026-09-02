@@ -9,6 +9,7 @@ public interface ILocalIdentityService
     public Task<bool> CheckAccessAsync(Guid id, string token);
     public Task<Guid> VerifyUserAsync(Guid id);
     public Task<LoginResult> VerifyUserPasswordAsync(string username, string password);
+    public Task<bool> IsUserEligibleAsync(string username);
     public Task<Guid> UpdatePasswordAsync(Guid id, string password);
     public Task DeleteUserAsync(Guid id);
     public Task<LoginResult> LoginAsync(string username);

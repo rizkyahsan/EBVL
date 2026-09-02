@@ -161,13 +161,7 @@ public static class AuthenticationHandlers
 
         await httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal, authenticationProperties);
 
-        //if (string.IsNullOrWhiteSpace(returnUrl))
-        //{
-        //    return TypedResults.Redirect("/");
-        //}
-
-        returnUrl = "/MyProjects";
-        return TypedResults.Redirect(returnUrl);
+        return TypedResults.Redirect(GetSafeLocalReturnUrl(returnUrl));
     }
 
     private static async Task ProcessPositionRoles(IUserPositionsService userPositionsService, IPositionRolesService positionRolesService, ClaimsIdentity identity, string positionId, string userId)
@@ -295,5 +289,20 @@ public static class AuthenticationHandlers
         {
             RedirectUri = returnUrl
         };
+    }
+
+    private static string GetSafeLocalReturnUrl(string? returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl)
+            || returnUrl[0] != '/'
+            || returnUrl.StartsWith("//", StringComparison.Ordinal)
+            || returnUrl.StartsWith("/\\", StringComparison.Ordinal)
+            || returnUrl.Contains('\\')
+            || !Uri.IsWellFormedUriString(returnUrl, UriKind.Relative))
+        {
+            return "/";
+        }
+
+        return returnUrl;
     }
 }

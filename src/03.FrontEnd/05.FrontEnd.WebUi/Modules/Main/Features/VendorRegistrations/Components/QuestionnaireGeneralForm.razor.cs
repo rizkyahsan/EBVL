@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components;
 
-public partial class GeneralQuestionnaireSection
+public partial class QuestionnaireGeneralForm
 {
     [Parameter]
     public required QuestionnaireRequest Model { get; init; }

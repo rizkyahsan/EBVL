@@ -94,6 +94,11 @@ public partial class ResetPassword
 
     private async Task SendVerificationCode()
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         try
         {
             _isLoading = true;
@@ -132,6 +137,11 @@ public partial class ResetPassword
 
     private async Task ExecuteUserResetPassword()
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         try
         {
             _isLoading = true;

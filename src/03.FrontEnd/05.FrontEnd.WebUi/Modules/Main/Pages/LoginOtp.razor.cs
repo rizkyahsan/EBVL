@@ -39,6 +39,11 @@ public partial class LoginOtp
 
     protected override async Task OnInitializedAsync()
     {
+        if (!IsSafeLocalReturnUrl(ReturnUrl))
+        {
+            ReturnUrl = null;
+        }
+
         if (string.IsNullOrEmpty(Id))
         {
             NavigationManager.NavigateTo(MainRouteFor.Landing, forceLoad: true);
@@ -94,6 +99,11 @@ public partial class LoginOtp
 
     private async Task SendVerificationCode()
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         try
         {
             _isLoading = true;
@@ -128,6 +138,11 @@ public partial class LoginOtp
 
     private async Task ExecuteUserVerification()
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         try
         {
             _isLoading = true;
@@ -175,6 +190,16 @@ public partial class LoginOtp
             _isLoading = false;
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    private static bool IsSafeLocalReturnUrl(string? returnUrl)
+    {
+        return !string.IsNullOrWhiteSpace(returnUrl)
+            && returnUrl[0] == '/'
+            && !returnUrl.StartsWith("//", StringComparison.Ordinal)
+            && !returnUrl.StartsWith("/\\", StringComparison.Ordinal)
+            && !returnUrl.Contains('\\')
+            && Uri.IsWellFormedUriString(returnUrl, UriKind.Relative);
     }
 
     private void ExecuteReturn()

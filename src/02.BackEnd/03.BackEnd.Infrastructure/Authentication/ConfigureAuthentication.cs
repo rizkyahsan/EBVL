@@ -75,7 +75,7 @@ public static class ConfigureAuthentication
                 ValidateAudience = true,
                 ValidAudience = $"api://{idAManOptions.ObjectId}",
                 ValidateLifetime = true,
-                ValidateIssuerSigningKey = false,
+                ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(localIdentityOptions.Secret)
                 ),

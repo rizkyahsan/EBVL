@@ -33,6 +33,7 @@
             <MudTextField T="string" Value="@GetAnswer(5).Value" ValueChanged="value => UpdateAnswer(5, value)" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
         </div>
         <QuestionnaireUploadField Label="Vendor Company Profile" Mark="*" Answer="@GetAnswer(10)" OnChanged="OnChanged" />
+        <QuestionnaireUploadField Label="Representative Office Company Profile" Answer="@GetAnswer(11)" OnChanged="OnChanged" />
         <QuestionnaireUploadField Label="Sole Agent Company Profile" Answer="@GetAnswer(12)" OnChanged="OnChanged" />
         <QuestionnaireUploadField Label="The Latest Company Annual Report" Mark="**" Answer="@GetAnswer(13)" OnChanged="OnChanged" />
 

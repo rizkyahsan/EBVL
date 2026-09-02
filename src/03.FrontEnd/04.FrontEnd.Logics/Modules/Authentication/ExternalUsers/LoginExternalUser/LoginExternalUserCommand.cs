@@ -6,6 +6,14 @@ public sealed record LoginExternalUserCommand : LoginExternalUserRequest, IReque
 {
 }
 
+public sealed class LoginExternalUserCommandValidator : AbstractValidatorBase<LoginExternalUserCommand>
+{
+    public LoginExternalUserCommandValidator()
+    {
+        Include(new LoginExternalUserRequestValidator());
+    }
+}
+
 public sealed class LoginExternalUserCommandHandler(
     IBackEndApiService backEndApiService)
     : IRequestHandler<LoginExternalUserCommand, LoginExternalUserResponse>

@@ -1,0 +1,11 @@
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire
+@using EBVL.Shared.Statics.VendorRegistrations
+
+<QuestionnaireSection Questions="Questions" Model="Model" OnChanged="OnChanged" />
+
+@code {
+    private static readonly IReadOnlyList<VendorQuestionDefinition> Questions = QuestionnaireFor.GetSection(QuestionnaireFor.ProductPositioning, [45, 48, 46, 49, 47, 50]);
+
+    [Parameter] public required QuestionnaireRequest Model { get; init; }
+    [Parameter] public EventCallback OnChanged { get; init; }
+}

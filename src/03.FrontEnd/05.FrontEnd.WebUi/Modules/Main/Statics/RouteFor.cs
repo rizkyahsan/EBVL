@@ -21,8 +21,11 @@ public static class RouteFor
         return $"ErrorWithCode/{statusCode}";
     }
 
-    public static string LoginOtp(string externalLoginId)
+    public static string LoginOtp(string externalLoginId, string? returnUrl = null)
     {
-        return $"LoginOtp/{externalLoginId}";
+        var route = $"LoginOtp/{externalLoginId}";
+        return string.IsNullOrWhiteSpace(returnUrl)
+            ? route
+            : $"{route}?returnUrl={Uri.EscapeDataString(returnUrl)}";
     }
 }
