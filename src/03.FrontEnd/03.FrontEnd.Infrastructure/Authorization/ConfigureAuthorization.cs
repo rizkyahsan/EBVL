@@ -18,12 +18,7 @@ public static class ConfigureAuthorization
                 options.AddPolicy(permission, policy => policy.RequireClaim(ClaimTypeFor.Permission, permission));
             }
 
-            foreach (var permission in MasterDataPermissions.All)
-            {
-                options.AddPolicy(permission, policy => policy.RequireClaim(ClaimTypeFor.Permission, permission));
-            }
-
-            foreach (var permission in LogPermissions.All)
+            foreach (var permission in QuestionnairePermissions.All)
             {
                 options.AddPolicy(permission, policy => policy.RequireClaim(ClaimTypeFor.Permission, permission));
             }

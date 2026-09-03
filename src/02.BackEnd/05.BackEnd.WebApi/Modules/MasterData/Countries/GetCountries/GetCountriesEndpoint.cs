@@ -1,6 +1,6 @@
 using EBVL.BackEnd.Logics.Modules.MasterData.Countries.GetCountries;
-using EBVL.Shared.Dto.Modules.MasterData.Countries;
 using EBVL.Shared.Dto.Modules.MasterData.Countries.GetCountries;
+using EBVL.Shared.Dto.Modules.MasterData.Countries;
 
 namespace EBVL.BackEnd.WebApi.Modules.MasterData.Countries.GetCountries;
 
@@ -18,15 +18,9 @@ public sealed class GetCountriesEndpoint : IEndpoint
     }
 
     private static async Task<IResult> Handle(
-        HttpContext context,
         ISender sender,
         CancellationToken cancellationToken)
     {
-        if (!context.User.HasPermission(Permissions.MasterDataCountriesRead))
-        {
-            //return Results.Forbid();
-        }
-
         var query = new GetCountriesQuery();
         var response = await sender.Send(query, cancellationToken);
 

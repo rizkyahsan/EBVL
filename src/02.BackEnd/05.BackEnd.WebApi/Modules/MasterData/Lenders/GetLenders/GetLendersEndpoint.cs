@@ -18,15 +18,9 @@ public sealed class GetLendersEndpoint : IEndpoint
     }
 
     private static async Task<IResult> Handle(
-        HttpContext context,
         ISender sender,
         CancellationToken cancellationToken)
     {
-        if (!context.User.HasPermission(Permissions.MasterDataLendersRead))
-        {
-            //return Results.Forbid();
-        }
-
         var query = new GetLendersQuery();
         var response = await sender.Send(query, cancellationToken);
 

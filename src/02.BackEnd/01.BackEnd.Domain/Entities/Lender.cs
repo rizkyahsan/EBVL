@@ -15,6 +15,4 @@ public sealed class Lender : ModifiableEntity
     public Country Country { get; set; } = default!;
 
     public ICollection<User> Users { get; set; } = new HashSet<User>();
-    public ICollection<ProjectLender> ProjectLenders { get; set; } = new HashSet<ProjectLender>();
-
 }

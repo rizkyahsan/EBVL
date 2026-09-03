@@ -1,34 +1,9 @@
-<AuthorizeView Policy="@MasterDataPermissions.MasterData">
+<AuthorizeView Policy="@QuestionnairePermissions.Read">
     <Authorized>
-        <NavGroupDefault Title="@MasterDataDisplayTextFor.MasterData"
-                         Icon="@Icons.Material.TwoTone.Dataset">
-            <AuthorizeView Context="MasterDataCountries" Policy="@MasterDataPermissions.MasterDataCountriesRead">
-                <Authorized>
-                    <MudNavLink Href="@MasterDataCountriesRouteFor.Index"
-                                Match="NavLinkMatch.Prefix"
-                                Icon="@Icons.Material.TwoTone.Flag">
-                        @CountriesDisplayTextFor.Countries
-                    </MudNavLink>
-                </Authorized>
-            </AuthorizeView>
-            <AuthorizeView Context="MasterDataLenders" Policy="@MasterDataPermissions.MasterDataLendersRead">
-                <Authorized>
-                    <MudNavLink Href="@MasterDataLendersRouteFor.Index"
-                                Match="NavLinkMatch.Prefix"
-                                Icon="@Icons.Material.TwoTone.AccountBalance">
-                        @LendersDisplayTextFor.Lenders
-                    </MudNavLink>
-                </Authorized>
-            </AuthorizeView>
-            <AuthorizeView Context="MasterDataUsers" Policy="@MasterDataPermissions.MasterDataUsersRead">
-                <Authorized>
-                    <MudNavLink Href="@MasterDataUsersRouteFor.Index"
-                                Match="NavLinkMatch.Prefix"
-                                Icon="@Icons.Material.TwoTone.VerifiedUser">
-                        @UsersDisplayTextFor.Users
-                    </MudNavLink>
-                </Authorized>
-            </AuthorizeView>
+        <NavGroupDefault Title="Master Data" Icon="@Icons.Material.TwoTone.Storage">
+            <MudNavLink Href="@QuestionnaireRouteFor.Index" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.TwoTone.Quiz">
+                Questionnaire
+            </MudNavLink>
         </NavGroupDefault>
     </Authorized>
 </AuthorizeView>

@@ -1,0 +1,65 @@
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+
+<MudStack Spacing="3">
+    <MudTextField Label="Business Process" Value="@BusinessProcess" ValueChanged="BusinessProcessChanged" Variant="Variant.Outlined" Required="true" Disabled="@ReadOnly" />
+    @for (var si = 0; si < Sections.Count; si++)
+    {
+        var section = Sections[si]; var sectionIndex = si;
+        <MudPaper Outlined="true" Class="pa-4">
+            <MudStack Row="true" AlignItems="AlignItems.Center"><MudText Typo="Typo.h6">Section @(si + 1)</MudText><MudSpacer />@if (!ReadOnly) { <MudIconButton Icon="@Icons.Material.Outlined.ArrowUpward" Disabled="@(si == 0)" OnClick="@(() => Move(Sections, sectionIndex, -1))" /><MudIconButton Icon="@Icons.Material.Outlined.ArrowDownward" Disabled="@(si == Sections.Count - 1)" OnClick="@(() => Move(Sections, sectionIndex, 1))" /><MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="@(() => Sections.Remove(section))" /> }</MudStack>
+            <MudGrid>
+                <MudItem xs="12" sm="4"><MudTextField Label="Code" @bind-Value="section.Code" Variant="Variant.Outlined" Required="true" Disabled="@ReadOnly" /></MudItem>
+                <MudItem xs="12" sm="5"><MudTextField Label="Title" @bind-Value="section.Title" Variant="Variant.Outlined" Required="true" Disabled="@ReadOnly" /></MudItem>
+                <MudItem xs="12" sm="3"><MudSelect T="VendorCompanyStatusType?" Label="Vendor Type" @bind-Value="section.CompanyType" Variant="Variant.Outlined" Disabled="@ReadOnly" Clearable="true"><MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)null)">All</MudSelectItem>@foreach (var value in Enum.GetValues<VendorCompanyStatusType>()) { <MudSelectItem T="VendorCompanyStatusType?" Value="@value">@value</MudSelectItem> }</MudSelect></MudItem>
+            </MudGrid>
+            @for (var qi = 0; qi < section.Questions.Count; qi++)
+            {
+                var question = section.Questions[qi]; var questionIndex = qi;
+                <MudPaper Elevation="0" Class="pa-3 mt-3 mud-theme-background-grey">
+                    <MudStack Row="true"><MudText Typo="Typo.subtitle2">Question @(qi + 1)</MudText><MudSpacer />@if (!ReadOnly) { <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.ArrowUpward" Disabled="@(qi == 0)" OnClick="@(() => Move(section.Questions, questionIndex, -1))" /><MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.ArrowDownward" Disabled="@(qi == section.Questions.Count - 1)" OnClick="@(() => Move(section.Questions, questionIndex, 1))" /><MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="@(() => RemoveQuestion(section, question))" /> }</MudStack>
+                    <MudGrid>
+                        <MudItem xs="12" sm="3"><MudTextField Label="Code" @bind-Value="question.Code" Variant="Variant.Outlined" Disabled="@ReadOnly" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField Label="Label" @bind-Value="question.Label" Variant="Variant.Outlined" Disabled="@ReadOnly" /></MudItem>
+                        <MudItem xs="12" sm="3"><MudSelect T="QuestionnaireQuestionType" Label="Type" @bind-Value="question.Type" Variant="Variant.Outlined" Disabled="@ReadOnly">@foreach (var type in Enum.GetValues<QuestionnaireQuestionType>()) { <MudSelectItem Value="@type">@type</MudSelectItem> }</MudSelect></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField Label="Hint" @bind-Value="question.Hint" Variant="Variant.Outlined" Disabled="@ReadOnly" /></MudItem>
+                        <MudItem xs="12" sm="6"><MudTextField Label="Placeholder" @bind-Value="question.Placeholder" Variant="Variant.Outlined" Disabled="@ReadOnly" /></MudItem>
+                        <MudItem xs="6"><MudSwitch T="bool" @bind-Value="question.IsRequired" Label="Required" Disabled="@ReadOnly" /></MudItem><MudItem xs="6"><MudSwitch T="bool" @bind-Value="question.IsVisible" Label="Visible" Disabled="@ReadOnly" /></MudItem>
+                    </MudGrid>
+                    @if (question.Type is QuestionnaireQuestionType.SingleChoice or QuestionnaireQuestionType.MultipleChoice)
+                    {
+                        @foreach (var option in question.Options) { <MudStack Row="true" Class="mt-2"><MudTextField Label="Option code" @bind-Value="option.Code" Variant="Variant.Outlined" Disabled="@ReadOnly" /><MudTextField Label="Option label" @bind-Value="option.Label" Variant="Variant.Outlined" Disabled="@ReadOnly" />@if (!ReadOnly) { <MudIconButton Icon="@Icons.Material.Outlined.RemoveCircle" OnClick="@(() => question.Options.Remove(option))" /> }</MudStack> }
+                        @if (!ReadOnly) { <MudButton StartIcon="@Icons.Material.Outlined.Add" OnClick="@(() => question.Options.Add(new()))">Add Option</MudButton> }
+                    }
+                </MudPaper>
+            }
+            @if (!ReadOnly) { <MudButton Class="mt-3" Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Add" OnClick="@(() => section.Questions.Add(new()))">Add Question</MudButton> }
+        </MudPaper>
+    }
+    @if (!ReadOnly) { <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Add" OnClick="@(() => Sections.Add(new()))">Add Section</MudButton> }
+    <MudDivider />
+    <MudText Typo="Typo.h6">Rules</MudText>
+    @foreach (var rule in Rules)
+    {
+        <MudGrid>
+            <MudItem xs="12" sm="3"><MudSelect T="Guid" Label="Source" @bind-Value="rule.SourceQuestionId" Variant="Variant.Outlined" Disabled="@ReadOnly">@foreach (var q in Questions) { <MudSelectItem Value="@q.Id">@q.Label</MudSelectItem> }</MudSelect></MudItem>
+            <MudItem xs="6" sm="2"><MudSelect T="QuestionnaireRuleOperator" Label="Operator" @bind-Value="rule.Operator" Variant="Variant.Outlined" Disabled="@ReadOnly">@foreach (var x in Enum.GetValues<QuestionnaireRuleOperator>()) { <MudSelectItem Value="@x">@x</MudSelectItem> }</MudSelect></MudItem>
+            <MudItem xs="6" sm="2"><MudTextField Label="Value" @bind-Value="rule.Value" Variant="Variant.Outlined" Disabled="@ReadOnly" /></MudItem>
+            <MudItem xs="6" sm="2"><MudSelect T="QuestionnaireRuleAction" Label="Action" @bind-Value="rule.Action" Variant="Variant.Outlined" Disabled="@ReadOnly">@foreach (var x in Enum.GetValues<QuestionnaireRuleAction>()) { <MudSelectItem Value="@x">@x</MudSelectItem> }</MudSelect></MudItem>
+            <MudItem xs="6" sm="3"><MudStack Row="true"><MudSelect T="Guid" Label="Target" @bind-Value="rule.TargetQuestionId" Variant="Variant.Outlined" Disabled="@ReadOnly">@foreach (var q in Questions) { <MudSelectItem Value="@q.Id">@q.Label</MudSelectItem> }</MudSelect>@if (!ReadOnly) { <MudIconButton Icon="@Icons.Material.Outlined.Delete" OnClick="@(() => Rules.Remove(rule))" /> }</MudStack></MudItem>
+        </MudGrid>
+    }
+    @if (!ReadOnly) { <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.AccountTree" OnClick="AddRule" Disabled="@(Questions.Count < 2)">Add Rule</MudButton> }
+</MudStack>
+
+@code {
+    [Parameter] public string BusinessProcess { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> BusinessProcessChanged { get; set; }
+    [Parameter, EditorRequired] public List<SectionModel> Sections { get; set; } = [];
+    [Parameter, EditorRequired] public List<RuleModel> Rules { get; set; } = [];
+    [Parameter] public bool ReadOnly { get; set; }
+    private List<QuestionModel> Questions => Sections.SelectMany(x => x.Questions).ToList();
+    private static void Move<T>(List<T> items, int index, int delta) { var item = items[index]; items.RemoveAt(index); items.Insert(index + delta, item); }
+    private void RemoveQuestion(SectionModel section, QuestionModel question) { section.Questions.Remove(question); Rules.RemoveAll(x => x.SourceQuestionId == question.Id || x.TargetQuestionId == question.Id); }
+    private void AddRule() { var q = Questions; Rules.Add(new() { SourceQuestionId = q[0].Id, TargetQuestionId = q[1].Id }); }
+}

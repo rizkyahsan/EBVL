@@ -15,18 +15,19 @@ public partial interface IDatabaseService
     public DbSet<ExternalLoginLog> ExternalLoginLogs { get; }
     public DbSet<FileStorage> FileStorages { get; }
     public DbSet<LogEmail> LogEmails { get; }
-    public DbSet<LogTransaction> LogTransactions { get; }
     public DbSet<Lender> Lenders { get; }
-    public DbSet<Project> Projects { get; }
-    public DbSet<ProjectAttachment> ProjectAttachments { get; }
-    public DbSet<ProjectFile> ProjectFiles { get; }
-    public DbSet<ProjectLender> ProjectLenders { get; }
-    public DbSet<ProjectLenderHistory> ProjectLenderHistories { get; }
-    public DbSet<ProjectLenderReq> ProjectLenderReqs { get; }
-    public DbSet<ProjectLenderReqFile> ProjectLenderReqFiles { get; }
-    public DbSet<ProjectReq> ProjectReqs { get; }
-    public DbSet<ProjectStage> ProjectStages { get; }
     public DbSet<PublicHoliday> PublicHolidays { get; }
-    public DbSet<Status> Statuses { get; }
+    public DbSet<Questionnaire> Questionnaires { get; }
+    public DbSet<QuestionnaireVersion> QuestionnaireVersions { get; }
+    public DbSet<QuestionnaireSection> QuestionnaireSections { get; }
+    public DbSet<QuestionnaireQuestion> QuestionnaireQuestions { get; }
+    public DbSet<QuestionnaireOption> QuestionnaireOptions { get; }
+    public DbSet<QuestionnaireRule> QuestionnaireRules { get; }
+    public DbSet<VendorRegistration> VendorRegistrations { get; }
+    public DbSet<VendorRegistrationDocument> VendorRegistrationDocuments { get; }
+    public DbSet<QuestionnaireSubmission> QuestionnaireSubmissions { get; }
+    public DbSet<QuestionnaireAnswer> QuestionnaireAnswers { get; }
+    public DbSet<QuestionnaireAnswerOption> QuestionnaireAnswerOptions { get; }
+    public DbSet<QuestionnaireAnswerFile> QuestionnaireAnswerFiles { get; }
     public DbSet<User> Users { get; }
 }

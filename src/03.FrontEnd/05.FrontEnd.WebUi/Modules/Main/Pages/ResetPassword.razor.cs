@@ -159,7 +159,7 @@ public partial class ResetPassword
                 _isSuccess = true;
                 _isLoading = false;
 
-                Snackbar.AddSuccess(SuccessMessageFor.Updated($"{MasterDataUsersDisplayTextFor.ResetPassword}", _username));
+                Snackbar.AddSuccess(SuccessMessageFor.Updated($"{UsersDisplayTextFor.ResetPassword}", _username));
                 StateHasChanged();
 
                 await Task.Delay(5000);

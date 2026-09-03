@@ -1,0 +1,82 @@
+@page "/MasterData/Questionnaires/Details/{Id:guid}"
+@inherits PageBase
+@using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Components
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+@attribute [Authorize(Policy = QuestionnairePermissions.Read)]
+
+<HtmlHead Title="@_pageTitle" />
+<Breadcrumbs Items="@_breadcrumbItems" />
+<PageHeader Title="@_pageTitle" EntityType="Questionnaire" />
+<LoadingLinear IsVisible="@_isLoading" />
+<ErrorViewer Exception="@_exception" />
+@if (_item is not null)
+{
+    <MudStack Row="true" Wrap="Wrap.Wrap" Class="mb-4">
+        <MudChip T="string" Color="@StatusColor(_item.Status)" Variant="Variant.Filled">@_item.Status</MudChip>
+        <MudChip T="string" Variant="Variant.Outlined">Version @_item.Version</MudChip>
+        @if (_item.IsActive) { <MudChip T="string" Color="Color.Success">Active</MudChip> }
+        <MudSpacer />
+        <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.Visibility" Href="@QuestionnaireRouteFor.Preview(Id)">Preview</MudButton>
+        @if (_item.Status == QuestionnaireVersionStatus.Draft)
+        {
+            <AuthorizeView Policy="@QuestionnairePermissions.Write"><Authorized>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="Validate" Disabled="@_isSubmitting">Validate</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Save" Disabled="@_isSubmitting">Save Draft</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="Delete" Disabled="@_isSubmitting">Delete Draft</MudButton>
+            </Authorized></AuthorizeView>
+            <AuthorizeView Policy="@QuestionnairePermissions.Publish"><Authorized><MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Outlined.Publish" OnClick="Publish" Disabled="@_isSubmitting">Publish</MudButton></Authorized></AuthorizeView>
+        }
+        else
+        {
+            <AuthorizeView Policy="@QuestionnairePermissions.Write"><Authorized>
+                @if (_item.Status == QuestionnaireVersionStatus.Published) { <MudButton Variant="Variant.Outlined" OnClick="Deactivate" Disabled="@_isSubmitting">Deactivate</MudButton> }
+                @if (_item.Status != QuestionnaireVersionStatus.Archived) { <MudButton Variant="Variant.Text" Color="Color.Error" OnClick="Archive" Disabled="@_isSubmitting">Archive</MudButton> }
+            </Authorized></AuthorizeView>
+        }
+    </MudStack>
+    @if (_validationErrors.Count > 0) { <MudAlert Severity="Severity.Error" Class="mb-4"><MudText Typo="Typo.subtitle2">Validation issues</MudText>@foreach (var error in _validationErrors) { <div>@error</div> }</MudAlert> }
+    <MudTabs Rounded="true" PanelClass="pa-4">
+        <MudTabPanel Text="Editor">
+            <QuestionnaireEditor @bind-BusinessProcess="_businessProcess" Sections="_sections" Rules="_rules" ReadOnly="@(_item.Status != QuestionnaireVersionStatus.Draft)" />
+        </MudTabPanel>
+        <MudTabPanel Text="Version History" BadgeData="@_history.Count">
+            <MudTable Items="_history" Hover="true"><HeaderContent><MudTh>Version</MudTh><MudTh>Status</MudTh><MudTh>Active</MudTh><MudTh></MudTh></HeaderContent><RowTemplate><MudTd DataLabel="Version">v@context.Version</MudTd><MudTd DataLabel="Status">@context.Status</MudTd><MudTd DataLabel="Active">@(context.IsActive ? "Yes" : "No")</MudTd><MudTd><MudIconButton Icon="@Icons.Material.Outlined.Visibility" Href="@QuestionnaireRouteFor.Details(context.VersionId)" /></MudTd></RowTemplate></MudTable>
+        </MudTabPanel>
+    </MudTabs>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    private QuestionnaireDraftItem? _item;
+    private string _businessProcess = string.Empty;
+    private List<SectionModel> _sections = [];
+    private List<RuleModel> _rules = [];
+    private List<QuestionnaireListItem> _history = [];
+    private IReadOnlyList<string> _validationErrors = [];
+    private bool _isSubmitting;
+    protected override async Task OnParametersSetAsync() { LoadBreadcrumbs(); await Load(); }
+    protected override void LoadBreadcrumbs() => _breadcrumbItems = [MainBreadcrumbFor.Home, MasterDataBreadcrumbFor.Index, new("Questionnaire", QuestionnaireRouteFor.Index), CommonBreadcrumbFor.Active("Details")];
+    private async Task Load()
+    {
+        try { _isLoading = true; ClearException(); var response = await Sender.Send(new GetQuestionnaireQuery(Id)); _item = response.Item; _pageTitle = $"{_item.Code} · v{_item.Version}"; Map(_item); var list = await Sender.Send(new GetQuestionnairesQuery()); _history = list.Items.Where(x => x.Id == _item.QuestionnaireId).GroupBy(x => x.VersionId).Select(x => x.First()).OrderByDescending(x => x.Version).ToList(); }
+        catch (Exception ex) { _exception = ex; } finally { _isLoading = false; }
+    }
+    private void Map(QuestionnaireDraftItem item)
+    {
+        _businessProcess = item.BusinessProcess;
+        _sections = item.Sections.Select(s => new SectionModel { Id = s.Id, Code = s.Code, Title = s.Title, CompanyType = s.CompanyType, Questions = s.Questions.Select(q => new QuestionModel { Id = q.Id, Code = q.Code, Label = q.Label, Hint = q.Hint, Placeholder = q.Placeholder, Type = q.Type, IsRequired = q.IsRequired, IsVisible = q.IsVisible, Options = q.Options.Select(o => new OptionModel { Code = o.Code, Label = o.Label }).ToList() }).ToList() }).ToList();
+        _rules = item.Rules.Select(r => new RuleModel { SourceQuestionId = r.SourceQuestionId, TargetQuestionId = r.TargetQuestionId, Operator = r.Operator, Action = r.Action, Value = r.Value }).ToList();
+    }
+    private UpdateQuestionnaireDraftRequest Request() => new() { BusinessProcess = _businessProcess, RowVersion = _item!.RowVersion, Sections = _sections.Select((s, si) => new QuestionnaireSectionItem(s.Id, s.Code, s.Title, si + 1, s.CompanyType, s.Questions.Select((q, qi) => new QuestionnaireQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, qi + 1, q.IsRequired, q.IsVisible, q.Options.Select((o, oi) => new QuestionnaireOptionItem(Guid.Empty, o.Code, o.Label, oi + 1)).ToList())).ToList())).ToList(), Rules = _rules.Select(r => new QuestionnaireRuleItem(Guid.Empty, r.SourceQuestionId, r.TargetQuestionId, r.Operator, r.Action, r.Value)).ToList() };
+    private async Task Save() => await Execute(async () => { var response = await Sender.Send(new UpdateQuestionnaireDraftCommand(Id, Request())); _item = response.Item; Map(_item); Snackbar.AddSuccess("Draft saved."); });
+    private async Task Validate() => await Execute(async () => { var response = await Sender.Send(new ValidateQuestionnaireCommand(Id)); _validationErrors = response.Errors; Snackbar.Add(response.IsValid ? "Questionnaire is valid." : "Questionnaire has validation issues.", response.IsValid ? Severity.Success : Severity.Warning); });
+    private async Task Publish() { if (await Confirm("Publish this questionnaire version?")) await Execute(async () => { await Sender.Send(new PublishQuestionnaireCommand(Id)); Snackbar.AddSuccess("Questionnaire published."); await Load(); }); }
+    private async Task Delete() { if (await Confirm("Delete this draft?")) await Execute(async () => { await Sender.Send(new DeleteQuestionnaireDraftCommand(Id)); NavigationManager.NavigateTo(QuestionnaireRouteFor.Index); }); }
+    private async Task Deactivate() { if (await Confirm("Deactivate this questionnaire version?")) await Execute(async () => { await Sender.Send(new DeactivateQuestionnaireCommand(Id)); await Load(); }); }
+    private async Task Archive() { if (await Confirm("Archive this questionnaire version?")) await Execute(async () => { await Sender.Send(new ArchiveQuestionnaireCommand(Id)); await Load(); }); }
+    private async Task Execute(Func<Task> action) { if (_isSubmitting) return; try { _isSubmitting = true; ClearException(); await action(); } catch (Exception ex) { _exception = ex; } finally { _isSubmitting = false; } }
+    private async Task<bool> Confirm(string message) => await DialogService.ShowMessageBox("Questionnaire", message, yesText: "Yes", noText: "No") == true;
+    private static Color StatusColor(QuestionnaireVersionStatus status) => status switch { QuestionnaireVersionStatus.Published => Color.Success, QuestionnaireVersionStatus.Draft => Color.Warning, QuestionnaireVersionStatus.Archived => Color.Default, _ => Color.Info };
+}

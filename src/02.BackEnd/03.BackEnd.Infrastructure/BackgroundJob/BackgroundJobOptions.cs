@@ -7,8 +7,4 @@ public sealed class BackgroundJobOptions
     public string DashboardUrl { get; init; } = "/hf";
 
     public int WorkerCount { get; init; }
-
-    public string ProjectExpiredCron { get; init; } = "0 0 * * *";
-
-    public string TimeZone { get; init; } = "SE Asia Standard Time";
 }

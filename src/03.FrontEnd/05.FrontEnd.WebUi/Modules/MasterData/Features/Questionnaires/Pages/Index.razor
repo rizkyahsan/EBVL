@@ -1,0 +1,38 @@
+@page "/MasterData/Questionnaires"
+@inherits PageBase
+@using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Components
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+@attribute [Authorize(Policy = QuestionnairePermissions.Read)]
+
+<HtmlHead Title="Questionnaire" />
+<Breadcrumbs Items="@_breadcrumbItems" />
+<PageHeader Title="Questionnaire" />
+<ErrorViewer Exception="@_exception" />
+<AuthorizeView Policy="@QuestionnairePermissions.Write">
+    <Authorized><TopButtonPanel><MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="ShowAdd">Add New</MudButton></TopButtonPanel></Authorized>
+</AuthorizeView>
+<TableDefault Items="_items" Loading="_isLoading" Filter="Filter">
+    <ToolBarContent><MudSpacer /><TextFieldSearch @bind-Value="_search" /></ToolBarContent>
+    <HeaderContent><MudTh>No</MudTh><MudTh>Business Process</MudTh><MudTh>Vendor Type</MudTh><MudTh>Section</MudTh><MudTh Class="text-center">Action</MudTh></HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="No">@Number(context)</MudTd>
+        <MudTd DataLabel="Business Process"><MudHighlighter Text="@context.BusinessProcess" HighlightedText="@_search" /><MudText Typo="Typo.caption">v@context.Version · @context.Status</MudText></MudTd>
+        <MudTd DataLabel="Vendor Type">@Vendor(context.VendorType)</MudTd>
+        <MudTd DataLabel="Section">@context.Section</MudTd>
+        <MudTd DataLabel="Action" Class="text-center"><MudIconButton Icon="@Icons.Material.Outlined.Visibility" Color="Color.Primary" Href="@QuestionnaireRouteFor.Details(context.VersionId)" /></MudTd>
+    </RowTemplate>
+    <PagerContent><MudTablePager /></PagerContent>
+</TableDefault>
+
+@code {
+    private List<QuestionnaireListItem> _items = [];
+    private string? _search;
+    protected override async Task OnInitializedAsync() { LoadBreadcrumbs(); await Load(); }
+    protected override void LoadBreadcrumbs() => _breadcrumbItems = [MainBreadcrumbFor.Home, MasterDataBreadcrumbFor.Index, CommonBreadcrumbFor.Active("Questionnaire")];
+    private async Task Load() { try { _isLoading = true; ClearException(); _items = (await Sender.Send(new GetQuestionnairesQuery())).Items.ToList(); } catch (Exception ex) { _exception = ex; } finally { _isLoading = false; } }
+    private bool Filter(QuestionnaireListItem x) => string.IsNullOrWhiteSpace(_search) || $"{x.BusinessProcess} {x.Section} {Vendor(x.VendorType)} {x.Status}".Contains(_search, StringComparison.OrdinalIgnoreCase);
+    private int Number(QuestionnaireListItem x) => _items.IndexOf(x) + 1;
+    private static string Vendor(VendorCompanyStatusType? value) => value switch { null => "All", VendorCompanyStatusType.Manufacture => "Manufacturer", VendorCompanyStatusType.SoleDistributorAgent => "Sole Distributor Agent", _ => "Authorized Agent" };
+    private async Task ShowAdd() { var dialog = await DialogService.ShowAsync<DialogAdd>("Add Questionnaire", options: new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true }); var result = await dialog.Result; if (result is { Canceled: false }) await Load(); }
+}

@@ -36,8 +36,8 @@ public static class ConfigureDatabase
         _ = services.AddTransient<AuditSeeder>();
         _ = services.AddTransient<ConfigurationSeeder>();
         _ = services.AddTransient<CountrySeeder>();
-        _ = services.AddTransient<StatusSeeder>();
         _ = services.AddTransient<EmailTemplateSeeder>();
+        _ = services.AddTransient<QuestionnaireSeeder>();
 
         return services;
     }
@@ -61,11 +61,11 @@ public static class ConfigureDatabase
             var countrySeeder = serviceProvider.GetRequiredService<CountrySeeder>();
             await countrySeeder.SeedCountries();
 
-            var statusSeeder = serviceProvider.GetRequiredService<StatusSeeder>();
-            await statusSeeder.SeedStatuses();
-
             var emailTemplateSeeder = serviceProvider.GetRequiredService<EmailTemplateSeeder>();
             await emailTemplateSeeder.SeederEmailTemplate();
+
+            var questionnaireSeeder = serviceProvider.GetRequiredService<QuestionnaireSeeder>();
+            await questionnaireSeeder.SeedQuestionnaires();
         }
     }
 }

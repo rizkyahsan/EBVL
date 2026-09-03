@@ -1,0 +1,57 @@
+@inherits DialogBase
+@using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+
+<MudDialog>
+    <DialogContent>
+        <ErrorViewer Exception="@_exception" />
+        <LoadingLinear IsVisible="@_isLoading" />
+        <MudForm @ref="_form">
+            <MudGrid>
+                <MudItem xs="12" sm="6"><MudTextField Label="Code" @bind-Value="_code" Required="true" Variant="Variant.Outlined" /></MudItem>
+                <MudItem xs="12" sm="6"><MudTextField Label="Business Process" @bind-Value="_businessProcess" Required="true" Variant="Variant.Outlined" /></MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="VendorCompanyStatusType?" Label="Vendor Type" @bind-Value="_vendorType" Variant="Variant.Outlined" Clearable="true">
+                        <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)null)">All</MudSelectItem>
+                        @foreach (var value in Enum.GetValues<VendorCompanyStatusType>()) { <MudSelectItem T="VendorCompanyStatusType?" Value="@value">@Format(value)</MudSelectItem> }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" sm="6"><MudTextField Label="Section" @bind-Value="_section" Required="true" Variant="Variant.Outlined" /></MudItem>
+                <MudItem xs="12"><MudSwitch T="bool" Value="false" Disabled="true" Label="Active (enabled when published)" Color="Color.Primary" /></MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <ButtonCancel OnClick="Cancel" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Disabled="_isLoading">Create Draft</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private MudForm _form = default!;
+    private string _code = string.Empty;
+    private string _businessProcess = string.Empty;
+    private string _section = string.Empty;
+    private VendorCompanyStatusType? _vendorType;
+
+    private async Task Submit()
+    {
+        if (_isLoading) return;
+        try
+        {
+            _isLoading = true; ClearException(); await _form.Validate();
+            if (!_form.IsValid) return;
+            var created = await Sender.Send(new AddQuestionnaireCommand { Code = _code, BusinessProcess = _businessProcess });
+            var question = new QuestionnaireQuestionItem(Guid.CreateVersion7(), "QUESTION_1", "New question", null, null, QuestionnaireQuestionType.ShortText, 1, false, true, []);
+            var section = new QuestionnaireSectionItem(Guid.Empty, Code(_section), _section, 1, _vendorType, [question]);
+            var updated = await Sender.Send(new UpdateQuestionnaireDraftCommand(created.Item.Id, new UpdateQuestionnaireDraftRequest { BusinessProcess = _businessProcess, RowVersion = created.Item.RowVersion, Sections = [section], Rules = [] }));
+            Snackbar.AddSuccess("Questionnaire draft created.");
+            Dialog.Close(DialogResult.Ok(updated.Item.Id));
+        }
+        catch (Exception exception) { _exception = exception; }
+        finally { _isLoading = false; }
+    }
+
+    private static string Code(string value) => string.Join('_', value.Trim().ToUpperInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries));
+    private static string Format(VendorCompanyStatusType value) => value switch { VendorCompanyStatusType.Manufacture => "Manufacturer", VendorCompanyStatusType.SoleDistributorAgent => "Sole Distributor Agent", _ => "Authorized Agent" };
+}

@@ -1,4 +1,3 @@
-using EBVL.BackEnd.Infrastructure.BackgroundJob.Schedulers.Project;
 using EBVL.BackEnd.Logics.Common.Services.LogEmailDb;
 using Hangfire;
 using Hangfire.Dashboard.BasicAuthorization;
@@ -95,12 +94,6 @@ public static class ConfigureBackgroundJob
             connectionString: connectionString,
             name: $"Background Job Database: SQL Server ({databaseName})",
             tags: ["Database"]);
-
-        #region Scheduler
-
-        _ = services.AddScoped<IProjectScheduler, ProjectScheduler>();
-
-        #endregion
 
         return services;
     }

@@ -9,42 +9,6 @@ public static class ActionFor
     #endregion
 
     #region action for Main
-    #region action for MyProjects
-    public const string MainMyProjectsGetMyProject = "GetMyProject";
-    public const string MainMyProjectsGetMyProjects = "GetMyProjects";
-    public const string MainMyProjectsGetMyProjectStage = "GetMyProjectStage";
-    public const string MainMyProjectsUpdateMyProjectStage = "UpdateMyProjectStage";
-    public const string MainMyProjectsSubmitMyProjectStage = "SubmitMyProjectStage";
-    #endregion
-
-    #region action for Projects
-    public const string MainProjectsCompleteProject = "CompleteProject";
-    public const string MainProjectsCompleteProjectWin = "CompleteProjectWin";
-    public const string MainProjectsCompleteProjectLose = "CompleteProjectLose";
-
-    public const string MainProjectsCompleteProjectStage = "CompleteProjectStage";
-    public const string MainProjectsCompleteProjectStageAccept = "CompleteProjectStageAccept";
-    public const string MainProjectsCompleteProjectStageReject = "CompleteProjectStageReject";
-
-    public const string MainProjectsCreateProject = "CreateProject";
-    public const string MainProjectsCreateProjectStage = "CreateProjectStage";
-    public const string MainProjectsDeleteProject = "DeleteProject";
-    public const string MainProjectsDeleteFileProject = "DeleteProjectFile";
-    public const string MainProjectsGetLastProjectStage = "GetLastProjectStage";
-    public const string MainProjectsGetProject = "GetProject";
-    public const string MainProjectsGetProjects = "GetProjects";
-    public const string MainProjectsGetProjectStage = "GetProjectStage";
-    public const string MainProjectsGetProjectVerifies = "GetProjectVerifies";
-    public const string MainProjectsGetProjectVerify = "GetProjectVerify";
-    public const string MainProjectsPublishProjectStage = "PublishProjectStage";
-    public const string MainProjectsPublishProjectStageAdmin = "PublishProjectStageAdmin";
-    public const string MainProjectsReviewProjectStage = "ReviewProjectStage";
-    public const string MainProjectsRevisionProjectLenderReq = "RevisionProjectLenderReq";
-    public const string MainProjectsUpdateProject = "UpdateProject";
-    public const string MainProjectsUpdateProjectStage = "UpdateProjectStage";
-    public const string MainProjectsUploadProjectFile = "UploadProjectFile";
-    #endregion
-
     #region action for Users
     public const string MainCreateMyUser = "CreateMyUser";
     public const string MainGetMyUser = "GetMyUser";

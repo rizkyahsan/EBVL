@@ -45,7 +45,6 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseBackgroundJobService(appConfigBackEndOptions.PathBase, secrets[SecretKeyFor.BackgroundJobDashboardUsername], secrets[SecretKeyFor.BackgroundJobDashboardKataKunci]);
-app.RegisterRecurringJobs();
 app.MapOpenApi();
 app.MapScalarApiReference();
 app.RegisterEndpoints(typeof(Program).Assembly);
