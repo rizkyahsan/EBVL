@@ -62,7 +62,6 @@ global using MainRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Statics.RouteFor;
 global using PublicHolidaysDisplayTextFor = EBVL.Shared.Statics.PublicHolidays.DisplayTextFor;
 global using UsersDisplayTextFor = EBVL.Shared.Statics.Users.DisplayTextFor;
 global using WebUiDisplayTextFor = EBVL.FrontEnd.WebUi.Common.Statics.DisplayTextFor;
-global using QuestionnairePermissions = EBVL.Shared.Dto.Modules.MasterData.Questionnaires.QuestionnairePermissions;
 global using MasterDataRouteFor = EBVL.FrontEnd.WebUi.Modules.MasterData.Statics.RouteFor;
 global using MasterDataBreadcrumbFor = EBVL.FrontEnd.WebUi.Modules.MasterData.Statics.BreadcrumbFor;
 global using QuestionnaireRouteFor = EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Statics.RouteFor;

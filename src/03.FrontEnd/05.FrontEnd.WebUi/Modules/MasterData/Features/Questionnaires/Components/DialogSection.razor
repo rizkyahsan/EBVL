@@ -1,0 +1,17 @@
+@inherits DialogBase
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+
+<MudDialog><DialogContent><MudForm @ref="_form"><MudGrid>
+    <MudItem xs="12"><MudSelect T="string" Label="Business Process" @bind-Value="Model.BusinessProcess" Required="true" Variant="Variant.Outlined">@foreach (var process in QuestionnaireBusinessProcessFor.All) { <MudSelectItem Value="@process">@process</MudSelectItem> }</MudSelect></MudItem>
+    <MudItem xs="12"><MudRadioGroup T="VendorCompanyStatusType?" @bind-Value="Model.CompanyType"><MudText Typo="Typo.caption">Vendor Type</MudText>@foreach (var value in Enum.GetValues<VendorCompanyStatusType>()) { <MudRadio T="VendorCompanyStatusType?" Value="@value">@Vendor(value)</MudRadio> }</MudRadioGroup></MudItem>
+    <MudItem xs="12"><MudTextField Label="Section" @bind-Value="Model.Title" Required="true" Variant="Variant.Outlined" /></MudItem>
+    <MudItem xs="12"><MudRadioGroup T="bool" @bind-Value="Model.IsActive"><MudText Typo="Typo.caption">Active</MudText><MudRadio Value="true">Yes</MudRadio><MudRadio Value="false">No</MudRadio></MudRadioGroup></MudItem>
+</MudGrid></MudForm></DialogContent><DialogActions><ButtonCancel OnClick="Cancel" /><MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">Save</MudButton></DialogActions></MudDialog>
+
+@code {
+    [Parameter, EditorRequired] public required SectionModel Model { get; set; }
+    private MudForm _form = default!;
+    private async Task Submit() { await _form.Validate(); if (_form.IsValid) Dialog.Close(DialogResult.Ok(Model)); }
+    private static string Vendor(VendorCompanyStatusType value) => value switch { VendorCompanyStatusType.Manufacture => "Vendor", VendorCompanyStatusType.SoleDistributorAgent => "Sole Agent", _ => "Representative Office" };
+}

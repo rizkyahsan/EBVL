@@ -7,12 +7,12 @@ namespace EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires;
 public sealed record GetQuestionnairesQuery : IRequest<GetQuestionnairesResponse>;
 public sealed record GetQuestionnaireQuery(Guid Id) : IRequest<GetQuestionnaireResponse>;
 public sealed record AddQuestionnaireCommand : AddQuestionnaireRequest, IRequest<GetQuestionnaireResponse>;
+public sealed record AddQuestionnaireQuestionCommand(Guid Id, Guid SectionId, AddQuestionnaireQuestionRequest Question) : IRequest<GetQuestionnaireResponse>;
 public sealed record UpdateQuestionnaireDraftCommand(Guid Id, UpdateQuestionnaireDraftRequest Draft) : IRequest<GetQuestionnaireResponse>;
 public sealed record ValidateQuestionnaireCommand(Guid Id) : IRequest<ValidateQuestionnaireResponse>;
 public sealed record PublishQuestionnaireCommand(Guid Id) : IRequest;
 public sealed record DeactivateQuestionnaireCommand(Guid Id) : IRequest;
 public sealed record ArchiveQuestionnaireCommand(Guid Id) : IRequest;
-public sealed record DeleteQuestionnaireDraftCommand(Guid Id) : IRequest;
 
 public sealed class AddQuestionnaireCommandValidator : AbstractValidatorBase<AddQuestionnaireCommand>
 {
@@ -42,6 +42,14 @@ public sealed class AddQuestionnaireCommandHandler(IBackEndApiService api) : IRe
         return api.SendRequestAsync<GetQuestionnaireResponse>(rest, ct);
     }
 }
+public sealed class AddQuestionnaireQuestionCommandHandler(IBackEndApiService api) : IRequestHandler<AddQuestionnaireQuestionCommand, GetQuestionnaireResponse>
+{
+    public Task<GetQuestionnaireResponse> Handle(AddQuestionnaireQuestionCommand request, CancellationToken ct)
+    {
+        var route = QuestionnaireRoutes.AddQuestion.Replace("{id:guid}", request.Id.ToString()).Replace("{sectionId:guid}", request.SectionId.ToString());
+        return api.SendRequestAsync<GetQuestionnaireResponse>(new RestRequest(route, Method.Post).AddJsonBody(request.Question), ct);
+    }
+}
 
 public sealed class UpdateQuestionnaireDraftCommandHandler(IBackEndApiService api) : IRequestHandler<UpdateQuestionnaireDraftCommand, GetQuestionnaireResponse>
 {
@@ -68,4 +76,3 @@ public abstract class QuestionnaireActionHandler<TRequest>(IBackEndApiService ap
 public sealed class PublishQuestionnaireCommandHandler(IBackEndApiService api) : QuestionnaireActionHandler<PublishQuestionnaireCommand>(api, QuestionnaireRoutes.Publish, Method.Post) { public override Task Handle(PublishQuestionnaireCommand r, CancellationToken ct) => Send(r.Id, ct); }
 public sealed class DeactivateQuestionnaireCommandHandler(IBackEndApiService api) : QuestionnaireActionHandler<DeactivateQuestionnaireCommand>(api, QuestionnaireRoutes.Deactivate, Method.Post) { public override Task Handle(DeactivateQuestionnaireCommand r, CancellationToken ct) => Send(r.Id, ct); }
 public sealed class ArchiveQuestionnaireCommandHandler(IBackEndApiService api) : QuestionnaireActionHandler<ArchiveQuestionnaireCommand>(api, QuestionnaireRoutes.Archive, Method.Post) { public override Task Handle(ArchiveQuestionnaireCommand r, CancellationToken ct) => Send(r.Id, ct); }
-public sealed class DeleteQuestionnaireDraftCommandHandler(IBackEndApiService api) : QuestionnaireActionHandler<DeleteQuestionnaireDraftCommand>(api, QuestionnaireRoutes.DeleteDraft, Method.Delete) { public override Task Handle(DeleteQuestionnaireDraftCommand r, CancellationToken ct) => Send(r.Id, ct); }

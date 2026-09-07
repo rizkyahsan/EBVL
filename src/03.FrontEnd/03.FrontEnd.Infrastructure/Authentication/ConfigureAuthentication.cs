@@ -71,7 +71,7 @@ public static class ConfigureAuthentication
 
         _ = routeGroupBuilder
             .MapGet(PatternFor.Logout, (string? returnUrl, IHttpContextAccessor httpContextAccessor) => AuthenticationHandlers.LogoutHandler(finalPathBase, returnUrl, httpContextAccessor))
-            .RequireAuthorization();
+            .AllowAnonymous();
 
         _ = routeGroupBuilder
             .MapGet(PatternFor.SwitchPosition, ([FromRoute] string positionId, string? returnUrl, IHttpContextAccessor httpContextAccessor, IUserPositionsService userPositionsService, IPositionRolesService positionRolesService, IPersonalRolesService personalRolesService) => AuthenticationHandlers.SwitchPositionHandler(positionId, returnUrl, httpContextAccessor, userPositionsService, positionRolesService, personalRolesService))

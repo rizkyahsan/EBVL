@@ -370,8 +370,8 @@ internal static class QuestionnaireRuntime
     }
     public static IEnumerable<QuestionnaireQuestion> ApplicableQuestions(VendorRegistration r, IReadOnlyList<QuestionnaireAnswerValue> incoming)
     {
-        var sections = r.Submission.QuestionnaireVersion.Sections.Where(x => !x.IsDeleted && (x.CompanyType is null || x.CompanyType == r.CompanyType));
-        var questions = sections.SelectMany(x => x.Questions).Where(x => !x.IsDeleted).ToList();
+        var sections = r.Submission.QuestionnaireVersion.Sections.Where(x => !x.IsDeleted && x.IsActive && (x.CompanyType is null || x.CompanyType == r.CompanyType));
+        var questions = sections.SelectMany(x => x.Questions).Where(x => !x.IsDeleted && x.IsActive && (x.CompanyType is null || x.CompanyType == r.CompanyType)).ToList();
         var visible = questions.Where(x => x.IsVisible).Select(x => x.Id).ToHashSet();
         var values = r.Submission.Answers.Select(ToValue).Concat(incoming).GroupBy(x => x.QuestionId).ToDictionary(x => x.Key, x => x.Last());
         foreach (var rule in r.Submission.QuestionnaireVersion.Rules.Where(x => !x.IsDeleted && RuleMatches(r, x, values)))
@@ -391,7 +391,7 @@ internal static class QuestionnaireRuntime
     public static bool IsRequired(VendorRegistration r, QuestionnaireQuestion q)
     {
         var values = r.Submission.Answers.Select(ToValue).ToDictionary(x => x.QuestionId);
-        return q.IsRequired || r.Submission.QuestionnaireVersion.Rules.Any(x => !x.IsDeleted && x.TargetQuestionId == q.Id && x.Action == QuestionnaireRuleAction.Require && RuleMatches(r, x, values));
+        return q.AnswerRule == QuestionnaireAnswerRule.Mandatory || r.Submission.QuestionnaireVersion.Rules.Any(x => !x.IsDeleted && x.TargetQuestionId == q.Id && x.Action == QuestionnaireRuleAction.Require && RuleMatches(r, x, values));
     }
     private static bool RuleMatches(VendorRegistration registration, QuestionnaireRule rule, IReadOnlyDictionary<Guid, QuestionnaireAnswerValue> values)
     {
@@ -481,7 +481,7 @@ internal static class QuestionnaireRuntime
         var r = await Load(db, id, authToken, false, ct);
         var applicable = ApplicableQuestions(r, []).ToHashSet();
         var v = r.Submission.QuestionnaireVersion;
-        var sections = v.Sections.Where(s => !s.IsDeleted && (s.CompanyType is null || s.CompanyType == r.CompanyType)).OrderBy(s => s.Order).Select(s => new RuntimeSectionItem(s.Id, s.Code, s.Title, s.Order, s.Questions.Where(applicable.Contains).OrderBy(q => q.Order).Select(q =>
+        var sections = v.Sections.Where(s => !s.IsDeleted && s.IsActive && (s.CompanyType is null || s.CompanyType == r.CompanyType)).OrderBy(s => s.Order).Select(s => new RuntimeSectionItem(s.Id, s.Code, s.Title, s.Order, s.Questions.Where(applicable.Contains).OrderBy(q => q.Order).Select(q =>
         {
             var a = r.Submission.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == q.Id);
             return new RuntimeQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, q.Order, q.IsRequired, q.Options.Where(o => !o.IsDeleted).OrderBy(o => o.Order).Select(o => new RuntimeOptionItem(o.Id, o.Code, o.Label, o.Order)).ToList(), a is null ? null : ToValue(a), a?.Files.Where(f => !f.IsDeleted).Select(f => new RuntimeFileItem(f.Id, f.OriginalFileName, f.ContentType, f.Length)).ToList() ?? []);

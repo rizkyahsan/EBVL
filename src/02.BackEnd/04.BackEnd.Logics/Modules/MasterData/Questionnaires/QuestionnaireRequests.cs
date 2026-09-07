@@ -2,15 +2,17 @@ using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
 
 namespace EBVL.BackEnd.Logics.Modules.MasterData.Questionnaires;
 
-[AuthorizeRequestByPermission(QuestionnairePermissions.Read)] public sealed record GetQuestionnairesQuery : IRequest<GetQuestionnairesResponse>;
-[AuthorizeRequestByPermission(QuestionnairePermissions.Read)] public sealed record GetQuestionnaireQuery(Guid Id) : IRequest<GetQuestionnaireResponse>;
-[AuthorizeRequestByPermission(QuestionnairePermissions.Write)] public sealed record AddQuestionnaireCommand : AddQuestionnaireRequest, IRequest<GetQuestionnaireResponse>;
-[AuthorizeRequestByPermission(QuestionnairePermissions.Write)] public sealed record UpdateQuestionnaireDraftCommand(Guid Id, UpdateQuestionnaireDraftRequest Draft) : IRequest<GetQuestionnaireResponse>;
-[AuthorizeRequestByPermission(QuestionnairePermissions.Write)] public sealed record ValidateQuestionnaireCommand(Guid Id) : IRequest<ValidateQuestionnaireResponse>;
-[AuthorizeRequestByPermission(QuestionnairePermissions.Publish)] public sealed record PublishQuestionnaireCommand(Guid Id) : IRequest;
-[AuthorizeRequestByPermission(QuestionnairePermissions.Write)] public sealed record DeactivateQuestionnaireCommand(Guid Id) : IRequest;
-[AuthorizeRequestByPermission(QuestionnairePermissions.Write)] public sealed record ArchiveQuestionnaireCommand(Guid Id) : IRequest;
-[AuthorizeRequestByPermission(QuestionnairePermissions.Write)] public sealed record DeleteQuestionnaireDraftCommand(Guid Id) : IRequest;
+// TODO: Restore QuestionnairePermissions.Read after IdAMan permission setup is complete.
+public sealed record GetQuestionnairesQuery : IRequest<GetQuestionnairesResponse>;
+public sealed record GetQuestionnaireQuery(Guid Id) : IRequest<GetQuestionnaireResponse>;
+// TODO: Restore QuestionnairePermissions.Write and Publish after IdAMan permission setup is complete.
+public sealed record AddQuestionnaireCommand : AddQuestionnaireRequest, IRequest<GetQuestionnaireResponse>;
+public sealed record AddQuestionnaireQuestionCommand(Guid Id, Guid SectionId, AddQuestionnaireQuestionRequest Question) : IRequest<GetQuestionnaireResponse>;
+public sealed record UpdateQuestionnaireDraftCommand(Guid Id, UpdateQuestionnaireDraftRequest Draft) : IRequest<GetQuestionnaireResponse>;
+public sealed record ValidateQuestionnaireCommand(Guid Id) : IRequest<ValidateQuestionnaireResponse>;
+public sealed record PublishQuestionnaireCommand(Guid Id) : IRequest;
+public sealed record DeactivateQuestionnaireCommand(Guid Id) : IRequest;
+public sealed record ArchiveQuestionnaireCommand(Guid Id) : IRequest;
 
 public sealed class AddQuestionnaireCommandValidator : AbstractValidatorBase<AddQuestionnaireCommand>
 {
@@ -31,9 +33,10 @@ public sealed class GetQuestionnairesHandler(IDatabaseService db) : IRequestHand
 {
     public async Task<GetQuestionnairesResponse> Handle(GetQuestionnairesQuery r, CancellationToken cancellationToken)
     {
-        var rows = await db.QuestionnaireVersions.AsNoTracking().Where(v => !v.IsDeleted)
-            .SelectMany(v => v.Sections.Where(s => !s.IsDeleted), (v, s) => new QuestionnaireListItem(v.QuestionnaireId, v.Id, v.Questionnaire.Code, v.Questionnaire.BusinessProcess, s.CompanyType, s.Title, v.Version, v.Status, v.IsActive))
-            .OrderBy(x => x.BusinessProcess).ThenByDescending(x => x.Version).ThenBy(x => x.Section).ToListAsync(cancellationToken);
+        var versions = await db.QuestionnaireVersions.AsNoTracking().Include(x => x.Questionnaire).Include(x => x.Sections).Where(v => !v.IsDeleted).ToListAsync(cancellationToken);
+        var rows = versions.GroupBy(x => x.QuestionnaireId).Select(group => group.OrderByDescending(x => x.Status == QuestionnaireVersionStatus.Draft).ThenByDescending(x => x.IsActive).ThenByDescending(x => x.Version).First())
+            .SelectMany(v => v.Sections.Where(s => !s.IsDeleted), (v, s) => new QuestionnaireListItem(v.QuestionnaireId, v.Id, s.Id, v.Questionnaire.Code, v.Questionnaire.BusinessProcess, s.CompanyType, s.Title, v.Version, v.Status, s.IsActive))
+            .OrderBy(x => x.BusinessProcess).ThenBy(x => x.Section).ToList();
         return new() { Items = rows };
     }
 }
@@ -49,17 +52,41 @@ public sealed class AddQuestionnaireHandler(IDatabaseService db) : IRequestHandl
 {
     public async Task<GetQuestionnaireResponse> Handle(AddQuestionnaireCommand r, CancellationToken cancellationToken)
     {
-        if (await db.Questionnaires.AnyAsync(x => x.Code == r.Code, cancellationToken))
+        await using var tx = await db.BeginTransactionAsync(cancellationToken);
+        var code = Code(r.BusinessProcess);
+        var questionnaire = await db.Questionnaires.Include(x => x.Versions).ThenInclude(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
+            .Include(x => x.Versions).ThenInclude(x => x.Rules)
+            .SingleOrDefaultAsync(x => x.Code == code, cancellationToken);
+        QuestionnaireVersion version;
+        if (questionnaire is null)
         {
-            throw new InvalidOperationException($"Questionnaire code '{r.Code}' already exists.");
+            questionnaire = new Questionnaire { Code = code, BusinessProcess = r.BusinessProcess.Trim() };
+            version = new QuestionnaireVersion { Questionnaire = questionnaire, Version = 1, Status = QuestionnaireVersionStatus.Draft, IsActive = false };
+            questionnaire.Versions.Add(version);
+            _ = await db.Questionnaires.AddAsync(questionnaire, cancellationToken);
+        }
+        else
+        {
+            version = questionnaire.Versions.SingleOrDefault(x => !x.IsDeleted && x.Status == QuestionnaireVersionStatus.Draft)
+                ?? QuestionnaireGraph.CloneDraft(questionnaire);
         }
 
-        var q = new Questionnaire { Code = r.Code.Trim().ToUpperInvariant(), BusinessProcess = r.BusinessProcess.Trim() };
-        var v = new QuestionnaireVersion { Questionnaire = q, Version = 1, Status = QuestionnaireVersionStatus.Draft, IsActive = false };
-        q.Versions.Add(v);
-        _ = await db.Questionnaires.AddAsync(q, cancellationToken);
+        var baseCode = Code(r.Section);
+        var sectionCode = baseCode;
+        for (var suffix = 2; version.Sections.Any(x => x.Code == sectionCode); suffix++)
+        {
+            sectionCode = $"{baseCode}_{suffix}";
+        }
+
+        version.Sections.Add(new QuestionnaireSection { Code = sectionCode, Title = r.Section.Trim(), Order = version.Sections.Count + 1, CompanyType = r.VendorType, IsActive = r.IsActive });
         _ = await db.SaveAsync(nameof(AddQuestionnaireCommand), cancellationToken);
-        return new() { Item = QuestionnaireGraph.Map(v) };
+        await tx.CommitAsync(cancellationToken);
+        return new() { Item = QuestionnaireGraph.Map(version) };
+    }
+
+    private static string Code(string value)
+    {
+        return string.Join('_', value.Trim().ToUpperInvariant().Split([' ', '-', '/'], StringSplitOptions.RemoveEmptyEntries));
     }
 }
 public sealed class UpdateQuestionnaireDraftHandler(IDatabaseService db) : IRequestHandler<UpdateQuestionnaireDraftCommand, GetQuestionnaireResponse>
@@ -76,10 +103,10 @@ public sealed class UpdateQuestionnaireDraftHandler(IDatabaseService db) : IRequ
         v.Sections.Clear();
         foreach (var s in r.Draft.Sections.OrderBy(x => x.Order))
         {
-            var section = new QuestionnaireSection { QuestionnaireVersionId = v.Id, Code = s.Code, Title = s.Title, Order = s.Order, CompanyType = s.CompanyType };
+            var section = new QuestionnaireSection { QuestionnaireVersionId = v.Id, Code = s.Code, Title = s.Title, Order = s.Order, CompanyType = s.CompanyType, IsActive = s.IsActive };
             foreach (var q in s.Questions.OrderBy(x => x.Order))
             {
-                var question = new QuestionnaireQuestion { Id = q.Id == Guid.Empty ? Guid.CreateVersion7() : q.Id, Code = q.Code, Label = q.Label, Hint = q.Hint, Placeholder = q.Placeholder, Type = q.Type, Order = q.Order, IsRequired = q.IsRequired, IsVisible = q.IsVisible };
+                var question = new QuestionnaireQuestion { Id = q.Id == Guid.Empty ? Guid.CreateVersion7() : q.Id, Code = q.Code, Label = q.Label, Hint = q.Hint, Placeholder = q.Placeholder, Type = q.Type, CompanyType = q.CompanyType, Order = q.Order, IsRequired = q.AnswerRule == QuestionnaireAnswerRule.Mandatory, IsVisible = q.IsVisible, IsActive = q.IsActive, AnswerRule = q.AnswerRule };
                 foreach (var o in q.Options.OrderBy(x => x.Order))
                 {
                     question.Options.Add(new QuestionnaireOption { Code = o.Code, Label = o.Label, Order = o.Order });
@@ -105,6 +132,40 @@ public sealed class UpdateQuestionnaireDraftHandler(IDatabaseService db) : IRequ
         _ = await db.SaveAsync(nameof(UpdateQuestionnaireDraftCommand), cancellationToken);
         await tx.CommitAsync(cancellationToken);
         return new() { Item = QuestionnaireGraph.Map(v, r.Draft.Rules) };
+    }
+}
+public sealed class AddQuestionnaireQuestionHandler(IDatabaseService db) : IRequestHandler<AddQuestionnaireQuestionCommand, GetQuestionnaireResponse>
+{
+    public async Task<GetQuestionnaireResponse> Handle(AddQuestionnaireQuestionCommand r, CancellationToken cancellationToken)
+    {
+        var section = await db.QuestionnaireSections.AsNoTracking()
+            .Where(x => x.Id == r.SectionId && x.QuestionnaireVersionId == r.Id && !x.IsDeleted)
+            .Select(x => new { x.Id, x.QuestionnaireVersion.Status })
+            .SingleOrDefaultAsync(cancellationToken)
+            ?? throw new KeyNotFoundException("Questionnaire section was not found.");
+        if (section.Status != QuestionnaireVersionStatus.Draft)
+        {
+            throw new InvalidOperationException("Published questionnaire versions are immutable.");
+        }
+
+        var order = await db.QuestionnaireQuestions.AsNoTracking().CountAsync(x => x.QuestionnaireSectionId == section.Id && !x.IsDeleted, cancellationToken) + 1;
+        _ = await db.QuestionnaireQuestions.AddAsync(new QuestionnaireQuestion
+        {
+            QuestionnaireSectionId = section.Id,
+            Code = r.Question.Code.Trim(),
+            Label = r.Question.Name.Trim(),
+            Hint = r.Question.Description?.Trim(),
+            Type = r.Question.AnswerType,
+            CompanyType = r.Question.VendorType,
+            Order = order,
+            IsRequired = r.Question.AnswerRule == QuestionnaireAnswerRule.Mandatory,
+            IsVisible = true,
+            IsActive = r.Question.IsActive,
+            AnswerRule = r.Question.AnswerRule
+        }, cancellationToken);
+        _ = await db.SaveAsync(nameof(AddQuestionnaireQuestionCommand), cancellationToken);
+        var version = await QuestionnaireGraph.Load(db, r.Id, false, cancellationToken);
+        return new() { Item = QuestionnaireGraph.Map(version, await QuestionnaireGraph.Rules(db, version.Id, cancellationToken)) };
     }
 }
 public sealed class ValidateQuestionnaireHandler(IDatabaseService db) : IRequestHandler<ValidateQuestionnaireCommand, ValidateQuestionnaireResponse>
@@ -164,7 +225,7 @@ public sealed class ArchiveQuestionnaireHandler(IDatabaseService db) : IRequestH
         var v = await QuestionnaireGraph.Load(db, r.Id, false, cancellationToken);
         if (v.Status == QuestionnaireVersionStatus.Draft)
         {
-            throw new InvalidOperationException("Delete drafts instead of archiving them.");
+            throw new InvalidOperationException("Draft questionnaires cannot be archived.");
         }
 
         v.IsActive = false;
@@ -172,19 +233,40 @@ public sealed class ArchiveQuestionnaireHandler(IDatabaseService db) : IRequestH
         _ = await db.SaveAsync(nameof(ArchiveQuestionnaireCommand), cancellationToken);
     }
 }
-public sealed class DeleteQuestionnaireDraftHandler(IDatabaseService db) : IRequestHandler<DeleteQuestionnaireDraftCommand>
-{
-    public async Task Handle(DeleteQuestionnaireDraftCommand r, CancellationToken cancellationToken)
-    {
-        var v = await QuestionnaireGraph.Load(db, r.Id, false, cancellationToken);
-        QuestionnaireGraph.EnsureDraft(v);
-        _ = db.QuestionnaireVersions.Remove(v);
-        _ = await db.SaveAsync(nameof(DeleteQuestionnaireDraftCommand), cancellationToken);
-    }
-}
-
 internal static class QuestionnaireGraph
 {
+    public static QuestionnaireVersion CloneDraft(Questionnaire questionnaire)
+    {
+        var source = questionnaire.Versions.OrderByDescending(x => x.Version).First();
+        var draft = new QuestionnaireVersion { Questionnaire = questionnaire, Version = source.Version + 1, Status = QuestionnaireVersionStatus.Draft, IsActive = false };
+        var questionIds = new Dictionary<Guid, Guid>();
+        foreach (var sourceSection in source.Sections.Where(x => !x.IsDeleted).OrderBy(x => x.Order))
+        {
+            var section = new QuestionnaireSection { Code = sourceSection.Code, Title = sourceSection.Title, Order = sourceSection.Order, CompanyType = sourceSection.CompanyType, IsActive = sourceSection.IsActive };
+            foreach (var sourceQuestion in sourceSection.Questions.Where(x => !x.IsDeleted).OrderBy(x => x.Order))
+            {
+                var question = new QuestionnaireQuestion { Code = sourceQuestion.Code, Label = sourceQuestion.Label, Hint = sourceQuestion.Hint, Placeholder = sourceQuestion.Placeholder, Type = sourceQuestion.Type, CompanyType = sourceQuestion.CompanyType, Order = sourceQuestion.Order, IsRequired = sourceQuestion.IsRequired, IsVisible = sourceQuestion.IsVisible, IsActive = sourceQuestion.IsActive, AnswerRule = sourceQuestion.AnswerRule };
+                questionIds[sourceQuestion.Id] = question.Id;
+                foreach (var option in sourceQuestion.Options.Where(x => !x.IsDeleted).OrderBy(x => x.Order))
+                {
+                    question.Options.Add(new QuestionnaireOption { Code = option.Code, Label = option.Label, Order = option.Order });
+                }
+
+                section.Questions.Add(question);
+            }
+
+            draft.Sections.Add(section);
+        }
+
+        foreach (var rule in source.Rules.Where(x => !x.IsDeleted))
+        {
+            draft.Rules.Add(new QuestionnaireRule { SourceQuestionId = questionIds[rule.SourceQuestionId], TargetQuestionId = questionIds[rule.TargetQuestionId], Operator = rule.Operator, Action = rule.Action, Value = rule.Value });
+        }
+
+        questionnaire.Versions.Add(draft);
+        return draft;
+    }
+
     public static async Task<QuestionnaireVersion> Load(IDatabaseService db, Guid id, bool tracking, CancellationToken ct)
     {
         var query = db.QuestionnaireVersions.Include(x => x.Questionnaire).Include(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options).Where(x => x.Id == id && !x.IsDeleted);
@@ -293,6 +375,6 @@ internal static class QuestionnaireGraph
     }
     public static QuestionnaireDraftItem Map(QuestionnaireVersion v, IReadOnlyList<QuestionnaireRuleItem>? rules = null)
     {
-        return new(v.Id, v.QuestionnaireId, v.Questionnaire.Code, v.Questionnaire.BusinessProcess, v.Version, v.Status, v.IsActive, Convert.ToBase64String(v.RowVersion), v.Sections.OrderBy(x => x.Order).Select(s => new QuestionnaireSectionItem(s.Id, s.Code, s.Title, s.Order, s.CompanyType, s.Questions.OrderBy(x => x.Order).Select(q => new QuestionnaireQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, q.Order, q.IsRequired, q.IsVisible, q.Options.OrderBy(x => x.Order).Select(o => new QuestionnaireOptionItem(o.Id, o.Code, o.Label, o.Order)).ToList())).ToList())).ToList(), rules ?? []);
+        return new(v.Id, v.QuestionnaireId, v.Questionnaire.Code, v.Questionnaire.BusinessProcess, v.Version, v.Status, v.IsActive, Convert.ToBase64String(v.RowVersion), v.Sections.OrderBy(x => x.Order).Select(s => new QuestionnaireSectionItem(s.Id, s.Code, s.Title, s.Order, s.CompanyType, s.IsActive, s.Questions.OrderBy(x => x.Order).Select(q => new QuestionnaireQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, q.CompanyType, q.Order, q.IsRequired, q.IsVisible, q.IsActive, q.AnswerRule, q.Options.OrderBy(x => x.Order).Select(o => new QuestionnaireOptionItem(o.Id, o.Code, o.Label, o.Order)).ToList())).ToList())).ToList(), rules ?? []);
     }
 }

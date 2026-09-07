@@ -28,12 +28,12 @@ public static class AuthenticationHandlers
     {
         if (httpContextAccessor.HttpContext is null)
         {
-            return TypedResults.SignOut();
+            return TypedResults.SignOut(GenerateAuthenticationProperties(pathBase, returnUrl), [CookieAuthenticationDefaults.AuthenticationScheme]);
         }
 
-        if (httpContextAccessor.HttpContext.User.Identity is not ClaimsIdentity currentIdentity)
+        if (httpContextAccessor.HttpContext.User.Identity is not ClaimsIdentity currentIdentity || !currentIdentity.IsAuthenticated)
         {
-            return TypedResults.SignOut();
+            return TypedResults.SignOut(GenerateAuthenticationProperties(pathBase, returnUrl), [CookieAuthenticationDefaults.AuthenticationScheme]);
         }
 
         var authenticationProperties = GenerateAuthenticationProperties(pathBase, returnUrl);

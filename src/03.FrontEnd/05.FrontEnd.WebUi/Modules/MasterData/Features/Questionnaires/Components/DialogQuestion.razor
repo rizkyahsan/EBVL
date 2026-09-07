@@ -1,0 +1,72 @@
+@inherits DialogBase
+@using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models
+
+<MudDialog>
+    <DialogContent>
+        <ErrorViewer Exception="@_exception" />
+        <LoadingLinear IsVisible="@_isLoading" />
+        <MudForm @ref="_form">
+            <MudGrid>
+                <MudItem xs="12"><MudTextField Label="Questionnaire Name" @bind-Value="_model.Label" Required="true" Variant="Variant.Outlined" /></MudItem>
+                <MudItem xs="12"><MudRadioGroup T="VendorCompanyStatusType?" @bind-Value="_model.CompanyType"><MudText Typo="Typo.caption">Vendor Type</MudText>@foreach (var value in Enum.GetValues<VendorCompanyStatusType>()) { <MudRadio T="VendorCompanyStatusType?" Value="@value">@Vendor(value)</MudRadio> }</MudRadioGroup></MudItem>
+                <MudItem xs="12"><MudTextField Label="Description" @bind-Value="_model.Hint" Lines="3" Variant="Variant.Outlined" /></MudItem>
+                <MudItem xs="12"><MudRadioGroup T="QuestionnaireQuestionType" @bind-Value="_model.Type"><MudText Typo="Typo.caption">Answer Type</MudText><MudRadio Value="@QuestionnaireQuestionType.ShortText">Textbox</MudRadio><MudRadio Value="@QuestionnaireQuestionType.LongText">Textarea</MudRadio><MudRadio Value="@QuestionnaireQuestionType.File">Upload File</MudRadio></MudRadioGroup></MudItem>
+                <MudItem xs="12"><MudRadioGroup T="QuestionnaireAnswerRule" @bind-Value="_model.AnswerRule"><MudText Typo="Typo.caption">Answer Rule</MudText><MudRadio Value="@QuestionnaireAnswerRule.Mandatory">Mandatory (*)</MudRadio><MudRadio Value="@QuestionnaireAnswerRule.Optional">Optional</MudRadio><MudRadio Value="@QuestionnaireAnswerRule.AddedValue">Added Value (**)</MudRadio></MudRadioGroup></MudItem>
+                <MudItem xs="12"><MudRadioGroup T="bool" @bind-Value="_model.IsActive"><MudText Typo="Typo.caption">Active</MudText><MudRadio Value="true">Yes</MudRadio><MudRadio Value="false">No</MudRadio></MudRadioGroup></MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions><ButtonCancel OnClick="Cancel" Disabled="_isLoading" /><MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Disabled="_isLoading">Save</MudButton></DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter] public QuestionModel? Model { get; set; }
+    [Parameter, EditorRequired] public Guid VersionId { get; set; }
+    [Parameter, EditorRequired] public Guid SectionId { get; set; }
+    [Parameter, EditorRequired] public required EventCallback<QuestionModel> OnSubmit { get; set; }
+    private MudForm _form = default!;
+    private QuestionModel _model = new();
+    protected override void OnInitialized()
+    {
+        if (Model is not null) _model = new() { Id = Model.Id, Code = Model.Code, Label = Model.Label, Hint = Model.Hint, Placeholder = Model.Placeholder, Type = Model.Type, CompanyType = Model.CompanyType ?? VendorCompanyStatusType.Manufacture, IsRequired = Model.IsRequired, IsVisible = Model.IsVisible, IsActive = Model.IsActive, AnswerRule = Model.AnswerRule, Options = Model.Options.Select(x => new OptionModel { Code = x.Code, Label = x.Label }).ToList() };
+    }
+    private async Task Submit()
+    {
+        if (_isLoading) return;
+        try
+        {
+            _isLoading = true;
+            ClearException();
+            await _form.Validate();
+            if (!_form.IsValid) return;
+            _model.Code = string.IsNullOrWhiteSpace(_model.Code) ? Code(_model.Label) : _model.Code;
+            _model.IsRequired = _model.AnswerRule == QuestionnaireAnswerRule.Mandatory;
+            _model.IsVisible = true;
+            if (Model is null)
+            {
+                var response = await Sender.Send(new AddQuestionnaireQuestionCommand(VersionId, SectionId, new AddQuestionnaireQuestionRequest
+                {
+                    Name = _model.Label,
+                    Code = _model.Code,
+                    Description = _model.Hint,
+                    AnswerType = _model.Type,
+                    VendorType = _model.CompanyType ?? VendorCompanyStatusType.Manufacture,
+                    AnswerRule = _model.AnswerRule,
+                    IsActive = _model.IsActive
+                }));
+                Dialog.Close(DialogResult.Ok(response.Item));
+            }
+            else
+            {
+                await OnSubmit.InvokeAsync(_model);
+                Dialog.Close();
+            }
+        }
+        catch (Exception exception) { _exception = exception; }
+        finally { _isLoading = false; }
+    }
+    private static string Code(string value) => string.Join('_', value.Trim().ToUpperInvariant().Split([' ', '-', '/'], StringSplitOptions.RemoveEmptyEntries));
+    private static string Vendor(VendorCompanyStatusType value) => value switch { VendorCompanyStatusType.Manufacture => "Vendor", VendorCompanyStatusType.SoleDistributorAgent => "Sole Agent", _ => "Representative Office" };
+}

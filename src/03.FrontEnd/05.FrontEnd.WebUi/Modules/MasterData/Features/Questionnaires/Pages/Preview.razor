@@ -2,7 +2,7 @@
 @inherits PageBase
 @using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
 @using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
-@attribute [Authorize(Policy = QuestionnairePermissions.Read)]
+@* TODO: Restore QuestionnairePermissions.Read after IdAMan permission setup is complete. *@
 
 <HtmlHead Title="Questionnaire Preview" />
 <Breadcrumbs Items="@_breadcrumbItems" />
@@ -17,7 +17,7 @@
             <MudText Typo="Typo.h6" Class="mt-6 mb-3">@section.Title <MudChip T="string" Size="Size.Small">@(section.CompanyType?.ToString() ?? "All vendors")</MudChip></MudText>
             @foreach (var question in section.Questions.Where(x => x.IsVisible))
             {
-                <MudText Typo="Typo.subtitle2" Class="mt-3">@question.Label @(question.IsRequired ? "*" : "")</MudText>
+                <MudText Typo="Typo.subtitle2" Class="mt-3">@question.Label @Marker(question.AnswerRule)</MudText>
                 @if (!string.IsNullOrWhiteSpace(question.Hint)) { <MudText Typo="Typo.caption">@question.Hint</MudText> }
                 @switch (question.Type)
                 {
@@ -35,6 +35,7 @@
 }
 
 @code {
+    private static string Marker(QuestionnaireAnswerRule rule) => rule switch { QuestionnaireAnswerRule.Mandatory => "*", QuestionnaireAnswerRule.AddedValue => "**", _ => string.Empty };
     [Parameter] public Guid Id { get; set; }
     private QuestionnaireDraftItem? _item;
     protected override async Task OnParametersSetAsync() { LoadBreadcrumbs(); try { _isLoading = true; _item = (await Sender.Send(new GetQuestionnaireQuery(Id))).Item; } catch (Exception ex) { _exception = ex; } finally { _isLoading = false; } }

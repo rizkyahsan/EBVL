@@ -33,11 +33,11 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         for (var s = 0; s < definitions.Length; s++)
         {
             var (title, code, companyType, questionOrder) = definitions[s];
-            var section = new QuestionnaireSection { Id = Id(1, s + 1), QuestionnaireVersionId = _versionId, Code = code, Title = title, Order = s + 1, CompanyType = companyType };
+            var section = new QuestionnaireSection { Id = Id(1, s + 1), QuestionnaireVersionId = _versionId, Code = code, Title = title, Order = s + 1, CompanyType = companyType, IsActive = true };
             for (var q = 0; q < questionOrder.Length; q++)
             {
                 var source = QuestionnaireFor.All.Single(x => x.Number == questionOrder[q]);
-                section.Questions.Add(new QuestionnaireQuestion { Id = Id(2, source.Number), Code = $"Q{source.Number:000}", Label = source.Label, Hint = source.Hint, Placeholder = source.Placeholder, Type = source.IsFileUpload ? QuestionnaireQuestionType.File : source.Number is 6 or 7 or 8 or 9 ? QuestionnaireQuestionType.Address : QuestionnaireQuestionType.ShortText, Order = q + 1, IsRequired = source.IsRequired, IsVisible = true });
+                section.Questions.Add(new QuestionnaireQuestion { Id = Id(2, source.Number), Code = $"Q{source.Number:000}", Label = source.Label, Hint = source.Hint, Placeholder = source.Placeholder, Type = source.IsFileUpload ? QuestionnaireQuestionType.File : source.Number is 6 or 7 or 8 or 9 ? QuestionnaireQuestionType.Address : QuestionnaireQuestionType.ShortText, Order = q + 1, IsRequired = source.IsRequired, IsVisible = true, IsActive = true, AnswerRule = source.IsRequired ? QuestionnaireAnswerRule.Mandatory : QuestionnaireAnswerRule.Optional });
             }
 
             version.Sections.Add(section);

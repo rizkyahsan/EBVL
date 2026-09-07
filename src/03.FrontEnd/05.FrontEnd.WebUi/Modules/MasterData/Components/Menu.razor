@@ -1,9 +1,6 @@
-<AuthorizeView Policy="@QuestionnairePermissions.Read">
-    <Authorized>
-        <NavGroupDefault Title="Master Data" Icon="@Icons.Material.TwoTone.Storage">
-            <MudNavLink Href="@QuestionnaireRouteFor.Index" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.TwoTone.Quiz">
-                Questionnaire
-            </MudNavLink>
-        </NavGroupDefault>
-    </Authorized>
-</AuthorizeView>
+@* TODO: Restore AuthorizeView after Questionnaire permissions are configured in IdAMan. *@
+<NavGroupDefault Title="Master Data" Icon="@Icons.Material.TwoTone.Storage">
+    <MudNavLink Href="@QuestionnaireRouteFor.Index" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.TwoTone.Quiz">
+        Questionnaire
+    </MudNavLink>
+</NavGroupDefault>

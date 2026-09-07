@@ -29,6 +29,7 @@ public sealed class QuestionnaireSection : ModifiableEntity
     public required string Title { get; set; }
     public int Order { get; set; }
     public VendorCompanyStatusType? CompanyType { get; set; }
+    public bool IsActive { get; set; } = true;
     public QuestionnaireVersion QuestionnaireVersion { get; set; } = default!;
     public ICollection<QuestionnaireQuestion> Questions { get; set; } = new HashSet<QuestionnaireQuestion>();
 }
@@ -41,9 +42,12 @@ public sealed class QuestionnaireQuestion : ModifiableEntity
     public string? Hint { get; set; }
     public string? Placeholder { get; set; }
     public QuestionnaireQuestionType Type { get; set; }
+    public VendorCompanyStatusType? CompanyType { get; set; }
     public int Order { get; set; }
     public bool IsRequired { get; set; }
     public bool IsVisible { get; set; } = true;
+    public bool IsActive { get; set; } = true;
+    public QuestionnaireAnswerRule AnswerRule { get; set; }
     public QuestionnaireSection QuestionnaireSection { get; set; } = default!;
     public ICollection<QuestionnaireOption> Options { get; set; } = new HashSet<QuestionnaireOption>();
 }

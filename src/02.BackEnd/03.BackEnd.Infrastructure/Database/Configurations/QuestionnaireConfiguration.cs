@@ -48,6 +48,8 @@ public sealed class QuestionnaireQuestionConfiguration : IEntityTypeConfiguratio
         _ = builder.Property(x => x.Hint).HasMaxLength(1000);
         _ = builder.Property(x => x.Placeholder).HasMaxLength(1000);
         _ = builder.Property(x => x.Type).HasConversion<string>().HasMaxLength(30);
+        _ = builder.Property(x => x.CompanyType).HasConversion<string>().HasMaxLength(40);
+        _ = builder.Property(x => x.AnswerRule).HasConversion<string>().HasMaxLength(30);
         _ = builder.HasIndex(x => new { x.QuestionnaireSectionId, x.Code }).IsUnique();
         _ = builder.HasMany(x => x.Options).WithOne(x => x.QuestionnaireQuestion).HasForeignKey(x => x.QuestionnaireQuestionId).OnDelete(DeleteBehavior.Cascade);
     }
