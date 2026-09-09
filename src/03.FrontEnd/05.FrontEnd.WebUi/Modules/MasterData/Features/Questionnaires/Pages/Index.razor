@@ -17,11 +17,11 @@
     <HeaderContent><MudTh>No</MudTh><MudTh>Business Process</MudTh><MudTh>Vendor Type</MudTh><MudTh>Section</MudTh><MudTh>Active</MudTh><MudTh Class="text-center">Action</MudTh></HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="No">@Number(context)</MudTd>
-        <MudTd DataLabel="Business Process"><MudHighlighter Text="@context.BusinessProcess" HighlightedText="@_search" /><MudText Typo="Typo.caption">v@context.Version · @context.Status</MudText></MudTd>
+        <MudTd DataLabel="Business Process"><MudHighlighter Text="@context.BusinessProcess" HighlightedText="@_search" /></MudTd>
         <MudTd DataLabel="Vendor Type">@Vendor(context.VendorType)</MudTd>
         <MudTd DataLabel="Section">@context.Section</MudTd>
-        <MudTd DataLabel="Active">@(context.IsActive ? "Yes" : "No")</MudTd>
-        <MudTd DataLabel="Action" Class="text-center"><ButtonDetails Href="@QuestionnaireRouteFor.Details(context.VersionId, context.SectionId)" />@if (context.Status == QuestionnaireVersionStatus.Draft) { <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => EditSection(context))" /> }</MudTd>
+        <MudTd DataLabel="Active">@(context.IsSectionActive ? "Yes" : "No")</MudTd>
+        <MudTd DataLabel="Action" Class="text-center"><ButtonDetails Href="@QuestionnaireRouteFor.Details(context.QuestionnaireId, context.SectionId)" /><MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => EditSection(context))" /></MudTd>
     </RowTemplate>
     <PagerContent><MudTablePager /></PagerContent>
 </TableDefault>
@@ -32,32 +32,32 @@
     protected override async Task OnInitializedAsync() { LoadBreadcrumbs(); await Load(); }
     protected override void LoadBreadcrumbs() => _breadcrumbItems = [MainBreadcrumbFor.Home, MasterDataBreadcrumbFor.Index, CommonBreadcrumbFor.Active("Questionnaire")];
     private async Task Load() { try { _isLoading = true; ClearException(); _items = (await Sender.Send(new GetQuestionnairesQuery())).Items.ToList(); } catch (Exception ex) { _exception = ex; } finally { _isLoading = false; } }
-    private bool Filter(QuestionnaireListItem x) => string.IsNullOrWhiteSpace(_search) || $"{x.BusinessProcess} {x.Section} {Vendor(x.VendorType)} {x.Status}".Contains(_search, StringComparison.OrdinalIgnoreCase);
+    private bool Filter(QuestionnaireListItem x) => string.IsNullOrWhiteSpace(_search) || $"{x.BusinessProcess} {x.Section} {Vendor(x.VendorType)}".Contains(_search, StringComparison.OrdinalIgnoreCase);
     private int Number(QuestionnaireListItem x) => _items.IndexOf(x) + 1;
     private static string Vendor(VendorCompanyStatusType? value) => value switch { null => "All", VendorCompanyStatusType.Manufacture => "Vendor", VendorCompanyStatusType.SoleDistributorAgent => "Sole Agent", _ => "Representative Office" };
     private async Task ShowAdd()
     {
         var dialog = await DialogService.ShowAsync<DialogAdd>("Add Questionnaire", options: new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
         var result = await dialog.Result;
-        if (result is not { Canceled: false, Data: QuestionnaireDraftItem created }) return;
+        if (result is not { Canceled: false, Data: QuestionnaireItem created }) return;
 
         _search = null;
-        _items = created.Sections.Select(section => new QuestionnaireListItem(created.QuestionnaireId, created.Id, section.Id, created.Code, created.BusinessProcess, section.CompanyType, section.Title, created.Version, created.Status, section.IsActive))
-            .Concat(_items.Where(x => x.Id != created.QuestionnaireId)).OrderBy(x => x.BusinessProcess).ThenBy(x => x.Section).ToList();
+        _items = created.Sections.Select(section => new QuestionnaireListItem(created.QuestionnaireId, section.Id, created.Code, created.BusinessProcess, section.CompanyType, section.Title, created.IsActive, section.IsActive))
+            .Concat(_items.Where(x => x.QuestionnaireId != created.QuestionnaireId)).OrderBy(x => x.BusinessProcess).ThenBy(x => x.Section).ToList();
         await InvokeAsync(StateHasChanged);
         await Load();
     }
     private async Task EditSection(QuestionnaireListItem row)
     {
-        var draft = (await Sender.Send(new GetQuestionnaireQuery(row.VersionId))).Item;
-        var section = draft.Sections.Single(x => x.Id == row.SectionId);
-        var model = new SectionModel { Id = section.Id, BusinessProcess = draft.BusinessProcess, Code = section.Code, Title = section.Title, CompanyType = section.CompanyType ?? VendorCompanyStatusType.Manufacture, IsActive = section.IsActive };
+        var questionnaire = (await Sender.Send(new GetQuestionnaireQuery(row.QuestionnaireId))).Item;
+        var section = questionnaire.Sections.Single(x => x.Id == row.SectionId);
+        var model = new SectionModel { Id = section.Id, BusinessProcess = questionnaire.BusinessProcess, Code = section.Code, Title = section.Title, CompanyType = section.CompanyType ?? VendorCompanyStatusType.Manufacture, IsActive = section.IsActive };
         var parameters = new DialogParameters<DialogSection> { { x => x.Model, model } };
         var dialog = await DialogService.ShowAsync<DialogSection>("Edit Questionnaire Section", parameters, new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true });
         var result = await dialog.Result;
         if (result is null || result.Canceled || result.Data is not SectionModel changed) return;
-        var sections = draft.Sections.Select(x => x.Id == changed.Id ? new QuestionnaireSectionItem(x.Id, x.Code, changed.Title, x.Order, changed.CompanyType, changed.IsActive, x.Questions) : x).ToList();
-        _ = await Sender.Send(new UpdateQuestionnaireDraftCommand(row.VersionId, new UpdateQuestionnaireDraftRequest { BusinessProcess = changed.BusinessProcess, RowVersion = draft.RowVersion, Sections = sections, Rules = draft.Rules.ToList() }));
+        var sections = questionnaire.Sections.Select(x => x.Id == changed.Id ? new QuestionnaireSectionItem(x.Id, x.Code, changed.Title, x.Order, changed.CompanyType, changed.IsActive, x.Questions) : x).ToList();
+        _ = await Sender.Send(new UpdateQuestionnaireCommand(row.QuestionnaireId, new UpdateQuestionnaireRequest { BusinessProcess = changed.BusinessProcess, IsActive = questionnaire.IsActive, RowVersion = questionnaire.RowVersion, Sections = sections, Rules = questionnaire.Rules.ToList() }));
         Snackbar.AddSuccess("Questionnaire section updated."); await Load();
     }
 }

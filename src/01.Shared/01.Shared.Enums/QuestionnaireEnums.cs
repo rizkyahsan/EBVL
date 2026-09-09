@@ -1,8 +1,7 @@
 namespace EBVL.Shared.Enums;
 
-#pragma warning disable CA1720 // Stable API values intentionally use domain question-type names.
+#pragma warning disable CA1720
 
-public enum QuestionnaireVersionStatus { Draft = 100, Published = 200, Inactive = 300, Archived = 400 }
 public enum QuestionnaireQuestionType { ShortText = 100, LongText = 200, Boolean = 300, Integer = 400, Decimal = 500, Date = 600, SingleChoice = 700, MultipleChoice = 800, Address = 900, File = 1000 }
 public enum QuestionnaireAnswerRule { Mandatory = 100, Optional = 200, AddedValue = 300 }
 public enum QuestionnaireRuleOperator { Equals = 100, NotEquals = 200, Contains = 300, GreaterThan = 400, LessThan = 500 }

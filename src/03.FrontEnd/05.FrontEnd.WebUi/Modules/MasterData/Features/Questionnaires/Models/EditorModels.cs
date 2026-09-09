@@ -24,6 +24,7 @@ public sealed class QuestionModel
     public bool IsVisible { get; set; } = true;
     public bool IsActive { get; set; } = true;
     public QuestionnaireAnswerRule AnswerRule { get; set; } = QuestionnaireAnswerRule.Optional;
+    public int Order { get; set; } = 1;
     public List<OptionModel> Options { get; set; } = [];
 }
 

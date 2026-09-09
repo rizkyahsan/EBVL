@@ -4,6 +4,7 @@ using EBVL.BackEnd.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(DatabaseService))]
-    partial class DatabaseServiceModelSnapshot : ModelSnapshot
+    [Migration("20260908073116_M020SeedGeneralQuestionnaireData")]
+    partial class M020SeedGeneralQuestionnaireData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -644,9 +647,6 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(320)");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -656,16 +656,15 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(320)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                    b.Property<Guid?>("PublishedVersionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
                         .IsUnique();
+
+                    b.HasIndex("PublishedVersionId");
 
                     b.ToTable("Questionnaires", "EBVL");
                 });
@@ -978,7 +977,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<Guid>("QuestionnaireId")
+                    b.Property<Guid>("QuestionnaireVersionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("SourceQuestionId")
@@ -994,7 +993,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuestionnaireId", "SourceQuestionId", "TargetQuestionId");
+                    b.HasIndex("QuestionnaireVersionId", "SourceQuestionId", "TargetQuestionId");
 
                     b.ToTable("QuestionnaireRules", "EBVL");
                 });
@@ -1036,7 +1035,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("QuestionnaireId")
+                    b.Property<Guid>("QuestionnaireVersionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Title")
@@ -1046,7 +1045,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuestionnaireId", "Code")
+                    b.HasIndex("QuestionnaireVersionId", "Code")
                         .IsUnique();
 
                     b.ToTable("QuestionnaireSections", "EBVL");
@@ -1074,7 +1073,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(320)");
 
-                    b.Property<Guid>("QuestionnaireId")
+                    b.Property<Guid>("QuestionnaireVersionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("VendorRegistrationId")
@@ -1082,12 +1081,65 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuestionnaireId");
+                    b.HasIndex("QuestionnaireVersionId");
 
                     b.HasIndex("VendorRegistrationId")
                         .IsUnique();
 
                     b.ToTable("QuestionnaireSubmissions", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireVersion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<DateTimeOffset?>("PublishedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("QuestionnaireId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireId", "Version")
+                        .IsUnique();
+
+                    b.ToTable("QuestionnaireVersions", "EBVL");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.User", b =>
@@ -1384,6 +1436,16 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.Questionnaire", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireVersion", "PublishedVersion")
+                        .WithMany()
+                        .HasForeignKey("PublishedVersionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("PublishedVersion");
+                });
+
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireAnswer", b =>
                 {
                     b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestion", "QuestionnaireQuestion")
@@ -1465,31 +1527,31 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireRule", b =>
                 {
-                    b.HasOne("EBVL.BackEnd.Domain.Entities.Questionnaire", "Questionnaire")
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireVersion", "QuestionnaireVersion")
                         .WithMany("Rules")
-                        .HasForeignKey("QuestionnaireId")
+                        .HasForeignKey("QuestionnaireVersionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Questionnaire");
+                    b.Navigation("QuestionnaireVersion");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSection", b =>
                 {
-                    b.HasOne("EBVL.BackEnd.Domain.Entities.Questionnaire", "Questionnaire")
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireVersion", "QuestionnaireVersion")
                         .WithMany("Sections")
-                        .HasForeignKey("QuestionnaireId")
+                        .HasForeignKey("QuestionnaireVersionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Questionnaire");
+                    b.Navigation("QuestionnaireVersion");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSubmission", b =>
                 {
-                    b.HasOne("EBVL.BackEnd.Domain.Entities.Questionnaire", "Questionnaire")
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireVersion", "QuestionnaireVersion")
                         .WithMany()
-                        .HasForeignKey("QuestionnaireId")
+                        .HasForeignKey("QuestionnaireVersionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1499,9 +1561,20 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Questionnaire");
+                    b.Navigation("QuestionnaireVersion");
 
                     b.Navigation("VendorRegistration");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireVersion", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.Questionnaire", "Questionnaire")
+                        .WithMany("Versions")
+                        .HasForeignKey("QuestionnaireId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Questionnaire");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.User", b =>
@@ -1561,9 +1634,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.Questionnaire", b =>
                 {
-                    b.Navigation("Rules");
-
-                    b.Navigation("Sections");
+                    b.Navigation("Versions");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireAnswer", b =>
@@ -1586,6 +1657,13 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSubmission", b =>
                 {
                     b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireVersion", b =>
+                {
+                    b.Navigation("Rules");
+
+                    b.Navigation("Sections");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.User", b =>

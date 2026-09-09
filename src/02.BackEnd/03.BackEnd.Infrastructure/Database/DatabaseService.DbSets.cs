@@ -15,7 +15,6 @@ public partial class DatabaseService : IDatabaseService
     public DbSet<Lender> Lenders => Set<Lender>();
     public DbSet<PublicHoliday> PublicHolidays => Set<PublicHoliday>();
     public DbSet<Questionnaire> Questionnaires => Set<Questionnaire>();
-    public DbSet<QuestionnaireVersion> QuestionnaireVersions => Set<QuestionnaireVersion>();
     public DbSet<QuestionnaireSection> QuestionnaireSections => Set<QuestionnaireSection>();
     public DbSet<QuestionnaireQuestion> QuestionnaireQuestions => Set<QuestionnaireQuestion>();
     public DbSet<QuestionnaireOption> QuestionnaireOptions => Set<QuestionnaireOption>();

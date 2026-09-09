@@ -52,7 +52,7 @@ public sealed class QuestionnaireSubmissionConfiguration : IEntityTypeConfigurat
         _ = builder.ToTable(nameof(IDatabaseService.QuestionnaireSubmissions));
         builder.ConfigureModifiableProperties();
         _ = builder.HasIndex(x => x.VendorRegistrationId).IsUnique();
-        _ = builder.HasOne(x => x.QuestionnaireVersion).WithMany().HasForeignKey(x => x.QuestionnaireVersionId).OnDelete(DeleteBehavior.Restrict);
+        _ = builder.HasOne(x => x.Questionnaire).WithMany().HasForeignKey(x => x.QuestionnaireId).OnDelete(DeleteBehavior.Restrict);
     }
 }
 public sealed class QuestionnaireAnswerConfiguration : IEntityTypeConfiguration<QuestionnaireAnswer>

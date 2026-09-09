@@ -18,7 +18,7 @@ public static class QuestionnaireRuntimeRoutes
 }
 public sealed record RegistrationAuthorizationRequest(Guid RegistrationId, string ResumeToken);
 public sealed record ResumeQuestionnaireRequest(Guid RegistrationId, string ResumeToken);
-public sealed record QuestionnaireRuntimeResponse(Guid RegistrationId, string? ResumeToken, string RowVersion, VendorRegistrationStatus Status, PreRegistrationRequest Profile, IReadOnlyList<VendorRegistrationDocumentItem> Documents, bool IsDocumentEvidenceComplete, Guid QuestionnaireVersionId, int QuestionnaireVersion, IReadOnlyList<RuntimeSectionItem> Sections);
+public sealed record QuestionnaireRuntimeResponse(Guid RegistrationId, string? ResumeToken, string RowVersion, VendorRegistrationStatus Status, PreRegistrationRequest Profile, IReadOnlyList<VendorRegistrationDocumentItem> Documents, bool IsDocumentEvidenceComplete, Guid QuestionnaireId, IReadOnlyList<RuntimeSectionItem> Sections);
 public sealed record UpdateVendorRegistrationProfileRequest(string ResumeToken, string RowVersion, PreRegistrationRequest Profile);
 public sealed record VendorRegistrationDocumentItem(Guid Id, string DefinitionKey, string FileName, string ContentType, long Length);
 public sealed record UploadVendorRegistrationDocumentResponse(VendorRegistrationDocumentItem Document, string RowVersion, bool IsDocumentEvidenceComplete);

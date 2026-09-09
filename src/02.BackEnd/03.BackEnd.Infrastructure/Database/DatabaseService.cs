@@ -66,9 +66,9 @@ public partial class DatabaseService(
         return Database.BeginTransactionAsync(cancellationToken);
     }
 
-    public void SetQuestionnaireVersionOriginalRowVersion(QuestionnaireVersion version, byte[] rowVersion)
+    public void SetQuestionnaireOriginalRowVersion(Questionnaire questionnaire, byte[] rowVersion)
     {
-        Entry(version).Property(x => x.RowVersion).OriginalValue = rowVersion;
+        Entry(questionnaire).Property(x => x.RowVersion).OriginalValue = rowVersion;
     }
     public void SetVendorRegistrationOriginalRowVersion(VendorRegistration registration, byte[] rowVersion)
     {

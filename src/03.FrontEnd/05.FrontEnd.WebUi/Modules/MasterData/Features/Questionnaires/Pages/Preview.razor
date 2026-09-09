@@ -10,8 +10,8 @@
 <LoadingLinear IsVisible="@_isLoading" /><ErrorViewer Exception="@_exception" />
 @if (_item is not null)
 {
-    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-4">Preview uses version @_item.Version graph metadata. Conditional rules are listed but not executed.</MudAlert>
-    <MudPaper Class="pa-4 pa-sm-6" Outlined="true"><MudText Typo="Typo.h4">@_item.BusinessProcess</MudText><MudText Typo="Typo.caption">@_item.Code · @_item.Status</MudText>
+    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-4">Preview uses the current questionnaire graph. Conditional rules are listed but not executed.</MudAlert>
+    <MudPaper Class="pa-4 pa-sm-6" Outlined="true"><MudText Typo="Typo.h4">@_item.BusinessProcess</MudText><MudText Typo="Typo.caption">@_item.Code</MudText>
         @foreach (var section in _item.Sections)
         {
             <MudText Typo="Typo.h6" Class="mt-6 mb-3">@section.Title <MudChip T="string" Size="Size.Small">@(section.CompanyType?.ToString() ?? "All vendors")</MudChip></MudText>
@@ -26,6 +26,7 @@
                     case QuestionnaireQuestionType.MultipleChoice: @foreach (var option in question.Options) { <MudCheckBox T="bool" Label="@option.Label" Disabled="true" /> } break;
                     case QuestionnaireQuestionType.LongText: <MudTextField T="string" Lines="3" Placeholder="@question.Placeholder" Variant="Variant.Outlined" Disabled="true" /> break;
                     case QuestionnaireQuestionType.Date: <MudDatePicker Placeholder="@question.Placeholder" Variant="Variant.Outlined" Disabled="true" /> break;
+                    case QuestionnaireQuestionType.Address: <MudTextField T="string" Placeholder="Country, Building, Street, Number, City, Phone, Fax, Email, Website" Variant="Variant.Outlined" Disabled="true" /> break;
                     case QuestionnaireQuestionType.File: <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.UploadFile" Disabled="true">Select PDF</MudButton> break;
                     default: <MudTextField T="string" Placeholder="@question.Placeholder" Variant="Variant.Outlined" Disabled="true" /> break;
                 }
@@ -37,7 +38,7 @@
 @code {
     private static string Marker(QuestionnaireAnswerRule rule) => rule switch { QuestionnaireAnswerRule.Mandatory => "*", QuestionnaireAnswerRule.AddedValue => "**", _ => string.Empty };
     [Parameter] public Guid Id { get; set; }
-    private QuestionnaireDraftItem? _item;
+    private QuestionnaireItem? _item;
     protected override async Task OnParametersSetAsync() { LoadBreadcrumbs(); try { _isLoading = true; _item = (await Sender.Send(new GetQuestionnaireQuery(Id))).Item; } catch (Exception ex) { _exception = ex; } finally { _isLoading = false; } }
     protected override void LoadBreadcrumbs() => _breadcrumbItems = [MainBreadcrumbFor.Home, MasterDataBreadcrumbFor.Index, new("Questionnaire", QuestionnaireRouteFor.Index), CommonBreadcrumbFor.Active("Preview")];
 }

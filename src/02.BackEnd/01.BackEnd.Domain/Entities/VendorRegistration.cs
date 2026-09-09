@@ -44,9 +44,9 @@ public sealed class VendorRegistrationDocument : ModifiableEntity
 public sealed class QuestionnaireSubmission : ModifiableEntity
 {
     public Guid VendorRegistrationId { get; set; }
-    public Guid QuestionnaireVersionId { get; set; }
+    public Guid QuestionnaireId { get; set; }
     public VendorRegistration VendorRegistration { get; set; } = default!;
-    public QuestionnaireVersion QuestionnaireVersion { get; set; } = default!;
+    public Questionnaire Questionnaire { get; set; } = default!;
     public ICollection<QuestionnaireAnswer> Answers { get; set; } = new HashSet<QuestionnaireAnswer>();
 }
 

@@ -9,18 +9,18 @@
 <MudStack Spacing="3">
     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
         <div><MudText Typo="Typo.h5">Questionnaire Detail</MudText><MudText Typo="Typo.body2" Color="Color.Secondary">@_item?.BusinessProcess / @_section?.Title</MudText></div>
-        <MudStack Row="true"><MudButton Variant="Variant.Outlined" Href="@QuestionnaireRouteFor.Index">Back</MudButton>@if (_item?.Status == QuestionnaireVersionStatus.Draft) { <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="AddQuestion">Add Questionnaire</MudButton>@* TODO: Restore QuestionnairePermissions.Publish after IdAMan permission setup is complete. *@<MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Publish">Publish</MudButton> }</MudStack>
+        <MudStack Row="true"><MudButton Variant="Variant.Outlined" Href="@QuestionnaireRouteFor.Index">Back</MudButton><MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="AddQuestion">Add Questionnaire</MudButton></MudStack>
     </MudStack>
     <ErrorViewer Exception="@_exception" />
     <LoadingLinear IsVisible="@_isLoading" />
     @if (_section is not null)
     {
         <MudTable Items="@_section.Questions.OrderBy(x => x.Order)" Hover="true" Breakpoint="Breakpoint.Sm">
-            <HeaderContent><MudTh>No</MudTh><MudTh>Questionnaire Name</MudTh><MudTh>Description</MudTh><MudTh>Answer Type</MudTh><MudTh>Answer Rule</MudTh><MudTh>Active</MudTh><MudTh Class="text-center">Action</MudTh></HeaderContent>
+            <HeaderContent><MudTh>No</MudTh><MudTh>Questionnaire Name</MudTh><MudTh>Description</MudTh><MudTh>Answer Type</MudTh><MudTh>Answer Rule</MudTh><MudTh>Order Number</MudTh><MudTh>Active</MudTh><MudTh Class="text-center">Action</MudTh></HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="No">@context.Order</MudTd><MudTd DataLabel="Questionnaire Name">@context.Label</MudTd><MudTd DataLabel="Description">@context.Hint</MudTd>
-                <MudTd DataLabel="Answer Type">@AnswerType(context.Type)</MudTd><MudTd DataLabel="Answer Rule">@AnswerRule(context.AnswerRule)</MudTd><MudTd DataLabel="Active">@(context.IsActive ? "Yes" : "No")</MudTd>
-                <MudTd DataLabel="Action" Class="text-center">@if (_item?.Status == QuestionnaireVersionStatus.Draft) { <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => EditQuestion(context))" /> }</MudTd>
+                <MudTd DataLabel="No">@Number(context)</MudTd><MudTd DataLabel="Questionnaire Name">@context.Label</MudTd><MudTd DataLabel="Description">@context.Hint</MudTd>
+                <MudTd DataLabel="Answer Type">@AnswerType(context.Type)</MudTd><MudTd DataLabel="Answer Rule">@AnswerRule(context.AnswerRule)</MudTd><MudTd DataLabel="Order Number">@context.Order</MudTd><MudTd DataLabel="Active">@(context.IsActive ? "Yes" : "No")</MudTd>
+                <MudTd DataLabel="Action" Class="text-center"><MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => EditQuestion(context))" /></MudTd>
             </RowTemplate>
             <NoRecordsContent><MudText Class="pa-4">No questionnaires have been added to this section.</MudText></NoRecordsContent>
         </MudTable>
@@ -30,7 +30,7 @@
 @code {
     [Parameter] public Guid Id { get; set; }
     [Parameter] public Guid SectionId { get; set; }
-    private QuestionnaireDraftItem? _item;
+    private QuestionnaireItem? _item;
     private QuestionnaireSectionItem? _section;
 
     protected override async Task OnParametersSetAsync() { LoadBreadcrumbs(); await Load(); }
@@ -43,21 +43,15 @@
     }
 
     private Task AddQuestion() => OpenQuestion(null);
-    private async Task Publish()
-    {
-        try { _isLoading = true; ClearException(); _ = await Sender.Send(new ValidateQuestionnaireCommand(Id)); await Sender.Send(new PublishQuestionnaireCommand(Id)); Snackbar.AddSuccess("Questionnaire published."); await Load(); }
-        catch (Exception exception) { _exception = exception; }
-        finally { _isLoading = false; }
-    }
     private Task EditQuestion(QuestionnaireQuestionItem question) => OpenQuestion(question);
     private async Task OpenQuestion(QuestionnaireQuestionItem? question)
     {
         if (_item is null || _section is null) return;
         var model = question is null ? null : ToModel(question);
-        var parameters = new DialogParameters<DialogQuestion> { { x => x.Model, model }, { x => x.VersionId, Id }, { x => x.SectionId, SectionId }, { x => x.OnSubmit, EventCallback.Factory.Create<QuestionModel>(this, SaveQuestion) } };
+        var parameters = new DialogParameters<DialogQuestion> { { x => x.Model, model }, { x => x.QuestionnaireId, Id }, { x => x.SectionId, SectionId }, { x => x.NextOrder, _section.Questions.Count + 1 }, { x => x.OnSubmit, EventCallback.Factory.Create<QuestionModel>(this, SaveQuestion) } };
         var dialog = await DialogService.ShowAsync<DialogQuestion>(question is null ? "Add Questionnaire" : "Edit Questionnaire", parameters, new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true });
         var result = await dialog.Result;
-        if (result is { Canceled: false, Data: QuestionnaireDraftItem updated })
+        if (result is { Canceled: false, Data: QuestionnaireItem updated })
         {
             _item = updated;
             _section = updated.Sections.Single(x => x.Id == SectionId);
@@ -74,7 +68,7 @@
             var sectionCode = _section.Code;
             var sections = _item.Sections.Select(section => new QuestionnaireSectionItem(section.Id, section.Code, section.Title, section.Order, section.CompanyType, section.IsActive,
                 section.Id == SectionId ? Apply(section.Questions, changed) : section.Questions)).ToList();
-            _item = (await Sender.Send(new UpdateQuestionnaireDraftCommand(Id, new UpdateQuestionnaireDraftRequest { BusinessProcess = _item.BusinessProcess, RowVersion = _item.RowVersion, Sections = sections, Rules = _item.Rules.ToList() }))).Item;
+            _item = (await Sender.Send(new UpdateQuestionnaireCommand(Id, new UpdateQuestionnaireRequest { BusinessProcess = _item.BusinessProcess, IsActive = _item.IsActive, RowVersion = _item.RowVersion, Sections = sections, Rules = _item.Rules.ToList() }))).Item;
             _section = _item.Sections.Single(x => x.Code == sectionCode);
             SectionId = _section.Id;
             Snackbar.AddSuccess("Questionnaire saved.");
@@ -85,13 +79,13 @@
 
     private static IReadOnlyList<QuestionnaireQuestionItem> Apply(IReadOnlyList<QuestionnaireQuestionItem> questions, QuestionModel changed)
     {
-        var rows = questions.ToList();
-        var existing = rows.FirstOrDefault(x => x.Id == changed.Id);
-        var order = existing?.Order ?? rows.Count + 1;
-        var item = new QuestionnaireQuestionItem(changed.Id, changed.Code, changed.Label, changed.Hint, changed.Placeholder, changed.Type, changed.CompanyType, order, changed.AnswerRule == QuestionnaireAnswerRule.Mandatory, changed.IsVisible, changed.IsActive, changed.AnswerRule, changed.Options.Select((x, i) => new QuestionnaireOptionItem(Guid.Empty, x.Code, x.Label, i + 1)).ToList());
-        var index = rows.FindIndex(x => x.Id == changed.Id); if (index < 0) rows.Add(item); else rows[index] = item; return rows;
+        var rows = questions.Where(x => x.Id != changed.Id).OrderBy(x => x.Order).ToList();
+        var item = new QuestionnaireQuestionItem(changed.Id, changed.Code, changed.Label, changed.Hint, changed.Placeholder, changed.Type, changed.CompanyType, changed.Order, changed.AnswerRule == QuestionnaireAnswerRule.Mandatory, changed.IsVisible, changed.IsActive, changed.AnswerRule, changed.Options.Select((x, i) => new QuestionnaireOptionItem(Guid.Empty, x.Code, x.Label, i + 1)).ToList());
+        rows.Insert(Math.Clamp(changed.Order - 1, 0, rows.Count), item);
+        return rows.Select((row, index) => row with { Order = index + 1 }).ToList();
     }
-    private static QuestionModel ToModel(QuestionnaireQuestionItem q) => new() { Id = q.Id, Code = q.Code, Label = q.Label, Hint = q.Hint, Placeholder = q.Placeholder, Type = q.Type, CompanyType = q.CompanyType, IsRequired = q.IsRequired, IsVisible = q.IsVisible, IsActive = q.IsActive, AnswerRule = q.AnswerRule, Options = q.Options.Select(x => new OptionModel { Code = x.Code, Label = x.Label }).ToList() };
-    private static string AnswerType(QuestionnaireQuestionType value) => value switch { QuestionnaireQuestionType.ShortText => "Textbox", QuestionnaireQuestionType.LongText => "Textarea", QuestionnaireQuestionType.File => "Upload File", _ => value.ToString() };
+    private static QuestionModel ToModel(QuestionnaireQuestionItem q) => new() { Id = q.Id, Code = q.Code, Label = q.Label, Hint = q.Hint, Placeholder = q.Placeholder, Type = q.Type, CompanyType = q.CompanyType, IsRequired = q.IsRequired, IsVisible = q.IsVisible, IsActive = q.IsActive, AnswerRule = q.AnswerRule, Order = q.Order, Options = q.Options.Select(x => new OptionModel { Code = x.Code, Label = x.Label }).ToList() };
+    private int Number(QuestionnaireQuestionItem question) => _section is null ? 0 : _section.Questions.OrderBy(x => x.Order).ToList().IndexOf(question) + 1;
+    private static string AnswerType(QuestionnaireQuestionType value) => value switch { QuestionnaireQuestionType.ShortText => "Textbox", QuestionnaireQuestionType.LongText => "Textarea", QuestionnaireQuestionType.Address => "Address", QuestionnaireQuestionType.File => "Upload File", _ => value.ToString() };
     private static string AnswerRule(QuestionnaireAnswerRule value) => value switch { QuestionnaireAnswerRule.Mandatory => "Mandatory (*)", QuestionnaireAnswerRule.AddedValue => "Added Value (**)" , _ => "Optional" };
 }

@@ -57,9 +57,8 @@ public sealed class StartQuestionnaireHandler(IDatabaseService db, ICurrentUserS
             throw new ValidationException("An active registration already exists for this SAP vendor number.");
         }
 
-        var version = await db.QuestionnaireVersions.Include(x => x.Questionnaire)
-            .SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.Status == QuestionnaireVersionStatus.Published && x.Questionnaire.Code == "VENDOR_REGISTRATION", cancellationToken)
-            ?? throw new InvalidOperationException("No published vendor registration questionnaire is available.");
+        var questionnaire = await db.Questionnaires.SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.Code == "VENDOR_REGISTRATION", cancellationToken)
+            ?? throw new InvalidOperationException("No active vendor registration questionnaire is available.");
         var tokenBytes = RandomNumberGenerator.GetBytes(32);
         var token = Convert.ToBase64String(tokenBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
         var registration = new VendorRegistration
@@ -84,7 +83,7 @@ public sealed class StartQuestionnaireHandler(IDatabaseService db, ICurrentUserS
             ResumeTokenHash = SHA256.HashData(Encoding.UTF8.GetBytes(token)),
             ResumeTokenExpiresAt = DateTimeOffset.UtcNow.AddDays(30),
             Status = VendorRegistrationStatus.Draft,
-            Submission = new QuestionnaireSubmission { QuestionnaireVersionId = version.Id }
+            Submission = new QuestionnaireSubmission { QuestionnaireId = questionnaire.Id }
         };
         _ = await db.VendorRegistrations.AddAsync(registration, cancellationToken);
         _ = await db.SaveAsync(nameof(StartQuestionnaireCommand), cancellationToken);
@@ -288,9 +287,8 @@ internal static class QuestionnaireRuntime
 {
     public static async Task<VendorRegistration> Load(IDatabaseService db, Guid id, string token, bool tracking, CancellationToken ct)
     {
-        var query = db.VendorRegistrations.Include(x => x.Submission).ThenInclude(x => x.QuestionnaireVersion).ThenInclude(x => x.Questionnaire)
-            .Include(x => x.Submission).ThenInclude(x => x.QuestionnaireVersion).ThenInclude(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
-            .Include(x => x.Submission).ThenInclude(x => x.QuestionnaireVersion).ThenInclude(x => x.Rules)
+        var query = db.VendorRegistrations.Include(x => x.Submission).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
+            .Include(x => x.Submission).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.Rules)
             .Include(x => x.Submission).ThenInclude(x => x.Answers).ThenInclude(x => x.SelectedOptions)
             .Include(x => x.Submission).ThenInclude(x => x.Answers).ThenInclude(x => x.Files)
             .Include(x => x.Documents).Where(x => x.Id == id && !x.IsDeleted);
@@ -370,11 +368,11 @@ internal static class QuestionnaireRuntime
     }
     public static IEnumerable<QuestionnaireQuestion> ApplicableQuestions(VendorRegistration r, IReadOnlyList<QuestionnaireAnswerValue> incoming)
     {
-        var sections = r.Submission.QuestionnaireVersion.Sections.Where(x => !x.IsDeleted && x.IsActive && (x.CompanyType is null || x.CompanyType == r.CompanyType));
+        var sections = r.Submission.Questionnaire.Sections.Where(x => !x.IsDeleted && x.IsActive && (x.CompanyType is null || x.CompanyType == r.CompanyType));
         var questions = sections.SelectMany(x => x.Questions).Where(x => !x.IsDeleted && x.IsActive && (x.CompanyType is null || x.CompanyType == r.CompanyType)).ToList();
         var visible = questions.Where(x => x.IsVisible).Select(x => x.Id).ToHashSet();
         var values = r.Submission.Answers.Select(ToValue).Concat(incoming).GroupBy(x => x.QuestionId).ToDictionary(x => x.Key, x => x.Last());
-        foreach (var rule in r.Submission.QuestionnaireVersion.Rules.Where(x => !x.IsDeleted && RuleMatches(r, x, values)))
+        foreach (var rule in r.Submission.Questionnaire.Rules.Where(x => !x.IsDeleted && RuleMatches(r, x, values)))
         {
             if (rule.Action == QuestionnaireRuleAction.Hide)
             {
@@ -391,7 +389,7 @@ internal static class QuestionnaireRuntime
     public static bool IsRequired(VendorRegistration r, QuestionnaireQuestion q)
     {
         var values = r.Submission.Answers.Select(ToValue).ToDictionary(x => x.QuestionId);
-        return q.AnswerRule == QuestionnaireAnswerRule.Mandatory || r.Submission.QuestionnaireVersion.Rules.Any(x => !x.IsDeleted && x.TargetQuestionId == q.Id && x.Action == QuestionnaireRuleAction.Require && RuleMatches(r, x, values));
+        return q.AnswerRule == QuestionnaireAnswerRule.Mandatory || r.Submission.Questionnaire.Rules.Any(x => !x.IsDeleted && x.TargetQuestionId == q.Id && x.Action == QuestionnaireRuleAction.Require && RuleMatches(r, x, values));
     }
     private static bool RuleMatches(VendorRegistration registration, QuestionnaireRule rule, IReadOnlyDictionary<Guid, QuestionnaireAnswerValue> values)
     {
@@ -400,7 +398,7 @@ internal static class QuestionnaireRuntime
             return false;
         }
 
-        var optionCodes = registration.Submission.QuestionnaireVersion.Sections.SelectMany(x => x.Questions).SelectMany(x => x.Options)
+        var optionCodes = registration.Submission.Questionnaire.Sections.SelectMany(x => x.Questions).SelectMany(x => x.Options)
             .Where(x => value.OptionIds?.Contains(x.Id) == true).Select(x => x.Code);
         var actual = value.TextValue ?? value.IntegerValue?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? value.DecimalValue?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? value.DateValue?.ToString("O") ?? value.BooleanValue?.ToString() ?? value.AddressJson ?? string.Join(',', optionCodes);
         var comparison = string.Compare(actual, rule.Value, StringComparison.OrdinalIgnoreCase);
@@ -480,13 +478,13 @@ internal static class QuestionnaireRuntime
     {
         var r = await Load(db, id, authToken, false, ct);
         var applicable = ApplicableQuestions(r, []).ToHashSet();
-        var v = r.Submission.QuestionnaireVersion;
-        var sections = v.Sections.Where(s => !s.IsDeleted && s.IsActive && (s.CompanyType is null || s.CompanyType == r.CompanyType)).OrderBy(s => s.Order).Select(s => new RuntimeSectionItem(s.Id, s.Code, s.Title, s.Order, s.Questions.Where(applicable.Contains).OrderBy(q => q.Order).Select(q =>
+        var questionnaire = r.Submission.Questionnaire;
+        var sections = questionnaire.Sections.Where(s => !s.IsDeleted && s.IsActive && (s.CompanyType is null || s.CompanyType == r.CompanyType)).OrderBy(s => s.Order).Select(s => new RuntimeSectionItem(s.Id, s.Code, s.Title, s.Order, s.Questions.Where(applicable.Contains).OrderBy(q => q.Order).Select(q =>
         {
             var a = r.Submission.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == q.Id);
             return new RuntimeQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, q.Order, q.IsRequired, q.Options.Where(o => !o.IsDeleted).OrderBy(o => o.Order).Select(o => new RuntimeOptionItem(o.Id, o.Code, o.Label, o.Order)).ToList(), a is null ? null : ToValue(a), a?.Files.Where(f => !f.IsDeleted).Select(f => new RuntimeFileItem(f.Id, f.OriginalFileName, f.ContentType, f.Length)).ToList() ?? []);
         }).ToList())).Where(s => s.Questions.Count != 0).ToList();
         var documents = r.Documents.Where(x => !x.IsDeleted).OrderBy(x => x.DefinitionKey).Select(x => new VendorRegistrationDocumentItem(x.Id, x.DefinitionKey, x.OriginalFileName, x.ContentType, x.Length)).ToList();
-        return new(r.Id, returnedToken, Convert.ToBase64String(r.RowVersion), r.Status, MapProfile(r), documents, IsDocumentEvidenceComplete(r), v.Id, v.Version, sections);
+        return new(r.Id, returnedToken, Convert.ToBase64String(r.RowVersion), r.Status, MapProfile(r), documents, IsDocumentEvidenceComplete(r), questionnaire.Id, sections);
     }
 }

@@ -4,33 +4,21 @@ public sealed class Questionnaire : ModifiableEntity
 {
     public required string Code { get; set; }
     public required string BusinessProcess { get; set; }
-    public Guid? PublishedVersionId { get; set; }
-    public QuestionnaireVersion? PublishedVersion { get; set; }
-    public ICollection<QuestionnaireVersion> Versions { get; set; } = new HashSet<QuestionnaireVersion>();
-}
-
-public sealed class QuestionnaireVersion : ModifiableEntity
-{
-    public Guid QuestionnaireId { get; set; }
-    public int Version { get; set; }
-    public QuestionnaireVersionStatus Status { get; set; }
     public bool IsActive { get; set; }
-    public DateTimeOffset? PublishedAt { get; set; }
     public byte[] RowVersion { get; set; } = [];
-    public Questionnaire Questionnaire { get; set; } = default!;
     public ICollection<QuestionnaireSection> Sections { get; set; } = new HashSet<QuestionnaireSection>();
     public ICollection<QuestionnaireRule> Rules { get; set; } = new HashSet<QuestionnaireRule>();
 }
 
 public sealed class QuestionnaireSection : ModifiableEntity
 {
-    public Guid QuestionnaireVersionId { get; set; }
+    public Guid QuestionnaireId { get; set; }
     public required string Code { get; set; }
     public required string Title { get; set; }
     public int Order { get; set; }
     public VendorCompanyStatusType? CompanyType { get; set; }
     public bool IsActive { get; set; } = true;
-    public QuestionnaireVersion QuestionnaireVersion { get; set; } = default!;
+    public Questionnaire Questionnaire { get; set; } = default!;
     public ICollection<QuestionnaireQuestion> Questions { get; set; } = new HashSet<QuestionnaireQuestion>();
 }
 
@@ -63,11 +51,11 @@ public sealed class QuestionnaireOption : ModifiableEntity
 
 public sealed class QuestionnaireRule : ModifiableEntity
 {
-    public Guid QuestionnaireVersionId { get; set; }
+    public Guid QuestionnaireId { get; set; }
     public Guid SourceQuestionId { get; set; }
     public Guid TargetQuestionId { get; set; }
     public QuestionnaireRuleOperator Operator { get; set; }
     public QuestionnaireRuleAction Action { get; set; }
     public required string Value { get; set; }
-    public QuestionnaireVersion QuestionnaireVersion { get; set; } = default!;
+    public Questionnaire Questionnaire { get; set; } = default!;
 }

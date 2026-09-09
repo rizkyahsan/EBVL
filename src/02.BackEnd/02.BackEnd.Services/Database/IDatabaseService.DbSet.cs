@@ -18,7 +18,6 @@ public partial interface IDatabaseService
     public DbSet<Lender> Lenders { get; }
     public DbSet<PublicHoliday> PublicHolidays { get; }
     public DbSet<Questionnaire> Questionnaires { get; }
-    public DbSet<QuestionnaireVersion> QuestionnaireVersions { get; }
     public DbSet<QuestionnaireSection> QuestionnaireSections { get; }
     public DbSet<QuestionnaireQuestion> QuestionnaireQuestions { get; }
     public DbSet<QuestionnaireOption> QuestionnaireOptions { get; }
