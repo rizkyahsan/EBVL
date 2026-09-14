@@ -48,7 +48,20 @@ div.mud-input-slot.mud-input-root-outlined
 
 .mud-table th, .mud-simple-table th
 {
-    background-color: var(--mud-palette-background-gray);
+    background-color: #2196F3;
+    color: #FFFFFF !important;
+}
+
+.mud-table th .mud-table-sort-label,
+.mud-table th .mud-table-sort-label:hover,
+.mud-table th .mud-table-sort-label:focus
+{
+    color: #FFFFFF !important;
+}
+
+.mud-table th .mud-table-sort-label-icon
+{
+    fill: #FFFFFF !important;
 }
 
 .mud-table tr:not(:last-child) td, .mud-simple-table tr:not(:last-child) td

@@ -9,5 +9,6 @@ public partial interface IDatabaseService
 
     public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     public void SetQuestionnaireOriginalRowVersion(Questionnaire questionnaire, byte[] rowVersion);
+    public void SetDocumentDefinitionOriginalRowVersion(DocumentDefinition documentDefinition, byte[] rowVersion);
     public void SetVendorRegistrationOriginalRowVersion(VendorRegistration registration, byte[] rowVersion);
 }

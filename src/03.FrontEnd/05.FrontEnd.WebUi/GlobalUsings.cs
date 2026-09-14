@@ -65,3 +65,4 @@ global using WebUiDisplayTextFor = EBVL.FrontEnd.WebUi.Common.Statics.DisplayTex
 global using MasterDataRouteFor = EBVL.FrontEnd.WebUi.Modules.MasterData.Statics.RouteFor;
 global using MasterDataBreadcrumbFor = EBVL.FrontEnd.WebUi.Modules.MasterData.Statics.BreadcrumbFor;
 global using QuestionnaireRouteFor = EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Statics.RouteFor;
+global using DocumentRouteFor = EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Documents.Statics.RouteFor;

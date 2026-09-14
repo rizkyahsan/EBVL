@@ -8,7 +8,9 @@
 
 <CascadingValue Value="DisplayInfo">
     <MudLayout>
-        <MudAppBar Elevation="0" Class="@($"landing-appbar{(DisplayInfo.IsDarkMode ? " landing-appbar-dark" : string.Empty)}")">
+        <MudAppBar Elevation="0"
+                   Class="@($"landing-appbar{(DisplayInfo.IsDarkMode ? " landing-appbar-dark" : string.Empty)}")"
+                   Style="@(DisplayInfo.IsDarkMode ? "background-color: #141a21; color: #fff;" : "background-color: #fff; color: #616161;")">
             <MudLink Href="/Landing" Class="landing-logo-link" aria-label="EBVL landing page">
                 <MudImage Src="@DisplayInfo.SrcLogo"
                           Alt="Logo Pertamina"
@@ -21,6 +23,7 @@
                                Icon="@DisplayInfo.IconForDarkMode"
                                Size="Size.Small"
                                Class="landing-theme-button"
+                               Style="@(DisplayInfo.IsDarkMode ? "color: #fff;" : "color: #000;")"
                                aria-label="Toggle dark mode"
                                OnClick="ToggleDarkMode" />
                 <MudButton Href="/Landing#faq" Variant="Variant.Text" Class="landing-nav-button">Need Help?</MudButton>

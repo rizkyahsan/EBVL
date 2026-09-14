@@ -1,0 +1,45 @@
+@inherits DialogBase
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+
+<MudDialog>
+    <DialogContent>
+        <ErrorViewer Exception="@_exception" />
+        <LoadingLinear IsVisible="@_isLoading" />
+        <MudForm @ref="_form">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField Label="Document Type Name" @bind-Value="_name" Required="true" Variant="Variant.Text" ShrinkLabel="true" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudSelect T="string" Label="Business Process" @bind-Value="_businessProcess" Required="true" Variant="Variant.Text" ShrinkLabel="true">
+                        @foreach (var process in QuestionnaireBusinessProcessFor.All)
+                        {
+                            <MudSelectItem Value="@process">@process</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNumericField T="int" Label="Maximal Size (MB)" @bind-Value="_maxSizeMb" Min="1" Max="100" Required="true" Variant="Variant.Text" ShrinkLabel="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudRadioGroup T="bool" @bind-Value="_isMandatory">
+                        <MudText Typo="Typo.caption">Mandatory</MudText>
+                        <MudRadio Value="true">Yes</MudRadio>
+                        <MudRadio Value="false">No</MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudRadioGroup T="bool" @bind-Value="_isActive">
+                        <MudText Typo="Typo.caption">Active</MudText>
+                        <MudRadio Value="true">Yes</MudRadio>
+                        <MudRadio Value="false">No</MudRadio>
+                    </MudRadioGroup>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <ButtonCancel OnClick="Cancel" />
+        <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Submit" Disabled="_isLoading">Save</MudButton>
+    </DialogActions>
+</MudDialog>

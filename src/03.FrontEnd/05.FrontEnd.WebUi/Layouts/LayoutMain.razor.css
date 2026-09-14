@@ -34,12 +34,35 @@
 
 .footer
 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     height: 41px;
-    line-height: 41px;
     padding-left: 38px;
     padding-right: 38px;
     font-size: 0.750rem;
-    color: var(--mud-palette-text-secondary);
-    background-color: var(--mud-palette-background-paper);
-    border-top: 1px solid var(--mud-palette-lines-default);
+    color: #FFFFFF;
+    background-color: #2196F3;
+}
+
+.footer-energizing-logo
+{
+    width: auto;
+    height: 24px;
+}
+
+@media (max-width: 600px)
+{
+    .footer
+    {
+        gap: 12px;
+        height: auto;
+        min-height: 41px;
+        padding: 8px 16px;
+    }
+
+    .footer-energizing-logo
+    {
+        height: 18px;
+    }
 }

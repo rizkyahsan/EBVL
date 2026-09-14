@@ -11,7 +11,7 @@
 }
 
 ::deep .landing-appbar-dark {
-    background: var(--mud-palette-appbar-background);
+    background: #141a21;
     color: #fff;
     border-bottom-color: rgba(255, 255, 255, .12);
 }

@@ -1,0 +1,38 @@
+@page "/MasterData/Documents"
+@inherits PageBase
+@using EBVL.Shared.Dto.Modules.MasterData.Documents
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Documents.Statics
+@* TODO: Add the Documents IdAMan permission guard when its permissions are configured. *@
+
+<HtmlHead Title="@DisplayTextFor.Documents" />
+<Breadcrumbs Items="@_breadcrumbItems" />
+<PageHeader Title="@DisplayTextFor.Documents" />
+<ErrorViewer Exception="@_exception" />
+<TableDefault Items="_items" Loading="_isLoading" Filter="Filter">
+    <ToolBarContent>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="ShowAdd">Add New</MudButton>
+        <MudSpacer />
+        <TextFieldSearch @bind-Value="_search" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>@DisplayTextFor.Number</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.BusinessProcess)" InitialDirection="SortDirection.Ascending">@DisplayTextFor.BusinessProcess</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.Name)">@DisplayTextFor.Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.MaxSizeMb)">@DisplayTextFor.MaxSizeMb</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.IsMandatory)">@DisplayTextFor.Mandatory</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.IsActive)">@DisplayTextFor.Active</MudTableSortLabel></MudTh>
+        <MudTh Class="text-center">@DisplayTextFor.Action</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="@DisplayTextFor.Number">@Number(context)</MudTd>
+        <MudTd DataLabel="@DisplayTextFor.BusinessProcess"><MudHighlighter Text="@context.BusinessProcess" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="@DisplayTextFor.Name"><MudHighlighter Text="@context.Name" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="@DisplayTextFor.MaxSizeMb"><MudHighlighter Text="@context.MaxSizeMb.ToString()" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="@DisplayTextFor.Mandatory"><MudIcon Icon="@(context.IsMandatory ? Icons.Material.Outlined.CheckBox : Icons.Material.Outlined.CheckBoxOutlineBlank)" Color="Color.Primary" Title="@(context.IsMandatory ? "Mandatory: Yes" : "Mandatory: No")" aria-label="@(context.IsMandatory ? "Mandatory: Yes" : "Mandatory: No")" /></MudTd>
+        <MudTd DataLabel="@DisplayTextFor.Active"><MudIcon Icon="@(context.IsActive ? Icons.Material.Outlined.CheckBox : Icons.Material.Outlined.CheckBoxOutlineBlank)" Color="Color.Primary" Title="@(context.IsActive ? "Active: Yes" : "Active: No")" aria-label="@(context.IsActive ? "Active: Yes" : "Active: No")" /></MudTd>
+        <MudTd DataLabel="@DisplayTextFor.Action" Class="text-center">
+            <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => ShowEdit(context))" aria-label="Edit document" />
+        </MudTd>
+    </RowTemplate>
+    <PagerContent><MudTablePager /></PagerContent>
+</TableDefault>

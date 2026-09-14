@@ -10,6 +10,7 @@ public partial interface IDatabaseService
     public DbSet<Configuration> Configurations { get; }
     public DbSet<Country> Countries { get; }
     public DbSet<Document> Documents { get; }
+    public DbSet<DocumentDefinition> DocumentDefinitions { get; }
     public DbSet<EmailTemplate> EmailTemplates { get; }
     public DbSet<ExternalLogin> ExternalLogins { get; }
     public DbSet<ExternalLoginLog> ExternalLoginLogs { get; }

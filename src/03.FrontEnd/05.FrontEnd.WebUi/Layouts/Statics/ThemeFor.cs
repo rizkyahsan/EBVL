@@ -8,7 +8,7 @@ public static class ThemeFor
     {
         PaletteLight = new PaletteLight()
         {
-            Primary = new MudColor(0, 167, 111, 1.0),
+            Primary = new MudColor("#2196F3"),
             PrimaryContrastText = new MudColor(255, 255, 255, 1.0),
 
             Secondary = new MudColor(142, 51, 255, 1.0),
@@ -48,8 +48,8 @@ public static class ThemeFor
 
             Background = new MudColor(255, 255, 255, 1.0),
             BackgroundGray = new MudColor(244, 246, 248, 1.0),
-            AppbarBackground = new MudColor(255, 255, 255, 0.8),
-            AppbarText = new MudColor(0, 45, 24, 1.0),
+            AppbarBackground = new MudColor("#2196F3"),
+            AppbarText = new MudColor(255, 255, 255, 1.0),
             DrawerBackground = new MudColor(255, 255, 255, 1.0),
             DrawerText = new MudColor(99, 115, 129, 1.0),
             DrawerIcon = new MudColor(99, 115, 129, 1.0),
@@ -79,7 +79,7 @@ public static class ThemeFor
         },
         PaletteDark = new PaletteDark()
         {
-            Primary = new MudColor(0, 167, 111, 1.0),
+            Primary = new MudColor("#2196F3"),
             PrimaryContrastText = new MudColor(255, 255, 255, 1.0),
 
             Secondary = new MudColor(142, 51, 255, 1.0),
@@ -119,7 +119,7 @@ public static class ThemeFor
 
             Background = new MudColor(20, 26, 33, 1.0),
             BackgroundGray = new MudColor(40, 50, 61, 1.0),
-            AppbarBackground = new MudColor(20, 26, 33, 0.8),
+            AppbarBackground = new MudColor("#2196F3"),
             AppbarText = new MudColor(255, 255, 255, 1.0),
             DrawerBackground = new MudColor(20, 26, 33, 1.0),
             DrawerIcon = new MudColor(255, 255, 255, 0.5),
