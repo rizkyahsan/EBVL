@@ -18,6 +18,11 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         if (existing is not null)
         {
             await EnsureGeneralQuestions(existing);
+            await EnsureVendorRepresentativeOfficeQuestions(existing);
+            await EnsureSoleAgentQuestions(existing);
+            await EnsureProductQualityGeneralQuestions(existing);
+            await EnsureProductQualitySpecificQuestions(existing);
+            await EnsureProductPositioningQuestions(existing);
             return;
         }
 
@@ -47,6 +52,11 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         _ = await db.Questionnaires.AddAsync(questionnaire);
         _ = await db.SaveAsync(nameof(SeedQuestionnaires));
         await EnsureGeneralQuestions(questionnaire);
+        await EnsureVendorRepresentativeOfficeQuestions(questionnaire);
+        await EnsureSoleAgentQuestions(questionnaire);
+        await EnsureProductQualityGeneralQuestions(questionnaire);
+        await EnsureProductQualitySpecificQuestions(questionnaire);
+        await EnsureProductPositioningQuestions(questionnaire);
     }
 
     private async Task EnsureGeneralQuestions(Questionnaire questionnaire)
@@ -99,5 +109,242 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         _ = obsoleteRepresentativeProfile?.IsDeleted = true;
 
         _ = await db.SaveAsync(nameof(EnsureGeneralQuestions));
+    }
+
+    private async Task EnsureVendorRepresentativeOfficeQuestions(Questionnaire questionnaire)
+    {
+        var section = questionnaire.Sections.SingleOrDefault(x => x.Code == "VENDOR_RO");
+        if (section is null)
+        {
+            section = new QuestionnaireSection { QuestionnaireId = questionnaire.Id, Code = "VENDOR_RO", Title = "Vendor / RO (Representative Office)", Order = 2, CompanyType = VendorCompanyStatusType.AuthorizedAgent, IsActive = true };
+            questionnaire.Sections.Add(section);
+        }
+
+        (string Code, string LegacyCode, string Label, QuestionnaireAnswerRule Rule)[] definitions =
+        {
+            ("BUSINESS_NAME_CARD_DIRECTOR", "Q014", "Business Name Card (Director)", QuestionnaireAnswerRule.Mandatory),
+            ("CERTIFICATE_COMPANY_DOMICILE", "Q017", "Certificate of Company Domicile (COD/Surat Keterangan Domisili)", QuestionnaireAnswerRule.Mandatory),
+            ("ID_CARD_PASSPORT_AUTHORIZED_SIGNATORIES", "Q015", "ID Card/Passport for authorized Signatories", QuestionnaireAnswerRule.AddedValue),
+            ("TAX_IDENTIFICATION_NUMBER_COMPANY", "Q018", "Tax Identification Number (TIN/NPWP)-Company", QuestionnaireAnswerRule.Mandatory),
+            ("DEED_COMPANY_ESTABLISHMENT", "Q016", "Deed of Company Establishment (ACTA/ Akta Pendirian Perusahaan)", QuestionnaireAnswerRule.Mandatory),
+            ("CERTIFICATE_COMPANY_REGISTRATION", "Q019", "Certificate of Company Registration (TDP)", QuestionnaireAnswerRule.Mandatory)
+        };
+
+        section.Title = "Vendor / RO (Representative Office)";
+        section.CompanyType = VendorCompanyStatusType.AuthorizedAgent;
+        section.IsActive = true;
+        for (var index = 0; index < definitions.Length; index++)
+        {
+            var (code, legacyCode, label, rule) = definitions[index];
+            var question = section.Questions.FirstOrDefault(x => x.Code == code || x.Code == legacyCode || x.Label == label);
+            if (question is null)
+            {
+                question = new QuestionnaireQuestion { QuestionnaireSectionId = section.Id, Code = code, Label = label };
+                section.Questions.Add(question);
+            }
+
+            question.Code = code;
+            question.Label = label;
+            question.Type = QuestionnaireQuestionType.File;
+            question.Order = index + 1;
+            question.IsRequired = rule == QuestionnaireAnswerRule.Mandatory;
+            question.IsVisible = true;
+            question.IsActive = true;
+            question.AnswerRule = rule;
+            question.CompanyType = VendorCompanyStatusType.AuthorizedAgent;
+        }
+
+        _ = await db.SaveAsync(nameof(EnsureVendorRepresentativeOfficeQuestions));
+    }
+
+    private async Task EnsureSoleAgentQuestions(Questionnaire questionnaire)
+    {
+        var section = questionnaire.Sections.SingleOrDefault(x => x.Code == "SOLE_AGENT");
+        if (section is null)
+        {
+            section = new QuestionnaireSection { QuestionnaireId = questionnaire.Id, Code = "SOLE_AGENT", Title = "Sole Agent", Order = 3, CompanyType = VendorCompanyStatusType.SoleDistributorAgent, IsActive = true };
+            questionnaire.Sections.Add(section);
+        }
+
+        (string Code, string LegacyCode, string Label)[] definitions =
+        {
+            ("SOLE_AGENT_BUSINESS_NAME_CARD_DIRECTOR", "Q020", "Business Name Card (Director)"),
+            ("SKUP_MIGAS_ESDM", "Q024", "SKUP (Surat Kemampuan Usaha Penunjang) Migas/ESDM (Base on National Regulation)"),
+            ("COMPANY_BUSINESS_LICENSES_SIUP", "Q021", "Company Business Licenses (SIUP)"),
+            ("SKT_PERTAMINA", "Q025", "SKT (Surat Keterangan Terdaftar) Pertamina"),
+            ("STP_TRADE_MINISTRY", "Q022", "STP (Surat Tanda Pendaftaran) Kemendag/ Trade Ministry"),
+            ("CSMS_CERTIFICATE_PERTAMINA", "Q026", "CSMS (Contractor Safety Management System) Certificate Pertamina (Only for SA Provide service for product)"),
+            ("AGENCY_AGREEMENT_FROM_VENDOR", "Q023", "Agency Agreement from Vendor")
+        };
+
+        section.Title = "Sole Agent";
+        section.CompanyType = VendorCompanyStatusType.SoleDistributorAgent;
+        section.IsActive = true;
+        for (var index = 0; index < definitions.Length; index++)
+        {
+            var (code, legacyCode, label) = definitions[index];
+            var question = section.Questions.FirstOrDefault(x => x.Code == code || x.Code == legacyCode || x.Label == label);
+            if (question is null)
+            {
+                question = new QuestionnaireQuestion { QuestionnaireSectionId = section.Id, Code = code, Label = label };
+                section.Questions.Add(question);
+            }
+
+            question.Code = code;
+            question.Label = label;
+            question.Type = QuestionnaireQuestionType.File;
+            question.Order = index + 1;
+            question.IsRequired = true;
+            question.IsVisible = true;
+            question.IsActive = true;
+            question.AnswerRule = QuestionnaireAnswerRule.Mandatory;
+            question.CompanyType = VendorCompanyStatusType.SoleDistributorAgent;
+        }
+
+        _ = await db.SaveAsync(nameof(EnsureSoleAgentQuestions));
+    }
+
+    private async Task EnsureProductQualityGeneralQuestions(Questionnaire questionnaire)
+    {
+        var section = questionnaire.Sections.SingleOrDefault(x => x.Code == "QUALITY_GENERAL");
+        if (section is null)
+        {
+            section = new QuestionnaireSection { QuestionnaireId = questionnaire.Id, Code = "QUALITY_GENERAL", Title = "Product Quality - General", Order = 4, IsActive = true };
+            questionnaire.Sections.Add(section);
+        }
+
+        (string Code, string LegacyCode, string Label)[] definitions =
+        {
+            ("BRAND_CERTIFICATE", "Q027", "Brand Certificate"),
+            ("SAMPLE_COMPONENT_MILL_CERTIFICATE", "Q030", "Sample Component Mill Certificate"),
+            ("PATENT_LICENSE_PRODUCT_DESIGN_CERTIFICATE", "Q028", "Patent/License Certificate and/or International Product Design Standard Certificate"),
+            ("USER_SATISFACTION_LETTER", "Q031", "User Satisfaction Letter (Testimony)"),
+            ("COMPONENT_SUPPLIER_EXPERT_LIST", "Q029", "Component Supplier/Expert List"),
+            ("LOCAL_CONTENT_CERTIFICATE_TKDN", "Q032", "Local Content Certificate (TKDN from Kemenperin)")
+        };
+
+        section.Title = "Product Quality - General";
+        section.CompanyType = null;
+        section.IsActive = true;
+        for (var index = 0; index < definitions.Length; index++)
+        {
+            var (code, legacyCode, label) = definitions[index];
+            var question = section.Questions.FirstOrDefault(x => x.Code == code || x.Code == legacyCode || x.Label == label);
+            if (question is null)
+            {
+                question = new QuestionnaireQuestion { QuestionnaireSectionId = section.Id, Code = code, Label = label };
+                section.Questions.Add(question);
+            }
+
+            question.Code = code;
+            question.Label = label;
+            question.Type = QuestionnaireQuestionType.File;
+            question.Order = index + 1;
+            question.IsRequired = false;
+            question.IsVisible = true;
+            question.IsActive = true;
+            question.AnswerRule = QuestionnaireAnswerRule.AddedValue;
+            question.CompanyType = null;
+        }
+
+        _ = await db.SaveAsync(nameof(EnsureProductQualityGeneralQuestions));
+    }
+
+    private async Task EnsureProductQualitySpecificQuestions(Questionnaire questionnaire)
+    {
+        var section = questionnaire.Sections.SingleOrDefault(x => x.Code == "QUALITY_SPECIFIC");
+        if (section is null)
+        {
+            section = new QuestionnaireSection { QuestionnaireId = questionnaire.Id, Code = "QUALITY_SPECIFIC", Title = "Product Quality - Spesific", Order = 5, CompanyType = VendorCompanyStatusType.SoleDistributorAgent, IsActive = true };
+            questionnaire.Sections.Add(section);
+        }
+
+        (string Code, string LegacyCode, string Label, QuestionnaireAnswerRule Rule)[] definitions =
+        {
+            ("LATEST_PRODUCT_CATALOGUE", "Q033", "Latest Product Catalogue", QuestionnaireAnswerRule.Mandatory),
+            ("SAMPLE_FAT_REPORT", "Q039", "Sample of FAT Report", QuestionnaireAnswerRule.AddedValue),
+            ("LATEST_PRODUCT_EXPERIENCE_LIST", "Q034", "Latest Product Experience List", QuestionnaireAnswerRule.Mandatory),
+            ("SAMPLE_CONFORMITY_CERTIFICATE", "Q040", "Sample Conformity Certificate", QuestionnaireAnswerRule.AddedValue),
+            ("MANUFACTURING_TYPE_FULLY", "Q035", "Manufacturing Type - Fully (Design & Manufacturer) Packager/ Integrator", QuestionnaireAnswerRule.Mandatory),
+            ("SAMPLE_SITE_ACCEPTANCE_TEST_REPORT", "Q041", "Sample of Site Acceptance Test (SAT) Report", QuestionnaireAnswerRule.Optional),
+            ("INTERNATIONAL_PRODUCT_MFG_STANDARD_CERT", "Q036", "International Product Manufacturing Standard Certificate", QuestionnaireAnswerRule.Mandatory),
+            ("QUALITY_GUARANTEE_LETTER_HQ", "Q042", "Quality Guarantee Letter from HQ", QuestionnaireAnswerRule.Mandatory),
+            ("QUALITY_MANAGEMENT_SYSTEM", "Q037", "Quality Management System", QuestionnaireAnswerRule.Mandatory),
+            ("PRODUCT_OBSOLESCENCE_LETTER", "Q043", "Product Obsolescence Letter", QuestionnaireAnswerRule.Optional),
+            ("SAMPLE_INSPECTION_TEST_PLAN", "Q038", "Sample of Inspection Test Plan", QuestionnaireAnswerRule.Mandatory),
+            ("SAMPLE_TASA_PROGRAM", "Q044", "Sample of TASA (Technical Assistance Services Agreement) Program", QuestionnaireAnswerRule.Optional)
+        };
+
+        section.Title = "Product Quality - Spesific";
+        section.CompanyType = VendorCompanyStatusType.SoleDistributorAgent;
+        section.IsActive = true;
+        for (var index = 0; index < definitions.Length; index++)
+        {
+            var (code, legacyCode, label, rule) = definitions[index];
+            var question = section.Questions.FirstOrDefault(x => x.Code == code || x.Code == legacyCode || x.Label == label);
+            if (question is null)
+            {
+                question = new QuestionnaireQuestion { QuestionnaireSectionId = section.Id, Code = code, Label = label };
+                section.Questions.Add(question);
+            }
+
+            question.Code = code;
+            question.Label = label;
+            question.Type = QuestionnaireQuestionType.File;
+            question.Order = index + 1;
+            question.IsRequired = rule == QuestionnaireAnswerRule.Mandatory;
+            question.IsVisible = true;
+            question.IsActive = true;
+            question.AnswerRule = rule;
+            question.CompanyType = null;
+        }
+
+        _ = await db.SaveAsync(nameof(EnsureProductQualitySpecificQuestions));
+    }
+
+    private async Task EnsureProductPositioningQuestions(Questionnaire questionnaire)
+    {
+        var section = questionnaire.Sections.SingleOrDefault(x => x.Code == "PRODUCT_POSITIONING");
+        if (section is null)
+        {
+            section = new QuestionnaireSection { QuestionnaireId = questionnaire.Id, Code = "PRODUCT_POSITIONING", Title = "Product Positioning & Technical Support", Order = 6, CompanyType = VendorCompanyStatusType.AuthorizedAgent, IsActive = true };
+            questionnaire.Sections.Add(section);
+        }
+
+        (string Code, string LegacyCode, string Label, QuestionnaireQuestionType Type, QuestionnaireAnswerRule Rule)[] definitions =
+        {
+            ("MARKET_SHARE_WORLD", "Q045", "Market Share (%) (In the world)", QuestionnaireQuestionType.File, QuestionnaireAnswerRule.Optional),
+            ("BRAND_PRODUCT_COMPETITOR", "Q048", "Brand Product Competitor", QuestionnaireQuestionType.File, QuestionnaireAnswerRule.AddedValue),
+            ("COUNTRY_ORIGIN_FACTORY_LOCATION", "Q046", "Country of Origin/Factory Location", QuestionnaireQuestionType.File, QuestionnaireAnswerRule.Mandatory),
+            ("PRODUCT_TECHNOLOGY_LEADER_FOLLOWER", "Q049", "Product Technology Leader/Follower", QuestionnaireQuestionType.ShortText, QuestionnaireAnswerRule.Mandatory),
+            ("PRODUCT_REGIONAL_SUPPLY", "Q047", "Product Regional Supply", QuestionnaireQuestionType.File, QuestionnaireAnswerRule.Mandatory),
+            ("AFTER_SALES_SERVICE_OFFICE_VENDOR", "Q050", "After sales service office/vendor", QuestionnaireQuestionType.ShortText, QuestionnaireAnswerRule.AddedValue)
+        };
+
+        section.Title = "Product Positioning & Technical Support";
+        section.CompanyType = VendorCompanyStatusType.AuthorizedAgent;
+        section.IsActive = true;
+        for (var index = 0; index < definitions.Length; index++)
+        {
+            var (code, legacyCode, label, type, rule) = definitions[index];
+            var question = section.Questions.FirstOrDefault(x => x.Code == code || x.Code == legacyCode || x.Label == label);
+            if (question is null)
+            {
+                question = new QuestionnaireQuestion { QuestionnaireSectionId = section.Id, Code = code, Label = label };
+                section.Questions.Add(question);
+            }
+
+            question.Code = code;
+            question.Label = label;
+            question.Type = type;
+            question.Order = index + 1;
+            question.IsRequired = rule == QuestionnaireAnswerRule.Mandatory;
+            question.IsVisible = true;
+            question.IsActive = true;
+            question.AnswerRule = rule;
+            question.CompanyType = null;
+        }
+
+        _ = await db.SaveAsync(nameof(EnsureProductPositioningQuestions));
     }
 }

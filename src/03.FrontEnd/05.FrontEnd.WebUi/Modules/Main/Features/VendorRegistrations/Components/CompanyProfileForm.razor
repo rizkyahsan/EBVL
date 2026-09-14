@@ -8,7 +8,7 @@
             <MudStack Spacing="2" Class="sap-vendor-form">
                 <MudText Typo="Typo.body1" Align="Align.Center">SAP Vendor Number</MudText>
                 <MudStack Row="true" Justify="Justify.Center" AlignItems="AlignItems.Start" Spacing="2" Class="sap-find-row">
-                    <MudTextField T="string" @bind-Value="_sapModel.SapVendorNumber" For="@(() => _sapModel.SapVendorNumber)" Required="true" RequiredError="Nomor SAP Vendor wajib diisi." Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" Class="sap-input" />
+                    <MudTextField T="string" @bind-Value="_sapModel.SapVendorNumber" For="@(() => _sapModel.SapVendorNumber)" Required="true" RequiredError="Nomor SAP Vendor wajib diisi." Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" Immediate="true" Class="sap-input" />
                     <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Info" Size="Size.Medium" Class="find-button" Disabled="_isFindingSap" OnClick="FindSapVendor">Find</MudButton>
                 </MudStack>
             </MudStack>
@@ -27,22 +27,22 @@
                 <MudPaper Elevation="0" Class="form-panel form-column">
                     <MudGrid Class="align-center" Spacing="2">
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nama Perusahaan</MudText></MudItem>
-                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyName" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyName" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Email Perusahaan</MudText></MudItem>
-                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyEmail" InputType="InputType.Email" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyEmail" InputType="InputType.Email" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Email PIC</MudText></MudItem>
-                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.PicEmail" InputType="InputType.Email" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.PicEmail" InputType="InputType.Email" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nomor Kontak Perusahaan</MudText></MudItem>
-                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyPhoneNumber" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyPhoneNumber" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nomor Kontak PIC</MudText></MudItem>
-                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.PicPhoneNumber" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.PicPhoneNumber" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Website Perusahaan</MudText></MudItem>
-                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.Website" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                        <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.Website" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
                     </MudGrid>
                 </MudPaper>
             </MudItem>
@@ -52,7 +52,7 @@
                     <MudGrid Class="align-center" Spacing="2">
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Layanan Perusahaan</MudText></MudItem>
                         <MudItem xs="12" sm="8">
-                            <MudSelect T="VendorServiceType?" @bind-Value="Model.CompanyService" Placeholder="Pilih Layanan" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense">
+                            <MudSelect T="VendorServiceType?" @bind-Value="Model.CompanyService" Placeholder="Pilih Layanan" Required="true" Variant="Variant.Text" ShrinkLabel="true" Margin="Margin.Dense">
                                 <MudSelectItem T="VendorServiceType?" Value="@((VendorServiceType?)VendorServiceType.Product)">@VendorServiceType.Product.GetDisplayText()</MudSelectItem>
                                 <MudSelectItem T="VendorServiceType?" Value="@((VendorServiceType?)VendorServiceType.Service)">@VendorServiceType.Service.GetDisplayText()</MudSelectItem>
                                 <MudSelectItem T="VendorServiceType?" Value="@((VendorServiceType?)VendorServiceType.ProductAndService)">@VendorServiceType.ProductAndService.GetDisplayText()</MudSelectItem>
@@ -63,19 +63,19 @@
                         <MudItem xs="12" sm="8">
                             <MudGrid Spacing="1">
                                 <MudItem xs="12" md="4">
-                                    <MudSelect T="string" @bind-Value="Model.FactoryCountry" Placeholder="Pilih Negara" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense">
+                                    <MudSelect T="string" @bind-Value="Model.FactoryCountry" Placeholder="Pilih Negara" Required="true" Variant="Variant.Text" ShrinkLabel="true" Margin="Margin.Dense">
                                         <MudSelectItem Value="@("Indonesia")">Indonesia</MudSelectItem>
                                         <MudSelectItem Value="@("Luar Indonesia")">Luar Indonesia</MudSelectItem>
                                     </MudSelect>
                                 </MudItem>
-                                <MudItem xs="12" md="8"><MudTextField @bind-Value="Model.FactoryAddress" Placeholder="Masukkan Alamat" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                                <MudItem xs="12" md="8"><MudTextField @bind-Value="Model.FactoryAddress" Placeholder="Masukkan Alamat" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
                             </MudGrid>
                         </MudItem>
 
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Pemilik / Perwakilan Brand</MudText></MudItem>
                         <MudItem xs="12" sm="8">
                             <MudGrid Spacing="1" Class="align-center">
-                                <MudItem xs="12" md="7"><MudTextField @bind-Value="Model.BrandRepresentative" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                                <MudItem xs="12" md="7"><MudTextField @bind-Value="Model.BrandRepresentative" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
                                 <MudItem xs="12" md="5">
                                     <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Info" StartIcon="@Icons.Material.Filled.Add" FullWidth="true" OnClick="AddBrand">
                                         Brand lainnya
@@ -90,7 +90,7 @@
                             <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Brand @(brandIndex + 2)</MudText></MudItem>
                             <MudItem xs="12" sm="8">
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
-                                    <MudTextField T="string" Value="@Model.AdditionalBrands[brandIndex]" ValueChanged="value => UpdateBrand(brandIndex, value)" Variant="Variant.Outlined" Margin="Margin.Dense" Class="flex-grow-1" />
+                                    <MudTextField T="string" Value="@Model.AdditionalBrands[brandIndex]" ValueChanged="value => UpdateBrand(brandIndex, value)" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" Class="flex-grow-1" />
                                     <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" OnClick="() => RemoveBrand(brandIndex)" aria-label="Hapus brand" />
                                 </MudStack>
                             </MudItem>
@@ -98,7 +98,7 @@
 
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Status Perusahaan</MudText></MudItem>
                         <MudItem xs="12" sm="8">
-                            <MudSelect T="VendorCompanyStatusType?" @bind-Value="Model.CompanyStatus" Placeholder="Pilih Status Perusahaan" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense">
+                            <MudSelect T="VendorCompanyStatusType?" @bind-Value="Model.CompanyStatus" Placeholder="Pilih Status Perusahaan" Required="true" Variant="Variant.Text" ShrinkLabel="true" Margin="Margin.Dense">
                                 <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)VendorCompanyStatusType.Manufacture)">@VendorCompanyStatusType.Manufacture.GetDisplayText()</MudSelectItem>
                                 <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)VendorCompanyStatusType.SoleDistributorAgent)">@VendorCompanyStatusType.SoleDistributorAgent.GetDisplayText()</MudSelectItem>
                                 <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)VendorCompanyStatusType.AuthorizedAgent)">@VendorCompanyStatusType.AuthorizedAgent.GetDisplayText()</MudSelectItem>
@@ -117,7 +117,7 @@
                                         <MudRadio T="bool?" Value="@((bool?)false)" Color="Color.Primary">Tidak</MudRadio>
                                     </MudRadioGroup>
                                 </MudItem>
-                                <MudItem xs="12" md="7"><MudTextField @bind-Value="Model.RepresentativeName" Variant="Variant.Outlined" Margin="Margin.Dense" /></MudItem>
+                                <MudItem xs="12" md="7"><MudTextField @bind-Value="Model.RepresentativeName" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
                             </MudGrid>
                         </MudItem>
                     </MudGrid>

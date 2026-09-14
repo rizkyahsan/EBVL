@@ -32,7 +32,6 @@ public sealed record AddQuestionnaireQuestionRequest
     public required string Code { get; init; }
     public string? Description { get; init; }
     public QuestionnaireQuestionType AnswerType { get; init; }
-    public VendorCompanyStatusType VendorType { get; init; }
     public QuestionnaireAnswerRule AnswerRule { get; init; }
     public int Order { get; init; }
     public bool IsActive { get; init; } = true;
@@ -49,6 +48,7 @@ public static class QuestionnaireRoutes
     public const string Detail = RouteConfig.BasePath + "/{questionnaireId:guid}";
     public const string Update = Detail;
     public const string AddQuestion = Detail + "/sections/{sectionId:guid}/questions";
+    public const string UpdateSection = Detail + "/sections/{sectionId:guid}";
 }
 
 public sealed class AddQuestionnaireRequestValidator : AbstractValidator<AddQuestionnaireRequest>

@@ -35,6 +35,12 @@
     z-index: 2000;
 }
 
+.mud-input > input.mud-input-root-outlined,
+div.mud-input-slot.mud-input-root-outlined
+{
+    padding: 16px 14px !important;
+}
+
 .mud-nav-link.active:not(.mud-nav-link-disabled) .mud-nav-link-text
 {
     color: var(--mud-palette-text-primary) !important;

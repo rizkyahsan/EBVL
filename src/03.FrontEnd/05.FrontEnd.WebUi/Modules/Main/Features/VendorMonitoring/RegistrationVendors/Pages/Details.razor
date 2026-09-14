@@ -60,7 +60,7 @@
                         {
                             <div class="question-row">
                                 <MudText Typo="Typo.caption">@question.Number. @(question.IsRequired ? "*" : string.Empty) @question.Label</MudText>
-                                <MudTextField Value="@GetAnswer(question.Number)" ReadOnly="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudTextField Value="@GetAnswer(question.Number)" ReadOnly="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" />
                                 <MudLink Class="attachment-link" OnClick="@(() => PreviewDocument(GetQuestionFileName(question.Number)))">attached</MudLink>
                             </div>
                         }

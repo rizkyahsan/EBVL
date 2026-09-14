@@ -7,6 +7,7 @@ public sealed record GetQuestionnairesQuery : IRequest<GetQuestionnairesResponse
 public sealed record GetQuestionnaireQuery(Guid QuestionnaireId) : IRequest<GetQuestionnaireResponse>;
 public sealed record AddQuestionnaireCommand : AddQuestionnaireRequest, IRequest<GetQuestionnaireResponse>;
 public sealed record AddQuestionnaireQuestionCommand(Guid QuestionnaireId, Guid SectionId, AddQuestionnaireQuestionRequest Question) : IRequest<GetQuestionnaireResponse>;
+public sealed record UpdateQuestionnaireSectionCommand(Guid QuestionnaireId, Guid SectionId, AddQuestionnaireRequest Section) : IRequest<GetQuestionnaireResponse>;
 public sealed record UpdateQuestionnaireCommand(Guid QuestionnaireId, UpdateQuestionnaireRequest Questionnaire) : IRequest<GetQuestionnaireResponse>;
 
 public sealed class AddQuestionnaireCommandValidator : AbstractValidatorBase<AddQuestionnaireCommand>
@@ -130,10 +131,25 @@ public sealed class AddQuestionnaireQuestionHandler(IDatabaseService db) : IRequ
         var order = Math.Min(r.Question.Order, count + 1);
         _ = await db.QuestionnaireQuestions.Where(x => x.QuestionnaireSectionId == section.Id && !x.IsDeleted && x.Order >= order)
             .ExecuteUpdateAsync(update => update.SetProperty(x => x.Order, x => x.Order + 1), cancellationToken);
-        section.Questions.Add(new QuestionnaireQuestion { Code = r.Question.Code.Trim(), Label = r.Question.Name.Trim(), Hint = r.Question.Description?.Trim(), Type = r.Question.AnswerType, CompanyType = r.Question.VendorType, Order = order, IsRequired = r.Question.AnswerRule == QuestionnaireAnswerRule.Mandatory, IsVisible = true, IsActive = r.Question.IsActive, AnswerRule = r.Question.AnswerRule });
+        section.Questions.Add(new QuestionnaireQuestion { Code = r.Question.Code.Trim(), Label = r.Question.Name.Trim(), Hint = r.Question.Description?.Trim(), Type = r.Question.AnswerType, CompanyType = null, Order = order, IsRequired = r.Question.AnswerRule == QuestionnaireAnswerRule.Mandatory, IsVisible = true, IsActive = r.Question.IsActive, AnswerRule = r.Question.AnswerRule });
         _ = await db.SaveAsync(nameof(AddQuestionnaireQuestionCommand), cancellationToken);
         var q = await QuestionnaireGraph.Load(db, r.QuestionnaireId, false, cancellationToken);
         return new() { Item = QuestionnaireGraph.Map(q) };
+    }
+}
+public sealed class UpdateQuestionnaireSectionHandler(IDatabaseService db) : IRequestHandler<UpdateQuestionnaireSectionCommand, GetQuestionnaireResponse>
+{
+    public async Task<GetQuestionnaireResponse> Handle(UpdateQuestionnaireSectionCommand r, CancellationToken cancellationToken)
+    {
+        var section = await db.QuestionnaireSections.Include(x => x.Questionnaire)
+            .SingleOrDefaultAsync(x => x.Id == r.SectionId && x.QuestionnaireId == r.QuestionnaireId && !x.IsDeleted, cancellationToken)
+            ?? throw new KeyNotFoundException("Questionnaire section was not found.");
+        section.Questionnaire.BusinessProcess = r.Section.BusinessProcess.Trim();
+        section.Title = r.Section.Section.Trim();
+        section.CompanyType = r.Section.VendorType;
+        section.IsActive = r.Section.IsActive;
+        _ = await db.SaveAsync(nameof(UpdateQuestionnaireSectionCommand), cancellationToken);
+        return new() { Item = QuestionnaireGraph.Map(await QuestionnaireGraph.Load(db, r.QuestionnaireId, false, cancellationToken)) };
     }
 }
 internal static class QuestionnaireGraph

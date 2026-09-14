@@ -24,21 +24,13 @@
                     case QuestionnaireQuestionType.Boolean: <MudSwitch T="bool" Label="Yes" Disabled="true" /> break;
                     case QuestionnaireQuestionType.SingleChoice: @foreach (var option in question.Options) { <MudText><MudIcon Icon="@Icons.Material.Outlined.RadioButtonUnchecked" Size="Size.Small" /> @option.Label</MudText> } break;
                     case QuestionnaireQuestionType.MultipleChoice: @foreach (var option in question.Options) { <MudCheckBox T="bool" Label="@option.Label" Disabled="true" /> } break;
-                    case QuestionnaireQuestionType.LongText: <MudTextField T="string" Lines="3" Placeholder="@question.Placeholder" Variant="Variant.Outlined" Disabled="true" /> break;
+                    case QuestionnaireQuestionType.LongText: <MudTextField T="string" Lines="3" Placeholder="@question.Placeholder" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Disabled="true" /> break;
                     case QuestionnaireQuestionType.Date: <MudDatePicker Placeholder="@question.Placeholder" Variant="Variant.Outlined" Disabled="true" /> break;
-                    case QuestionnaireQuestionType.Address: <MudTextField T="string" Placeholder="Country, Building, Street, Number, City, Phone, Fax, Email, Website" Variant="Variant.Outlined" Disabled="true" /> break;
+                    case QuestionnaireQuestionType.Address: <MudTextField T="string" Placeholder="Country, Building, Street, Number, City, Phone, Fax, Email, Website" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Disabled="true" /> break;
                     case QuestionnaireQuestionType.File: <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Outlined.UploadFile" Disabled="true">Select PDF</MudButton> break;
-                    default: <MudTextField T="string" Placeholder="@question.Placeholder" Variant="Variant.Outlined" Disabled="true" /> break;
+                    default: <MudTextField T="string" Placeholder="@question.Placeholder" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Disabled="true" /> break;
                 }
             }
         }
     </MudPaper>
-}
-
-@code {
-    private static string Marker(QuestionnaireAnswerRule rule) => rule switch { QuestionnaireAnswerRule.Mandatory => "*", QuestionnaireAnswerRule.AddedValue => "**", _ => string.Empty };
-    [Parameter] public Guid Id { get; set; }
-    private QuestionnaireItem? _item;
-    protected override async Task OnParametersSetAsync() { LoadBreadcrumbs(); try { _isLoading = true; _item = (await Sender.Send(new GetQuestionnaireQuery(Id))).Item; } catch (Exception ex) { _exception = ex; } finally { _isLoading = false; } }
-    protected override void LoadBreadcrumbs() => _breadcrumbItems = [MainBreadcrumbFor.Home, MasterDataBreadcrumbFor.Index, new("Questionnaire", QuestionnaireRouteFor.Index), CommonBreadcrumbFor.Active("Preview")];
 }

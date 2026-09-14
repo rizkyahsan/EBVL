@@ -19,7 +19,6 @@ public sealed class QuestionModel
     public string? Hint { get; set; }
     public string? Placeholder { get; set; }
     public QuestionnaireQuestionType Type { get; set; } = QuestionnaireQuestionType.ShortText;
-    public VendorCompanyStatusType? CompanyType { get; set; } = VendorCompanyStatusType.Manufacture;
     public bool IsRequired { get; set; }
     public bool IsVisible { get; set; } = true;
     public bool IsActive { get; set; } = true;

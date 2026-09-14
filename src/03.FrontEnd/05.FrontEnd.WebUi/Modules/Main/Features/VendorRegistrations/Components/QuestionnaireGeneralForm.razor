@@ -4,7 +4,7 @@
     <div class="general-column">
         <div class="general-field">
             <MudText Typo="Typo.body1">Brand Name <span>*</span></MudText>
-            <MudTextField T="string" Value="@GetAnswer(1).Value" ValueChanged="value => UpdateAnswer(1, value)" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField T="string" Value="@GetAnswer(1).Value" ValueChanged="value => UpdateAnswer(1, value)" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" />
         </div>
         <div class="general-field">
             <MudText Typo="Typo.body1">Product <span>*</span></MudText>
@@ -16,11 +16,11 @@
         </div>
         <div class="general-field">
             <MudText Typo="Typo.body1">Vendor / Company Name <span>*</span></MudText>
-            <MudTextField T="string" Value="@GetAnswer(3).Value" ValueChanged="value => UpdateAnswer(3, value)" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField T="string" Value="@GetAnswer(3).Value" ValueChanged="value => UpdateAnswer(3, value)" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" />
         </div>
         <div class="general-field">
             <MudText Typo="Typo.body1">Company Establishment <span>*</span></MudText>
-            <MudTextField T="string" Value="@GetAnswer(4).Value" ValueChanged="value => UpdateAnswer(4, value)" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField T="string" Value="@GetAnswer(4).Value" ValueChanged="value => UpdateAnswer(4, value)" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" />
         </div>
 
         <QuestionnaireAddressForm Title="Headquarter information" Model="Model.HeadquarterAddress" Required="true" OnChanged="() => AddressChanged(6, Model.HeadquarterAddress)" />
@@ -30,7 +30,7 @@
     <div class="general-column">
         <div class="general-field">
             <MudText Typo="Typo.body1">Initial Production <span>*</span></MudText>
-            <MudTextField T="string" Value="@GetAnswer(5).Value" ValueChanged="value => UpdateAnswer(5, value)" Required="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField T="string" Value="@GetAnswer(5).Value" ValueChanged="value => UpdateAnswer(5, value)" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" />
         </div>
         <QuestionnaireUploadField Label="Vendor Company Profile" Mark="*" Answer="@GetAnswer(10)" OnChanged="OnChanged" />
         <QuestionnaireUploadField Label="Representative Office Company Profile" Answer="@GetAnswer(11)" OnChanged="OnChanged" />

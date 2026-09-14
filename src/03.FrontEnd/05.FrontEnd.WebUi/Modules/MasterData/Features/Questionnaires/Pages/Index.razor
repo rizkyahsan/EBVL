@@ -4,6 +4,7 @@
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Components
 @using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Statics
 @* TODO: Restore QuestionnairePermissions.Read after IdAMan permission setup is complete. *@
 
 <HtmlHead Title="Questionnaire" />
@@ -11,53 +12,34 @@
 <PageHeader Title="Questionnaire" />
 <ErrorViewer Exception="@_exception" />
 @* TODO: Restore QuestionnairePermissions.Write after IdAMan permission setup is complete. *@
-<TopButtonPanel><MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="ShowAdd">Add New</MudButton></TopButtonPanel>
 <TableDefault Items="_items" Loading="_isLoading" Filter="Filter">
-    <ToolBarContent><MudSpacer /><TextFieldSearch @bind-Value="_search" /></ToolBarContent>
-    <HeaderContent><MudTh>No</MudTh><MudTh>Business Process</MudTh><MudTh>Vendor Type</MudTh><MudTh>Section</MudTh><MudTh>Active</MudTh><MudTh Class="text-center">Action</MudTh></HeaderContent>
+    <ToolBarContent>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="ShowAdd">Add New</MudButton>
+        <MudSpacer />
+        <TextFieldSearch @bind-Value="_search" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>@QuestionnaireDisplayTextFor.Number</MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireListItem, object>(x => x.BusinessProcess)" InitialDirection="SortDirection.Ascending">@QuestionnaireDisplayTextFor.BusinessProcess</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireListItem, object>(x => Vendor(x.VendorType))">@QuestionnaireDisplayTextFor.VendorType</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireListItem, object>(x => x.Section)">@QuestionnaireDisplayTextFor.Section</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireListItem, object>(x => x.IsSectionActive)">@QuestionnaireDisplayTextFor.Active</MudTableSortLabel></MudTh>
+        <MudTh Class="text-center">@QuestionnaireDisplayTextFor.Action</MudTh>
+    </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="No">@Number(context)</MudTd>
-        <MudTd DataLabel="Business Process"><MudHighlighter Text="@context.BusinessProcess" HighlightedText="@_search" /></MudTd>
-        <MudTd DataLabel="Vendor Type">@Vendor(context.VendorType)</MudTd>
-        <MudTd DataLabel="Section">@context.Section</MudTd>
-        <MudTd DataLabel="Active">@(context.IsSectionActive ? "Yes" : "No")</MudTd>
-        <MudTd DataLabel="Action" Class="text-center"><ButtonDetails Href="@QuestionnaireRouteFor.Details(context.QuestionnaireId, context.SectionId)" /><MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => EditSection(context))" /></MudTd>
+        <MudTd DataLabel="@QuestionnaireDisplayTextFor.Number">@Number(context)</MudTd>
+        <MudTd DataLabel="@QuestionnaireDisplayTextFor.BusinessProcess">
+            <MudHighlighter Text="@context.BusinessProcess" HighlightedText="@_search" />
+        </MudTd>
+        <MudTd DataLabel="@QuestionnaireDisplayTextFor.VendorType"><MudHighlighter Text="@Vendor(context.VendorType)" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="@QuestionnaireDisplayTextFor.Section"><MudHighlighter Text="@context.Section" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="@QuestionnaireDisplayTextFor.Active"><MudHighlighter Text="@(context.IsSectionActive ? "Yes" : "No")" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="@QuestionnaireDisplayTextFor.Action" Class="text-center">
+            <ButtonDetails Href="@QuestionnaireRouteFor.Details(context.QuestionnaireId, context.SectionId)" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => EditSection(context))" />
+        </MudTd>
     </RowTemplate>
-    <PagerContent><MudTablePager /></PagerContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
 </TableDefault>
-
-@code {
-    private List<QuestionnaireListItem> _items = [];
-    private string? _search;
-    protected override async Task OnInitializedAsync() { LoadBreadcrumbs(); await Load(); }
-    protected override void LoadBreadcrumbs() => _breadcrumbItems = [MainBreadcrumbFor.Home, MasterDataBreadcrumbFor.Index, CommonBreadcrumbFor.Active("Questionnaire")];
-    private async Task Load() { try { _isLoading = true; ClearException(); _items = (await Sender.Send(new GetQuestionnairesQuery())).Items.ToList(); } catch (Exception ex) { _exception = ex; } finally { _isLoading = false; } }
-    private bool Filter(QuestionnaireListItem x) => string.IsNullOrWhiteSpace(_search) || $"{x.BusinessProcess} {x.Section} {Vendor(x.VendorType)}".Contains(_search, StringComparison.OrdinalIgnoreCase);
-    private int Number(QuestionnaireListItem x) => _items.IndexOf(x) + 1;
-    private static string Vendor(VendorCompanyStatusType? value) => value switch { null => "All", VendorCompanyStatusType.Manufacture => "Vendor", VendorCompanyStatusType.SoleDistributorAgent => "Sole Agent", _ => "Representative Office" };
-    private async Task ShowAdd()
-    {
-        var dialog = await DialogService.ShowAsync<DialogAdd>("Add Questionnaire", options: new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
-        var result = await dialog.Result;
-        if (result is not { Canceled: false, Data: QuestionnaireItem created }) return;
-
-        _search = null;
-        _items = created.Sections.Select(section => new QuestionnaireListItem(created.QuestionnaireId, section.Id, created.Code, created.BusinessProcess, section.CompanyType, section.Title, created.IsActive, section.IsActive))
-            .Concat(_items.Where(x => x.QuestionnaireId != created.QuestionnaireId)).OrderBy(x => x.BusinessProcess).ThenBy(x => x.Section).ToList();
-        await InvokeAsync(StateHasChanged);
-        await Load();
-    }
-    private async Task EditSection(QuestionnaireListItem row)
-    {
-        var questionnaire = (await Sender.Send(new GetQuestionnaireQuery(row.QuestionnaireId))).Item;
-        var section = questionnaire.Sections.Single(x => x.Id == row.SectionId);
-        var model = new SectionModel { Id = section.Id, BusinessProcess = questionnaire.BusinessProcess, Code = section.Code, Title = section.Title, CompanyType = section.CompanyType ?? VendorCompanyStatusType.Manufacture, IsActive = section.IsActive };
-        var parameters = new DialogParameters<DialogSection> { { x => x.Model, model } };
-        var dialog = await DialogService.ShowAsync<DialogSection>("Edit Questionnaire Section", parameters, new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true });
-        var result = await dialog.Result;
-        if (result is null || result.Canceled || result.Data is not SectionModel changed) return;
-        var sections = questionnaire.Sections.Select(x => x.Id == changed.Id ? new QuestionnaireSectionItem(x.Id, x.Code, changed.Title, x.Order, changed.CompanyType, changed.IsActive, x.Questions) : x).ToList();
-        _ = await Sender.Send(new UpdateQuestionnaireCommand(row.QuestionnaireId, new UpdateQuestionnaireRequest { BusinessProcess = changed.BusinessProcess, IsActive = questionnaire.IsActive, RowVersion = questionnaire.RowVersion, Sections = sections, Rules = questionnaire.Rules.ToList() }));
-        Snackbar.AddSuccess("Questionnaire section updated."); await Load();
-    }
-}

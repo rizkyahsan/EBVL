@@ -80,7 +80,7 @@
                 <MudTextField @bind-Value="_sapVendorNumber"
                               Label="SAP Vendor Number"
                               Placeholder="Example: 647122345"
-                              Variant="Variant.Outlined"
+                              Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true"
                               Immediate="true"
                               MaxLength="20"
                               Error="@(!string.IsNullOrEmpty(_trackingError))"

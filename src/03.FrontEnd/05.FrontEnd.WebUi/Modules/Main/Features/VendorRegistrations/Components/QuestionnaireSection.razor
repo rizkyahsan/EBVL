@@ -41,7 +41,7 @@
                                       Required="@(question.IsRequired && !Disabled)"
                                       Disabled="@Disabled"
                                       RequiredError="Field wajib diisi."
-                                      Variant="Variant.Outlined"
+                                      Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true"
                                       Margin="Margin.Dense"
                                       Lines="@(question.Number is 6 or 7 or 8 or 9 ? 2 : 1)" />
                     }
