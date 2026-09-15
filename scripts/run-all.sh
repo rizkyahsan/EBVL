@@ -83,9 +83,7 @@ trap stop_apps EXIT INT TERM
 
 echo "Restoring packages from the repository feeds ..."
 dotnet restore "$repo_root/EBVL.slnx" \
-  --configfile "$repo_root/NuGet.Offline.Config" \
-  --ignore-failed-sources \
-  -p:NuGetAudit=false
+  --configfile "$repo_root/NuGet.Config"
 
 echo "Building the solution ..."
 dotnet build "$repo_root/EBVL.slnx" \

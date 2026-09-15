@@ -1,0 +1,192 @@
+{
+  "info": {
+    "_postman_id": "4b5bcdca-b8cc-4d73-b0f4-85e89d7d302e",
+    "name": "EBVL - Vendor Registration",
+    "description": "Jalankan request secara berurutan. Untuk upload dokumen, isi documentDefinitionKey dari daftar mandatoryDocumentKeys lalu pilih file PDF asli pada field file.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://localhost:44421/financing1_api" },
+    { "key": "registrationId", "value": "" },
+    { "key": "resumeToken", "value": "" },
+    { "key": "rowVersion", "value": "" },
+    { "key": "documentDefinitionKey", "value": "BrandRegistrationLetter" },
+    { "key": "documentId", "value": "" },
+    { "key": "questionFileId", "value": "" },
+    { "key": "questionId", "value": "" },
+    { "key": "answersBody", "value": "{\"resumeToken\":\"\",\"rowVersion\":\"\",\"answers\":[]}" },
+    { "key": "mandatoryDocumentKeys", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Start Vendor Registration",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sapVendorNumber\": \"SAP-{{$timestamp}}\",\n  \"companyName\": \"PT Vendor Demo Postman\",\n  \"companyEmail\": \"vendor{{$timestamp}}@example.com\",\n  \"picEmail\": \"pic{{$timestamp}}@example.com\",\n  \"companyPhoneNumber\": \"0215550100\",\n  \"picPhoneNumber\": \"081234567890\",\n  \"website\": \"https://vendor.example.com\",\n  \"companyService\": \"ProductAndService\",\n  \"factoryCountry\": \"Indonesia\",\n  \"factoryAddress\": \"Jakarta\",\n  \"brandRepresentative\": \"Demo Brand\",\n  \"additionalBrands\": [\"Demo Brand 2\"],\n  \"companyStatus\": \"Manufacture\",\n  \"isRepresentativeInIndonesia\": true,\n  \"representativeName\": \"PT Vendor Demo Postman\"\n}"
+        },
+        "url": "{{baseUrl}}/api/main/vendor-registrations/questionnaires/start"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Registration created', () => pm.response.to.have.status(200));",
+          "const data = pm.response.json();",
+          "pm.collectionVariables.set('registrationId', data.registrationId);",
+          "pm.collectionVariables.set('resumeToken', data.resumeToken);",
+          "pm.collectionVariables.set('rowVersion', data.rowVersion);"
+        ]}
+      }]
+    },
+    {
+      "name": "2. Get Runtime and Generate Answers",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"registrationId\": \"{{registrationId}}\",\n  \"resumeToken\": \"{{resumeToken}}\"\n}" },
+        "url": "{{baseUrl}}/api/main/vendor-registrations/questionnaires/{{registrationId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Runtime loaded', () => pm.response.to.have.status(200));",
+          "const data = pm.response.json();",
+          "pm.collectionVariables.set('rowVersion', data.rowVersion);",
+          "const documents = data.documents || [];",
+          "pm.collectionVariables.set('mandatoryDocumentKeys', documents.filter(x => x.isMandatory).map(x => x.definitionKey).join(','));",
+          "if (documents.length) pm.collectionVariables.set('documentDefinitionKey', documents[0].definitionKey);",
+          "const questions = (data.sections || []).flatMap(x => x.questions || []);",
+          "const fileQuestion = questions.find(x => x.type === 'File' || x.type === 1000);",
+          "if (fileQuestion) pm.collectionVariables.set('questionId', fileQuestion.id);",
+          "const answers = questions.filter(x => x.type !== 'File' && x.type !== 1000).map(q => {",
+          "  const type = q.type;",
+          "  const value = { questionId: q.id, textValue: null, integerValue: null, decimalValue: null, dateValue: null, booleanValue: null, addressJson: null, optionIds: null };",
+          "  if (type === 'ShortText' || type === 'LongText' || type === 100 || type === 200) value.textValue = 'Test Postman';",
+          "  else if (type === 'Integer' || type === 400) value.integerValue = 1;",
+          "  else if (type === 'Decimal' || type === 500) value.decimalValue = 1.5;",
+          "  else if (type === 'Date' || type === 600) value.dateValue = '2026-09-15';",
+          "  else if (type === 'Boolean' || type === 300) value.booleanValue = true;",
+          "  else if (type === 'Address' || type === 900) value.addressJson = JSON.stringify({ country: 'Indonesia', building: 'Gedung Demo', street: 'Jl. Demo', number: '1', city: 'Jakarta', phone: '0215550100', fax: '0215550101', email: 'vendor@example.com', website: 'https://vendor.example.com' });",
+          "  else if ((type === 'SingleChoice' || type === 700) && q.options?.length) value.optionIds = [q.options[0].id];",
+          "  else if ((type === 'MultipleChoice' || type === 800) && q.options?.length) value.optionIds = [q.options[0].id];",
+          "  return value;",
+          "});",
+          "pm.collectionVariables.set('answersBody', JSON.stringify({ resumeToken: pm.collectionVariables.get('resumeToken'), rowVersion: data.rowVersion, answers }));"
+        ]}
+      }]
+    },
+    {
+      "name": "3. Upload Document Evidence (repeat for every mandatory key)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "resumeToken", "value": "{{resumeToken}}", "type": "text" },
+            { "key": "file", "type": "file", "src": [] }
+          ]
+        },
+        "url": "{{baseUrl}}/api/main/vendor-registrations/questionnaires/{{registrationId}}/documents/{{documentDefinitionKey}}",
+        "description": "Lihat mandatoryDocumentKeys pada Collection Variables. Ubah documentDefinitionKey dan jalankan request ini untuk setiap key wajib. Pilih file PDF asli pada field file."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Document uploaded', () => pm.response.to.have.status(200));",
+          "const data = pm.response.json();",
+          "pm.collectionVariables.set('rowVersion', data.rowVersion);",
+          "if (data.document?.documentId) pm.collectionVariables.set('documentId', data.document.documentId);"
+        ]}
+      }]
+    },
+    {
+      "name": "4. Upload Questionnaire File (optional/repeat as required)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "resumeToken", "value": "{{resumeToken}}", "type": "text" },
+            { "key": "file", "type": "file", "src": [] }
+          ]
+        },
+        "url": "{{baseUrl}}/api/main/vendor-registrations/questionnaires/{{registrationId}}/questions/{{questionId}}/files",
+        "description": "questionId otomatis diisi dengan file question pertama. Pilih PDF asli. Ulangi dengan questionId lain jika ada file question wajib lainnya."
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Questionnaire file uploaded', () => pm.response.to.have.status(200));",
+          "const data = pm.response.json();",
+          "pm.collectionVariables.set('rowVersion', data.rowVersion);",
+          "if (data.file?.id) pm.collectionVariables.set('questionFileId', data.file.id);"
+        ]}
+      }]
+    },
+    {
+      "name": "5. Save Questionnaire Answers",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{{answersBody}}" },
+        "url": "{{baseUrl}}/api/main/vendor-registrations/questionnaires/{{registrationId}}/answers"
+      },
+      "event": [{
+        "listen": "prerequest",
+        "script": { "exec": [
+          "const body = JSON.parse(pm.collectionVariables.get('answersBody'));",
+          "body.resumeToken = pm.collectionVariables.get('resumeToken');",
+          "body.rowVersion = pm.collectionVariables.get('rowVersion');",
+          "pm.variables.set('answersBody', JSON.stringify(body));"
+        ]}
+      }, {
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Answers saved', () => pm.response.to.have.status(200));",
+          "const data = pm.response.json();",
+          "pm.collectionVariables.set('rowVersion', data.rowVersion);"
+        ]}
+      }]
+    },
+    {
+      "name": "6. Review Latest Runtime",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"registrationId\": \"{{registrationId}}\",\n  \"resumeToken\": \"{{resumeToken}}\"\n}" },
+        "url": "{{baseUrl}}/api/main/vendor-registrations/questionnaires/{{registrationId}}"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Review loaded', () => pm.response.to.have.status(200));",
+          "const data = pm.response.json();",
+          "pm.collectionVariables.set('rowVersion', data.rowVersion);",
+          "console.log('Missing mandatory documents:', (data.documents || []).filter(x => x.isMandatory && !x.documentId).map(x => x.definitionKey));"
+        ]}
+      }]
+    },
+    {
+      "name": "7. Submit Vendor Registration",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"resumeToken\": \"{{resumeToken}}\",\n  \"rowVersion\": \"{{rowVersion}}\"\n}" },
+        "url": "{{baseUrl}}/api/main/vendor-registrations/questionnaires/{{registrationId}}/submit"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Registration submitted', () => pm.response.to.have.status(200));",
+          "const data = pm.response.json();",
+          "pm.expect(data.status).to.eql('Submitted');",
+          "pm.collectionVariables.set('rowVersion', data.rowVersion);"
+        ]}
+      }]
+    }
+  ]
+}
