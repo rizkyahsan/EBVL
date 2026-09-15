@@ -26,8 +26,9 @@
     padding: 20px 26px 32px;
 }
 
-.questionnaire-form-scope ::deep .sole-agent-toggle {
-    margin-bottom: 18px;
+.questionnaire-form-scope ::deep .question-item {
+    padding-left: 12px!important;
+    padding-right: 12px!important;
 }
 
 .questionnaire-form-scope ::deep .questionnaire-actions {
@@ -43,6 +44,47 @@
     margin-bottom: 20px;
 }
 
+.questionnaire-upload-field {
+    display: grid;
+}
+
+.questionnaire-upload-field .upload-control {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.questionnaire-upload-field ::deep .file-name-field {
+    min-width: 0;
+}
+
+.questionnaire-upload-field ::deep .file-name-field input {
+    cursor: default;
+}
+
+.questionnaire-upload-field .upload-input {
+    display: none;
+}
+
+.questionnaire-upload-field .upload-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 15px;
+    border: 1px solid #2196f3;
+    border-radius: 4px;
+    color: #2196f3;
+    cursor: pointer;
+    font-size: .8rem;
+    text-transform: none;
+}
+
+.questionnaire-upload-field .upload-button:hover {
+    background: rgba(33, 150, 243, .08);
+}
+
 @media (max-width: 600px) {
     .questionnaire-form-scope ::deep .mud-expand-panel-header {
         padding: 0 18px;
@@ -54,6 +96,11 @@
 
     .questionnaire-form-scope ::deep .mud-expand-panel-content {
         padding: 14px 18px 24px;
+    }
+
+    .questionnaire-form-scope ::deep .question-item {
+        padding-left: 8px!important;
+        padding-right: 8px!important;
     }
 
     .questionnaire-form-scope ::deep .questionnaire-actions {

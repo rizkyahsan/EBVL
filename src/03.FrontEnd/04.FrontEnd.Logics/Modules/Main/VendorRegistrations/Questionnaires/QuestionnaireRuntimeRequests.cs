@@ -3,6 +3,8 @@ using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires;
 
 namespace EBVL.FrontEnd.Logics.Modules.Main.VendorRegistrations.Questionnaires;
 
+#region Requests
+
 public sealed record StartQuestionnaireCommand(PreRegistrationRequest Request) : IRequest<QuestionnaireRuntimeResponse>;
 public sealed record GetQuestionnaireRuntimeQuery(Guid RegistrationId, string ResumeToken) : IRequest<QuestionnaireRuntimeResponse>;
 public sealed record UpdateVendorRegistrationProfileCommand(Guid RegistrationId, UpdateVendorRegistrationProfileRequest Request) : IRequest<QuestionnaireRuntimeResponse>;
@@ -12,6 +14,13 @@ public sealed record UploadQuestionnaireFileCommand(Guid RegistrationId, Guid Qu
 public sealed record DeleteQuestionnaireFileCommand(Guid RegistrationId, Guid FileId, string ResumeToken) : IRequest;
 public sealed record UploadVendorRegistrationDocumentCommand(Guid RegistrationId, string DefinitionKey, string ResumeToken, string FileName, byte[] Content) : IRequest<UploadVendorRegistrationDocumentResponse>;
 public sealed record DeleteVendorRegistrationDocumentCommand(Guid RegistrationId, Guid DocumentId, string ResumeToken) : IRequest;
+public sealed record DownloadVendorRegistrationDocumentQuery(Guid RegistrationId, Guid DocumentId, string ResumeToken) : IRequest<QuestionnaireFileContent>;
+public sealed record DownloadQuestionnaireFileQuery(Guid RegistrationId, Guid FileId, string ResumeToken) : IRequest<QuestionnaireFileContent>;
+public sealed record QuestionnaireFileContent(byte[] Content, string ContentType, string FileName);
+
+#endregion
+
+#region Routing
 
 internal static class RuntimeUri
 {
@@ -20,6 +29,11 @@ internal static class RuntimeUri
         return route.Replace("{registrationId:guid}", registrationId.ToString()).Replace("{questionId:guid}", itemId?.ToString()).Replace("{fileId:guid}", itemId?.ToString());
     }
 }
+
+#endregion
+
+#region Questionnaire Lifecycle Handlers
+
 public sealed class StartQuestionnaireHandler(IBackEndApiService api) : IRequestHandler<StartQuestionnaireCommand, QuestionnaireRuntimeResponse>
 {
     public Task<QuestionnaireRuntimeResponse> Handle(StartQuestionnaireCommand c, CancellationToken cancellationToken)
@@ -55,6 +69,11 @@ public sealed class SubmitQuestionnaireHandler(IBackEndApiService api) : IReques
         return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(RuntimeUri.For(QuestionnaireRuntimeRoutes.Submit, c.RegistrationId), Method.Post).AddJsonBody(c.Request), cancellationToken);
     }
 }
+
+#endregion
+
+#region Questionnaire File Handlers
+
 public sealed class UploadQuestionnaireFileHandler(IBackEndApiService api) : IRequestHandler<UploadQuestionnaireFileCommand, UploadQuestionnaireFileResponse>
 {
     public Task<UploadQuestionnaireFileResponse> Handle(UploadQuestionnaireFileCommand c, CancellationToken cancellationToken)
@@ -69,6 +88,11 @@ public sealed class DeleteQuestionnaireFileHandler(IBackEndApiService api) : IRe
         return api.SendRequestAsync(new RestRequest(RuntimeUri.For(QuestionnaireRuntimeRoutes.File, c.RegistrationId, c.FileId), Method.Delete).AddQueryParameter("resumeToken", c.ResumeToken), cancellationToken);
     }
 }
+
+#endregion
+
+#region Registration Document Handlers
+
 public sealed class UploadVendorRegistrationDocumentHandler(IBackEndApiService api) : IRequestHandler<UploadVendorRegistrationDocumentCommand, UploadVendorRegistrationDocumentResponse>
 {
     public Task<UploadVendorRegistrationDocumentResponse> Handle(UploadVendorRegistrationDocumentCommand command, CancellationToken cancellationToken)
@@ -84,3 +108,26 @@ public sealed class DeleteVendorRegistrationDocumentHandler(IBackEndApiService a
         return api.SendRequestAsync(new RestRequest(QuestionnaireRuntimeRoutes.Document.Replace("{registrationId:guid}", command.RegistrationId.ToString()).Replace("{documentId:guid}", command.DocumentId.ToString()), Method.Delete).AddQueryParameter("resumeToken", command.ResumeToken), cancellationToken);
     }
 }
+public sealed class DownloadVendorRegistrationDocumentHandler(IBackEndApiService api) : IRequestHandler<DownloadVendorRegistrationDocumentQuery, QuestionnaireFileContent>
+{
+    public Task<QuestionnaireFileContent> Handle(DownloadVendorRegistrationDocumentQuery query, CancellationToken cancellationToken)
+    {
+        var route = QuestionnaireRuntimeRoutes.Document.Replace("{registrationId:guid}", query.RegistrationId.ToString()).Replace("{documentId:guid}", query.DocumentId.ToString()) + "/download";
+        return api.SendRequestAsync<QuestionnaireFileContent>(new RestRequest(route, Method.Post).AddJsonBody(new FileAuthorizationRequest(query.ResumeToken)), cancellationToken);
+    }
+}
+
+#endregion
+
+#region Questionnaire File Download
+
+public sealed class DownloadQuestionnaireFileHandler(IBackEndApiService api) : IRequestHandler<DownloadQuestionnaireFileQuery, QuestionnaireFileContent>
+{
+    public Task<QuestionnaireFileContent> Handle(DownloadQuestionnaireFileQuery query, CancellationToken cancellationToken)
+    {
+        var route = QuestionnaireRuntimeRoutes.File.Replace("{registrationId:guid}", query.RegistrationId.ToString()).Replace("{fileId:guid}", query.FileId.ToString()) + "/download";
+        return api.SendRequestAsync<QuestionnaireFileContent>(new RestRequest(route, Method.Post).AddJsonBody(new FileAuthorizationRequest(query.ResumeToken)), cancellationToken);
+    }
+}
+
+#endregion

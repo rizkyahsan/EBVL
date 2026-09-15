@@ -1,4 +1,5 @@
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
+using MediatR;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Pages;
@@ -10,6 +11,7 @@ public partial class EmailVerification
 
     [Inject]
     public required VendorRegistrationState RegistrationState { get; init; }
+    [Inject] public required ISender Sender { get; init; }
 
     private bool _isRestoring = true;
     private string _email = string.Empty;
@@ -21,8 +23,7 @@ public partial class EmailVerification
             return;
         }
 
-        await RegistrationState.RestoreAsync();
-        if (!RegistrationState.IsVerificationSent || RegistrationState.PreRegistration is null)
+        if (!await RegistrationState.RestoreRuntimeAsync(Sender) || RegistrationState.Runtime is null || RegistrationState.Runtime.Status != VendorRegistrationStatus.Submitted || RegistrationState.PreRegistration is null)
         {
             NavigationManager.NavigateTo(VendorRegistrationRouteFor.Review);
             return;

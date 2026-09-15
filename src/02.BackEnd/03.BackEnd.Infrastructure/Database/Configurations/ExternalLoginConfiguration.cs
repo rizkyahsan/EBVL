@@ -7,6 +7,8 @@ public sealed class ExternalLoginConfiguration : IEntityTypeConfiguration<Extern
         _ = builder.ToTable(nameof(IDatabaseService.ExternalLogins));
 
         builder.ConfigureModifiableProperties();
+        _ = builder.Property(x => x.Username).HasMaxLength(320);
+        _ = builder.Property(x => x.IpAddress).HasMaxLength(ExternalLoginLogsMaximumLengthFor.IpAddress);
 
         _ = builder.HasOne(x => x.User)
             .WithMany(x => x.ExternalLogins)

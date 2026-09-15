@@ -5,10 +5,11 @@ using EBVL.BackEnd.Logics.Common.Services.FileStorageDb;
 using EBVL.Shared.Dto.Common.FileStorages;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires;
-using EBVL.Shared.Statics.VendorRegistrations;
 using Pertamina.Services.CurrentUser;
 
 namespace EBVL.BackEnd.Logics.Modules.Main.VendorRegistrations.Questionnaires;
+
+#region Requests
 
 public sealed record StartQuestionnaireCommand(PreRegistrationRequest Request) : IRequest<QuestionnaireRuntimeResponse>;
 public sealed record GetQuestionnaireRuntimeQuery(Guid RegistrationId, string ResumeToken) : IRequest<QuestionnaireRuntimeResponse>;
@@ -22,6 +23,10 @@ public sealed record UploadVendorRegistrationDocumentCommand(Guid RegistrationId
 public sealed record DownloadVendorRegistrationDocumentQuery(Guid RegistrationId, Guid DocumentId, string ResumeToken) : IRequest<QuestionnaireFileContent>;
 public sealed record DeleteVendorRegistrationDocumentCommand(Guid RegistrationId, Guid DocumentId, string ResumeToken) : IRequest;
 public sealed record QuestionnaireFileContent(byte[] Content, string ContentType, string FileName);
+
+#endregion
+
+#region Validation
 
 public sealed class StartQuestionnaireCommandValidator : AbstractValidatorBase<StartQuestionnaireCommand>
 {
@@ -37,6 +42,10 @@ public sealed class UpdateVendorRegistrationProfileCommandValidator : AbstractVa
         _ = RuleFor(x => x.Request.Profile).SetValidator(new PreRegistrationRequestValidator());
     }
 }
+
+#endregion
+
+#region Questionnaire Lifecycle Handlers
 
 public sealed class StartQuestionnaireHandler(IDatabaseService db, ICurrentUserService currentUser) : IRequestHandler<StartQuestionnaireCommand, QuestionnaireRuntimeResponse>
 {
@@ -57,8 +66,10 @@ public sealed class StartQuestionnaireHandler(IDatabaseService db, ICurrentUserS
             throw new ValidationException("An active registration already exists for this SAP vendor number.");
         }
 
-        var questionnaire = await db.Questionnaires.SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.Code == "VENDOR_REGISTRATION", cancellationToken)
+        var questionnaire = await db.Questionnaires.Include(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
+            .Include(x => x.Rules).SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration", cancellationToken)
             ?? throw new InvalidOperationException("No active vendor registration questionnaire is available.");
+        var documentDefinitions = await db.DocumentDefinitions.AsNoTracking().Where(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration").OrderBy(x => x.Order).ThenBy(x => x.Code).ToListAsync(cancellationToken);
         var tokenBytes = RandomNumberGenerator.GetBytes(32);
         var token = Convert.ToBase64String(tokenBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
         var registration = new VendorRegistration
@@ -83,7 +94,7 @@ public sealed class StartQuestionnaireHandler(IDatabaseService db, ICurrentUserS
             ResumeTokenHash = SHA256.HashData(Encoding.UTF8.GetBytes(token)),
             ResumeTokenExpiresAt = DateTimeOffset.UtcNow.AddDays(30),
             Status = VendorRegistrationStatus.Draft,
-            Submission = new QuestionnaireSubmission { QuestionnaireId = questionnaire.Id }
+            QuestionnaireId = questionnaire.Id
         };
         _ = await db.VendorRegistrations.AddAsync(registration, cancellationToken);
         _ = await db.SaveAsync(nameof(StartQuestionnaireCommand), cancellationToken);
@@ -98,6 +109,11 @@ public sealed class UpdateVendorRegistrationProfileHandler(IDatabaseService db) 
         var registration = await QuestionnaireRuntime.Load(db, command.RegistrationId, command.Request.ResumeToken, true, cancellationToken);
         QuestionnaireRuntime.EnsureDraft(registration);
         QuestionnaireRuntime.SetConcurrency(db, registration, command.Request.RowVersion);
+        if (command.Request.Profile.CompanyStatus != registration.CompanyType)
+        {
+            throw new ValidationException("Company type cannot be changed after registration starts.");
+        }
+
         var normalizedSap = command.Request.Profile.SapVendorNumber.Trim().ToUpperInvariant();
         if (await db.VendorRegistrations.AnyAsync(x => !x.IsDeleted && x.Id != registration.Id && x.NormalizedSapVendorNumber == normalizedSap, cancellationToken))
         {
@@ -125,17 +141,13 @@ public sealed class SaveQuestionnaireAnswersHandler(IDatabaseService db) : IRequ
         var registration = await QuestionnaireRuntime.Load(db, command.RegistrationId, command.Request.ResumeToken, true, cancellationToken);
         QuestionnaireRuntime.EnsureDraft(registration);
         QuestionnaireRuntime.SetConcurrency(db, registration, command.Request.RowVersion);
-        if (!QuestionnaireRuntime.IsDocumentEvidenceComplete(registration))
-        {
-            throw new ValidationException("All required document evidence must be uploaded before submission.");
-        }
-
         if (command.Request.Answers.GroupBy(x => x.QuestionId).Any(x => x.Count() > 1))
         {
             throw new ValidationException("Duplicate answers are not allowed.");
         }
 
         var questions = QuestionnaireRuntime.ApplicableQuestions(registration, command.Request.Answers).ToDictionary(x => x.Id);
+        var answers = new List<QuestionnaireAnswer>();
         foreach (var value in command.Request.Answers)
         {
             if (!questions.TryGetValue(value.QuestionId, out var question))
@@ -144,16 +156,16 @@ public sealed class SaveQuestionnaireAnswersHandler(IDatabaseService db) : IRequ
             }
 
             QuestionnaireRuntime.ValidateValue(question, value);
-            var answer = registration.Submission.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == value.QuestionId);
-            if (answer is null)
-            {
-                answer = new QuestionnaireAnswer { QuestionnaireQuestionId = value.QuestionId };
-                registration.Submission.Answers.Add(answer);
-            }
-
+            var answer = new QuestionnaireAnswer { VendorRegistrationId = registration.Id, QuestionnaireQuestionId = value.QuestionId };
             QuestionnaireRuntime.Assign(answer, value);
+            answers.Add(answer);
         }
 
+        var questionIds = command.Request.Answers.Select(x => x.QuestionId).ToList();
+        _ = await db.QuestionnaireAnswers
+            .Where(x => x.VendorRegistrationId == registration.Id && questionIds.Contains(x.QuestionnaireQuestionId))
+            .ExecuteDeleteAsync(cancellationToken);
+        await db.QuestionnaireAnswers.AddRangeAsync(answers, cancellationToken);
         _ = await db.SaveAsync(nameof(SaveQuestionnaireAnswersCommand), cancellationToken);
         return await QuestionnaireRuntime.LoadResponse(db, registration.Id, command.Request.ResumeToken, null, cancellationToken);
     }
@@ -170,10 +182,15 @@ public sealed class SubmitQuestionnaireHandler(IDatabaseService db) : IRequestHa
         }
 
         QuestionnaireRuntime.SetConcurrency(db, registration, command.Request.RowVersion);
+        if (!await QuestionnaireRuntime.IsDocumentEvidenceComplete(db, registration, cancellationToken))
+        {
+            throw new ValidationException("All mandatory documents must be uploaded before submission.");
+        }
+
         var applicable = QuestionnaireRuntime.ApplicableQuestions(registration, []).ToList();
         foreach (var question in applicable)
         {
-            var answer = registration.Submission.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == question.Id);
+            var answer = registration.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == question.Id);
             var value = answer is null ? null : QuestionnaireRuntime.ToValue(answer);
             if (QuestionnaireRuntime.IsRequired(registration, question) && !QuestionnaireRuntime.HasValue(value, answer))
             {
@@ -187,7 +204,7 @@ public sealed class SubmitQuestionnaireHandler(IDatabaseService db) : IRequestHa
         }
 
         var ids = applicable.Select(x => x.Id).ToHashSet();
-        db.QuestionnaireAnswers.RemoveRange(registration.Submission.Answers.Where(x => !ids.Contains(x.QuestionnaireQuestionId) && x.Files.Count == 0));
+        db.QuestionnaireAnswers.RemoveRange(registration.Answers.Where(x => !ids.Contains(x.QuestionnaireQuestionId) && x.Files.Count == 0));
         registration.Status = VendorRegistrationStatus.Submitted;
         registration.SubmittedAt = DateTimeOffset.UtcNow;
         _ = await db.SaveAsync(nameof(SubmitQuestionnaireCommand), cancellationToken);
@@ -195,20 +212,25 @@ public sealed class SubmitQuestionnaireHandler(IDatabaseService db) : IRequestHa
     }
 }
 
+#endregion
+
+#region Questionnaire File Handlers
+
 public sealed class UploadQuestionnaireFileHandler(IDatabaseService db, IFileStorageDbService storage) : IRequestHandler<UploadQuestionnaireFileCommand, UploadQuestionnaireFileResponse>
 {
     public async Task<UploadQuestionnaireFileResponse> Handle(UploadQuestionnaireFileCommand c, CancellationToken cancellationToken)
     {
         var r = await QuestionnaireRuntime.Load(db, c.RegistrationId, c.ResumeToken, true, cancellationToken);
         QuestionnaireRuntime.EnsureDraft(r);
+        db.SetQuestionnaireRuntimeGraphUnchanged();
         var q = QuestionnaireRuntime.ApplicableQuestions(r, []).SingleOrDefault(x => x.Id == c.QuestionId && x.Type == QuestionnaireQuestionType.File) ?? throw new ValidationException("The file question is unknown or non-applicable.");
         QuestionnaireRuntime.ValidatePdf(c.File);
 
-        var answer = r.Submission.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == q.Id);
+        var answer = r.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == q.Id);
         if (answer is null)
         {
-            answer = new QuestionnaireAnswer { QuestionnaireQuestionId = q.Id };
-            r.Submission.Answers.Add(answer);
+            answer = new QuestionnaireAnswer { VendorRegistrationId = r.Id, QuestionnaireQuestionId = q.Id };
+            r.Answers.Add(answer);
         }
 
         var stored = await storage.CreateAsync(c.File, cancellationToken);
@@ -233,6 +255,7 @@ public sealed class DeleteQuestionnaireFileHandler(IDatabaseService db, IFileSto
     {
         var r = await QuestionnaireRuntime.Load(db, c.RegistrationId, c.ResumeToken, true, cancellationToken);
         QuestionnaireRuntime.EnsureDraft(r);
+        db.SetQuestionnaireRuntimeGraphUnchanged();
         var file = await db.QuestionnaireAnswerFiles.SingleOrDefaultAsync(x => x.Id == c.FileId && x.VendorRegistrationId == r.Id && !x.IsDeleted, cancellationToken) ?? throw new InvalidOperationException("File was not found.");
         file.IsDeleted = true;
         await storage.DeleteAsync(file.FileStorageId, cancellationToken);
@@ -240,25 +263,35 @@ public sealed class DeleteQuestionnaireFileHandler(IDatabaseService db, IFileSto
     }
 }
 
+#endregion
+
+#region Registration Document Handlers
+
 public sealed class UploadVendorRegistrationDocumentHandler(IDatabaseService db, IFileStorageDbService storage) : IRequestHandler<UploadVendorRegistrationDocumentCommand, UploadVendorRegistrationDocumentResponse>
 {
     public async Task<UploadVendorRegistrationDocumentResponse> Handle(UploadVendorRegistrationDocumentCommand command, CancellationToken cancellationToken)
     {
         var registration = await QuestionnaireRuntime.Load(db, command.RegistrationId, command.ResumeToken, true, cancellationToken);
         QuestionnaireRuntime.EnsureDraft(registration);
-        var definition = DocumentEvidenceFor.All.SingleOrDefault(x => x.Key == command.DefinitionKey) ?? throw new ValidationException("The document evidence definition is invalid.");
-        QuestionnaireRuntime.ValidatePdf(command.File);
-        var current = registration.Documents.SingleOrDefault(x => !x.IsDeleted && x.DefinitionKey == definition.Key);
-        if (current is not null)
+        db.SetQuestionnaireRuntimeGraphUnchanged();
+        var definition = await db.DocumentDefinitions.SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration" && x.Code == command.DefinitionKey, cancellationToken) ?? throw new ValidationException("The document definition is invalid.");
+        QuestionnaireRuntime.ValidatePdf(command.File, definition.MaxSizeMb);
+        var stored = await storage.CreateAsync(command.File, cancellationToken);
+        var current = registration.Documents.SingleOrDefault(x => !x.IsDeleted && x.DocumentDefinitionId == definition.Id);
+        if (current is { } existingDocument)
         {
-            throw new ValidationException("A file already exists for this document evidence definition. Delete it before uploading a replacement.");
+            existingDocument.IsDeleted = true;
         }
 
-        var stored = await storage.CreateAsync(command.File, cancellationToken);
-        var document = new VendorRegistrationDocument { DefinitionKey = definition.Key, FileStorageId = stored.Id, OriginalFileName = Path.GetFileName(command.File.FileName), ContentType = "application/pdf", Length = command.File.FileContent.LongLength };
+        var document = new VendorRegistrationDocument { VendorRegistrationId = registration.Id, DocumentDefinitionId = definition.Id, DefinitionKey = definition.Code, Name = definition.Name, Order = definition.Order, MaxSizeMb = definition.MaxSizeMb, IsMandatory = definition.IsMandatory, FileStorageId = stored.Id, OriginalFileName = Path.GetFileName(command.File.FileName), ContentType = "application/pdf", Length = command.File.FileContent.LongLength };
         registration.Documents.Add(document);
         _ = await db.SaveAsync(nameof(UploadVendorRegistrationDocumentCommand), cancellationToken);
-        return new(new(document.Id, document.DefinitionKey, document.OriginalFileName, document.ContentType, document.Length), Convert.ToBase64String(registration.RowVersion), QuestionnaireRuntime.IsDocumentEvidenceComplete(registration));
+        if (current is not null)
+        {
+            await storage.DeleteAsync(current.FileStorageId, cancellationToken);
+        }
+
+        return new(new(definition.Id, definition.Code, definition.Name, definition.Order, definition.IsMandatory, definition.MaxSizeMb, document.Id, document.OriginalFileName, document.ContentType, document.Length), Convert.ToBase64String(registration.RowVersion), await QuestionnaireRuntime.IsDocumentEvidenceComplete(db, registration, cancellationToken));
     }
 }
 public sealed class DownloadVendorRegistrationDocumentHandler(IDatabaseService db, IFileStorageDbService storage) : IRequestHandler<DownloadVendorRegistrationDocumentQuery, QuestionnaireFileContent>
@@ -276,6 +309,7 @@ public sealed class DeleteVendorRegistrationDocumentHandler(IDatabaseService db,
     {
         var registration = await QuestionnaireRuntime.Load(db, command.RegistrationId, command.ResumeToken, true, cancellationToken);
         QuestionnaireRuntime.EnsureDraft(registration);
+        db.SetQuestionnaireRuntimeGraphUnchanged();
         var document = registration.Documents.SingleOrDefault(x => x.Id == command.DocumentId && !x.IsDeleted) ?? throw new InvalidOperationException("Document was not found.");
         document.IsDeleted = true;
         await storage.DeleteAsync(document.FileStorageId, cancellationToken);
@@ -283,21 +317,33 @@ public sealed class DeleteVendorRegistrationDocumentHandler(IDatabaseService db,
     }
 }
 
+#endregion
+
 internal static class QuestionnaireRuntime
 {
+    #region Registration Lifecycle
+
     public static async Task<VendorRegistration> Load(IDatabaseService db, Guid id, string token, bool tracking, CancellationToken ct)
     {
-        var query = db.VendorRegistrations.Include(x => x.Submission).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
-            .Include(x => x.Submission).ThenInclude(x => x.Questionnaire).ThenInclude(x => x.Rules)
-            .Include(x => x.Submission).ThenInclude(x => x.Answers).ThenInclude(x => x.SelectedOptions)
-            .Include(x => x.Submission).ThenInclude(x => x.Answers).ThenInclude(x => x.Files)
-            .Include(x => x.Documents).Where(x => x.Id == id && !x.IsDeleted);
+        var query = db.VendorRegistrations.Include(x => x.Questionnaire).ThenInclude(x => x!.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
+            .Include(x => x.Questionnaire).ThenInclude(x => x!.Rules).Include(x => x.Answers).ThenInclude(x => x.Files).Include(x => x.Documents).Where(x => x.Id == id && !x.IsDeleted);
         if (!tracking)
         {
             query = query.AsNoTracking();
         }
 
         var r = await query.SingleOrDefaultAsync(ct) ?? throw new InvalidOperationException("Registration was not found.");
+        if (r.Questionnaire is null)
+        {
+            var questionnaire = await db.Questionnaires
+                .Include(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
+                .Include(x => x.Rules)
+                .SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration", ct)
+                ?? throw new InvalidOperationException("The active vendor registration questionnaire was not found.");
+            r.QuestionnaireId = questionnaire.Id;
+            r.Questionnaire = questionnaire;
+        }
+
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(token ?? string.Empty));
         if (!CryptographicOperations.FixedTimeEquals(hash, r.ResumeTokenHash) || (r.ResumeTokenExpiresAt is not null && r.ResumeTokenExpiresAt <= DateTimeOffset.UtcNow))
         {
@@ -348,17 +394,27 @@ internal static class QuestionnaireRuntime
         return new() { SapVendorNumber = r.SapVendorNumber ?? string.Empty, CompanyName = r.CompanyName, CompanyEmail = r.CompanyEmail, PicEmail = r.PicEmail, CompanyPhoneNumber = r.CompanyPhoneNumber, PicPhoneNumber = r.PicPhoneNumber, Website = r.Website, CompanyService = r.CompanyService, FactoryCountry = r.FactoryCountry, FactoryAddress = r.FactoryAddress, BrandRepresentative = r.BrandRepresentative, AdditionalBrands = JsonSerializer.Deserialize<List<string>>(r.AdditionalBrandsJson) ?? [], CompanyStatus = r.CompanyType, IsRepresentativeInIndonesia = r.IsRepresentativeInIndonesia, RepresentativeName = r.RepresentativeName };
     }
 
-    public static bool IsDocumentEvidenceComplete(VendorRegistration r)
+    #endregion
+
+    #region Document Validation
+
+    public static async Task<bool> IsDocumentEvidenceComplete(IDatabaseService db, VendorRegistration registration, CancellationToken cancellationToken)
     {
-        var required = DocumentEvidenceFor.All.Select(x => x.Key).ToHashSet(StringComparer.Ordinal);
-        var uploaded = r.Documents.Where(x => !x.IsDeleted).Select(x => x.DefinitionKey).ToHashSet(StringComparer.Ordinal);
-        return uploaded.SetEquals(required);
+        var mandatoryDefinitionIds = await db.DocumentDefinitions.AsNoTracking()
+            .Where(x => !x.IsDeleted && x.IsActive && x.IsMandatory && x.BusinessProcess == "Vendor Registration")
+            .Select(x => x.Id)
+            .ToListAsync(cancellationToken);
+        var uploadedDefinitionIds = registration.Documents
+            .Where(x => !x.IsDeleted)
+            .Select(x => x.DocumentDefinitionId)
+            .ToHashSet();
+        return mandatoryDefinitionIds.All(uploadedDefinitionIds.Contains);
     }
-    public static void ValidatePdf(FileItem file)
+    public static void ValidatePdf(FileItem file, int maxSizeMb = 50)
     {
-        if (file.FileContent.LongLength > 50L * 1024 * 1024)
+        if (file.FileContent.LongLength > maxSizeMb * 1024L * 1024L)
         {
-            throw new ValidationException("PDF files cannot exceed 50 MB.");
+            throw new ValidationException($"PDF files cannot exceed {maxSizeMb} MB.");
         }
 
         if (!string.Equals(Path.GetExtension(file.FileName), ".pdf", StringComparison.OrdinalIgnoreCase) || !string.Equals(file.ContentType, "application/pdf", StringComparison.OrdinalIgnoreCase) || file.FileContent.Length < 5 || !file.FileContent.AsSpan(0, 5).SequenceEqual("%PDF-"u8))
@@ -366,13 +422,25 @@ internal static class QuestionnaireRuntime
             throw new ValidationException("Only valid PDF files are accepted.");
         }
     }
+
+    #endregion
+
+    #region Question Rules and Values
+
     public static IEnumerable<QuestionnaireQuestion> ApplicableQuestions(VendorRegistration r, IReadOnlyList<QuestionnaireAnswerValue> incoming)
     {
-        var sections = r.Submission.Questionnaire.Sections.Where(x => !x.IsDeleted && x.IsActive && (x.CompanyType is null || x.CompanyType == r.CompanyType));
-        var questions = sections.SelectMany(x => x.Questions).Where(x => !x.IsDeleted && x.IsActive && (x.CompanyType is null || x.CompanyType == r.CompanyType)).ToList();
+        var questions = r.Questionnaire!.Sections
+            .Where(section => !section.IsDeleted
+                && section.IsActive
+                && (section.CompanyType is null || section.CompanyType == r.CompanyType))
+            .SelectMany(section => section.Questions)
+            .Where(question => !question.IsDeleted
+                && question.IsActive
+                && (question.CompanyType is null || question.CompanyType == r.CompanyType))
+            .ToList();
         var visible = questions.Where(x => x.IsVisible).Select(x => x.Id).ToHashSet();
-        var values = r.Submission.Answers.Select(ToValue).Concat(incoming).GroupBy(x => x.QuestionId).ToDictionary(x => x.Key, x => x.Last());
-        foreach (var rule in r.Submission.Questionnaire.Rules.Where(x => !x.IsDeleted && RuleMatches(r, x, values)))
+        var values = r.Answers.Select(ToValue).Concat(incoming).GroupBy(x => x.QuestionId).ToDictionary(x => x.Key, x => x.Last());
+        foreach (var rule in r.Questionnaire!.Rules.Where(x => !x.IsDeleted && RuleMatches(r, x, values)))
         {
             if (rule.Action == QuestionnaireRuleAction.Hide)
             {
@@ -388,8 +456,8 @@ internal static class QuestionnaireRuntime
     }
     public static bool IsRequired(VendorRegistration r, QuestionnaireQuestion q)
     {
-        var values = r.Submission.Answers.Select(ToValue).ToDictionary(x => x.QuestionId);
-        return q.AnswerRule == QuestionnaireAnswerRule.Mandatory || r.Submission.Questionnaire.Rules.Any(x => !x.IsDeleted && x.TargetQuestionId == q.Id && x.Action == QuestionnaireRuleAction.Require && RuleMatches(r, x, values));
+        var values = r.Answers.Select(ToValue).ToDictionary(x => x.QuestionId);
+        return q.IsRequired || q.AnswerRule == QuestionnaireAnswerRule.Mandatory || r.Questionnaire!.Rules.Any(x => !x.IsDeleted && x.TargetQuestionId == q.Id && x.Action == QuestionnaireRuleAction.Require && RuleMatches(r, x, values));
     }
     private static bool RuleMatches(VendorRegistration registration, QuestionnaireRule rule, IReadOnlyDictionary<Guid, QuestionnaireAnswerValue> values)
     {
@@ -398,7 +466,7 @@ internal static class QuestionnaireRuntime
             return false;
         }
 
-        var optionCodes = registration.Submission.Questionnaire.Sections.SelectMany(x => x.Questions).SelectMany(x => x.Options)
+        var optionCodes = registration.Questionnaire!.Sections.SelectMany(x => x.Questions).SelectMany(x => x.Options)
             .Where(x => value.OptionIds?.Contains(x.Id) == true).Select(x => x.Code);
         var actual = value.TextValue ?? value.IntegerValue?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? value.DecimalValue?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? value.DateValue?.ToString("O") ?? value.BooleanValue?.ToString() ?? value.AddressJson ?? string.Join(',', optionCodes);
         var comparison = string.Compare(actual, rule.Value, StringComparison.OrdinalIgnoreCase);
@@ -418,7 +486,7 @@ internal static class QuestionnaireRuntime
             throw new ValidationException("Duplicate selected options are not allowed.");
         }
 
-        var expectedScalar = q.Type switch { QuestionnaireQuestionType.ShortText or QuestionnaireQuestionType.LongText => v.TextValue is not null, QuestionnaireQuestionType.Integer => v.IntegerValue is not null, QuestionnaireQuestionType.Decimal => v.DecimalValue is not null, QuestionnaireQuestionType.Date => v.DateValue is not null, QuestionnaireQuestionType.Boolean => v.BooleanValue is not null, QuestionnaireQuestionType.Address => v.AddressJson is not null, QuestionnaireQuestionType.SingleChoice => throw new NotImplementedException(), QuestionnaireQuestionType.MultipleChoice => throw new NotImplementedException(), QuestionnaireQuestionType.File => throw new NotImplementedException(), _ => false };
+        var expectedScalar = q.Type switch { QuestionnaireQuestionType.ShortText or QuestionnaireQuestionType.LongText => v.TextValue is not null, QuestionnaireQuestionType.Integer => v.IntegerValue is not null, QuestionnaireQuestionType.Decimal => v.DecimalValue is not null, QuestionnaireQuestionType.Date => v.DateValue is not null, QuestionnaireQuestionType.Boolean => v.BooleanValue is not null, QuestionnaireQuestionType.Address => v.AddressJson is not null, QuestionnaireQuestionType.SingleChoice or QuestionnaireQuestionType.MultipleChoice or QuestionnaireQuestionType.File => false, _ => false };
         if (q.Type is QuestionnaireQuestionType.SingleChoice or QuestionnaireQuestionType.MultipleChoice)
         {
             if (scalarCount != 0 || (q.Type == QuestionnaireQuestionType.SingleChoice && optionIds.Count > 1) || optionIds.Any(id => q.Options.All(o => o.Id != id)))
@@ -458,15 +526,33 @@ internal static class QuestionnaireRuntime
         a.DateValue = v.DateValue;
         a.BooleanValue = v.BooleanValue;
         a.JsonValue = v.AddressJson;
-        a.SelectedOptions.Clear();
-        foreach (var id in v.OptionIds ?? [])
-        {
-            a.SelectedOptions.Add(new QuestionnaireAnswerOption { QuestionnaireOptionId = id });
-        }
+        a.JsonValue = v.OptionIds is null ? a.JsonValue : JsonSerializer.Serialize(v.OptionIds);
     }
     public static QuestionnaireAnswerValue ToValue(QuestionnaireAnswer a)
     {
-        return new(a.QuestionnaireQuestionId, a.TextValue, a.IntegerValue, a.DecimalValue, a.DateValue, a.BooleanValue, a.JsonValue, a.SelectedOptions.Where(x => !x.IsDeleted).Select(x => x.QuestionnaireOptionId).ToList());
+        IReadOnlyList<Guid>? optionIds = null;
+        var addressJson = a.JsonValue;
+        if (!string.IsNullOrWhiteSpace(a.JsonValue))
+        {
+            try
+            {
+                using var document = JsonDocument.Parse(a.JsonValue);
+                if (document.RootElement.ValueKind == JsonValueKind.Array)
+                {
+                    optionIds = document.RootElement.EnumerateArray()
+                        .Where(item => item.ValueKind == JsonValueKind.String && item.TryGetGuid(out _))
+                        .Select(item => item.GetGuid())
+                        .ToList();
+                    addressJson = null;
+                }
+            }
+            catch (JsonException)
+            {
+                optionIds = null;
+            }
+        }
+
+        return new(a.QuestionnaireQuestionId, a.TextValue, a.IntegerValue, a.DecimalValue, a.DateValue, a.BooleanValue, addressJson, optionIds);
     }
 
     public static bool HasValue(QuestionnaireAnswerValue? v, QuestionnaireAnswer? a)
@@ -474,17 +560,31 @@ internal static class QuestionnaireRuntime
         return v is not null && ((v.TextValue is not null && !string.IsNullOrWhiteSpace(v.TextValue)) || v.IntegerValue is not null || v.DecimalValue is not null || v.DateValue is not null || v.BooleanValue is not null || v.AddressJson is not null || v.OptionIds?.Count > 0 || a?.Files.Any(x => !x.IsDeleted) == true);
     }
 
+    #endregion
+
+    #region Response Mapping
+
     public static async Task<QuestionnaireRuntimeResponse> LoadResponse(IDatabaseService db, Guid id, string authToken, string? returnedToken, CancellationToken ct)
     {
         var r = await Load(db, id, authToken, false, ct);
         var applicable = ApplicableQuestions(r, []).ToHashSet();
-        var questionnaire = r.Submission.Questionnaire;
-        var sections = questionnaire.Sections.Where(s => !s.IsDeleted && s.IsActive && (s.CompanyType is null || s.CompanyType == r.CompanyType)).OrderBy(s => s.Order).Select(s => new RuntimeSectionItem(s.Id, s.Code, s.Title, s.Order, s.Questions.Where(applicable.Contains).OrderBy(q => q.Order).Select(q =>
+        var sections = r.Questionnaire!.Sections.Where(s => !s.IsDeleted).OrderBy(s => s.Order).Select(s => new RuntimeSectionItem(s.Id, s.Code, s.Title, s.Order, s.Questions.Where(applicable.Contains).OrderBy(q => q.Order).Select(q =>
         {
-            var a = r.Submission.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == q.Id);
-            return new RuntimeQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, q.Order, q.IsRequired, q.Options.Where(o => !o.IsDeleted).OrderBy(o => o.Order).Select(o => new RuntimeOptionItem(o.Id, o.Code, o.Label, o.Order)).ToList(), a is null ? null : ToValue(a), a?.Files.Where(f => !f.IsDeleted).Select(f => new RuntimeFileItem(f.Id, f.OriginalFileName, f.ContentType, f.Length)).ToList() ?? []);
+            var a = r.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == q.Id);
+            return new RuntimeQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, q.Order, IsRequired(r, q), q.Options.Where(o => !o.IsDeleted).OrderBy(o => o.Order).Select(o => new RuntimeOptionItem(o.Id, o.Code, o.Label, o.Order)).ToList(), a is null ? null : ToValue(a), a?.Files.Where(f => !f.IsDeleted).Select(f => new RuntimeFileItem(f.Id, f.OriginalFileName, f.ContentType, f.Length)).ToList() ?? []);
         }).ToList())).Where(s => s.Questions.Count != 0).ToList();
-        var documents = r.Documents.Where(x => !x.IsDeleted).OrderBy(x => x.DefinitionKey).Select(x => new VendorRegistrationDocumentItem(x.Id, x.DefinitionKey, x.OriginalFileName, x.ContentType, x.Length)).ToList();
-        return new(r.Id, returnedToken, Convert.ToBase64String(r.RowVersion), r.Status, MapProfile(r), documents, IsDocumentEvidenceComplete(r), questionnaire.Id, sections);
+        var definitions = await db.DocumentDefinitions.AsNoTracking()
+            .Where(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration")
+            .OrderBy(x => x.Order).ThenBy(x => x.Code)
+            .ToListAsync(ct);
+        var uploaded = r.Documents.Where(x => !x.IsDeleted).ToDictionary(x => x.DocumentDefinitionId);
+        var documents = definitions.Select(definition =>
+        {
+            _ = uploaded.TryGetValue(definition.Id, out var file);
+            return new VendorRegistrationDocumentItem(definition.Id, definition.Code, definition.Name, definition.Order, definition.IsMandatory, definition.MaxSizeMb, file?.Id, file?.OriginalFileName, file?.ContentType, file?.Length);
+        }).ToList();
+        return new(r.Id, returnedToken, Convert.ToBase64String(r.RowVersion), r.Status, MapProfile(r), documents, await IsDocumentEvidenceComplete(db, r, ct), r.QuestionnaireId!.Value, sections);
     }
+
+    #endregion
 }

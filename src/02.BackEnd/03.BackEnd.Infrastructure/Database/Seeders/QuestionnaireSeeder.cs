@@ -1,5 +1,5 @@
-using EBVL.Shared.Statics.VendorRegistrations;
 using EBVL.Shared.Enums;
+using EBVL.Shared.Statics.VendorRegistrations;
 
 namespace EBVL.BackEnd.Infrastructure.Database.Seeders;
 
@@ -17,6 +17,11 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
             .SingleOrDefaultAsync(x => x.Code == "VENDOR_REGISTRATION");
         if (existing is not null)
         {
+            if (await db.VendorRegistrations.AnyAsync(registration => registration.QuestionnaireId == existing.Id))
+            {
+                return;
+            }
+
             await EnsureGeneralQuestions(existing);
             await EnsureVendorRepresentativeOfficeQuestions(existing);
             await EnsureSoleAgentQuestions(existing);
@@ -28,14 +33,14 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
 
         var questionnaire = new Questionnaire { Id = _questionnaireId, Code = "VENDOR_REGISTRATION", BusinessProcess = "Vendor Registration", IsActive = true };
         (string Title, string Code, VendorCompanyStatusType? CompanyType, int[] Order)[] definitions =
-        {
-            (QuestionnaireFor.GeneralInformation, "GENERAL", null, Enumerable.Range(1,13).ToArray()),
+        [
+            (QuestionnaireFor.GeneralInformation, "GENERAL", null, [.. Enumerable.Range(1,13)]),
             (QuestionnaireFor.VendorRepresentativeOffice, "VENDOR_RO", VendorCompanyStatusType.AuthorizedAgent, new[] {14,17,15,18,16,19}),
             (QuestionnaireFor.SoleAgent, "SOLE_AGENT", VendorCompanyStatusType.SoleDistributorAgent, new[] {20,24,21,25,22,26,23}),
             (QuestionnaireFor.ProductQualityGeneral, "QUALITY_GENERAL", null, [27,30,28,31,29,32]),
             (QuestionnaireFor.ProductQualitySpecific, "QUALITY_SPECIFIC", VendorCompanyStatusType.SoleDistributorAgent, new[] {33,39,34,40,35,41,36,42,37,43,38,44}),
             (QuestionnaireFor.ProductPositioning, "PRODUCT_POSITIONING", VendorCompanyStatusType.AuthorizedAgent, new[] {45,48,46,49,47,50})
-        };
+        ];
         for (var s = 0; s < definitions.Length; s++)
         {
             var (title, code, companyType, questionOrder) = definitions[s];
@@ -69,7 +74,7 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         }
 
         (string Code, string LegacyCode, string Label, QuestionnaireQuestionType Type, QuestionnaireAnswerRule Rule, VendorCompanyStatusType? CompanyType)[] definitions =
-        {
+        [
             ("BRAND_NAME", "Q001", "Brand Name", QuestionnaireQuestionType.ShortText, QuestionnaireAnswerRule.Mandatory, null),
             ("PRODUCT", "Q002", "Product", QuestionnaireQuestionType.ShortText, QuestionnaireAnswerRule.Mandatory, null),
             ("VENDOR_COMPANY_NAME", "Q003", "Vendor / Company Name", QuestionnaireQuestionType.ShortText, QuestionnaireAnswerRule.Mandatory, null),
@@ -82,7 +87,7 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
             ("MANUFACTURING_INFORMATION", "Q007", "Manufacturing information", QuestionnaireQuestionType.Address, QuestionnaireAnswerRule.Mandatory, VendorCompanyStatusType.Manufacture),
             ("REPRESENTATIVE_OFFICE_INFORMATION", "Q008", "Representative Office information", QuestionnaireQuestionType.Address, QuestionnaireAnswerRule.Optional, VendorCompanyStatusType.AuthorizedAgent),
             ("SOLE_AGENT_OFFICE_INFORMATION", "Q009", "Sole Agent Office information", QuestionnaireQuestionType.Address, QuestionnaireAnswerRule.Optional, VendorCompanyStatusType.SoleDistributorAgent)
-        };
+        ];
 
         for (var index = 0; index < definitions.Length; index++)
         {
@@ -121,14 +126,14 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         }
 
         (string Code, string LegacyCode, string Label, QuestionnaireAnswerRule Rule)[] definitions =
-        {
+        [
             ("BUSINESS_NAME_CARD_DIRECTOR", "Q014", "Business Name Card (Director)", QuestionnaireAnswerRule.Mandatory),
             ("CERTIFICATE_COMPANY_DOMICILE", "Q017", "Certificate of Company Domicile (COD/Surat Keterangan Domisili)", QuestionnaireAnswerRule.Mandatory),
             ("ID_CARD_PASSPORT_AUTHORIZED_SIGNATORIES", "Q015", "ID Card/Passport for authorized Signatories", QuestionnaireAnswerRule.AddedValue),
             ("TAX_IDENTIFICATION_NUMBER_COMPANY", "Q018", "Tax Identification Number (TIN/NPWP)-Company", QuestionnaireAnswerRule.Mandatory),
             ("DEED_COMPANY_ESTABLISHMENT", "Q016", "Deed of Company Establishment (ACTA/ Akta Pendirian Perusahaan)", QuestionnaireAnswerRule.Mandatory),
             ("CERTIFICATE_COMPANY_REGISTRATION", "Q019", "Certificate of Company Registration (TDP)", QuestionnaireAnswerRule.Mandatory)
-        };
+        ];
 
         section.Title = "Vendor / RO (Representative Office)";
         section.CompanyType = VendorCompanyStatusType.AuthorizedAgent;
@@ -167,7 +172,7 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         }
 
         (string Code, string LegacyCode, string Label)[] definitions =
-        {
+        [
             ("SOLE_AGENT_BUSINESS_NAME_CARD_DIRECTOR", "Q020", "Business Name Card (Director)"),
             ("SKUP_MIGAS_ESDM", "Q024", "SKUP (Surat Kemampuan Usaha Penunjang) Migas/ESDM (Base on National Regulation)"),
             ("COMPANY_BUSINESS_LICENSES_SIUP", "Q021", "Company Business Licenses (SIUP)"),
@@ -175,7 +180,7 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
             ("STP_TRADE_MINISTRY", "Q022", "STP (Surat Tanda Pendaftaran) Kemendag/ Trade Ministry"),
             ("CSMS_CERTIFICATE_PERTAMINA", "Q026", "CSMS (Contractor Safety Management System) Certificate Pertamina (Only for SA Provide service for product)"),
             ("AGENCY_AGREEMENT_FROM_VENDOR", "Q023", "Agency Agreement from Vendor")
-        };
+        ];
 
         section.Title = "Sole Agent";
         section.CompanyType = VendorCompanyStatusType.SoleDistributorAgent;
@@ -214,14 +219,14 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         }
 
         (string Code, string LegacyCode, string Label)[] definitions =
-        {
+        [
             ("BRAND_CERTIFICATE", "Q027", "Brand Certificate"),
             ("SAMPLE_COMPONENT_MILL_CERTIFICATE", "Q030", "Sample Component Mill Certificate"),
             ("PATENT_LICENSE_PRODUCT_DESIGN_CERTIFICATE", "Q028", "Patent/License Certificate and/or International Product Design Standard Certificate"),
             ("USER_SATISFACTION_LETTER", "Q031", "User Satisfaction Letter (Testimony)"),
             ("COMPONENT_SUPPLIER_EXPERT_LIST", "Q029", "Component Supplier/Expert List"),
             ("LOCAL_CONTENT_CERTIFICATE_TKDN", "Q032", "Local Content Certificate (TKDN from Kemenperin)")
-        };
+        ];
 
         section.Title = "Product Quality - General";
         section.CompanyType = null;
@@ -260,7 +265,7 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         }
 
         (string Code, string LegacyCode, string Label, QuestionnaireAnswerRule Rule)[] definitions =
-        {
+        [
             ("LATEST_PRODUCT_CATALOGUE", "Q033", "Latest Product Catalogue", QuestionnaireAnswerRule.Mandatory),
             ("SAMPLE_FAT_REPORT", "Q039", "Sample of FAT Report", QuestionnaireAnswerRule.AddedValue),
             ("LATEST_PRODUCT_EXPERIENCE_LIST", "Q034", "Latest Product Experience List", QuestionnaireAnswerRule.Mandatory),
@@ -273,7 +278,7 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
             ("PRODUCT_OBSOLESCENCE_LETTER", "Q043", "Product Obsolescence Letter", QuestionnaireAnswerRule.Optional),
             ("SAMPLE_INSPECTION_TEST_PLAN", "Q038", "Sample of Inspection Test Plan", QuestionnaireAnswerRule.Mandatory),
             ("SAMPLE_TASA_PROGRAM", "Q044", "Sample of TASA (Technical Assistance Services Agreement) Program", QuestionnaireAnswerRule.Optional)
-        };
+        ];
 
         section.Title = "Product Quality - Spesific";
         section.CompanyType = VendorCompanyStatusType.SoleDistributorAgent;
@@ -312,14 +317,14 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
         }
 
         (string Code, string LegacyCode, string Label, QuestionnaireQuestionType Type, QuestionnaireAnswerRule Rule)[] definitions =
-        {
+        [
             ("MARKET_SHARE_WORLD", "Q045", "Market Share (%) (In the world)", QuestionnaireQuestionType.File, QuestionnaireAnswerRule.Optional),
             ("BRAND_PRODUCT_COMPETITOR", "Q048", "Brand Product Competitor", QuestionnaireQuestionType.File, QuestionnaireAnswerRule.AddedValue),
             ("COUNTRY_ORIGIN_FACTORY_LOCATION", "Q046", "Country of Origin/Factory Location", QuestionnaireQuestionType.File, QuestionnaireAnswerRule.Mandatory),
             ("PRODUCT_TECHNOLOGY_LEADER_FOLLOWER", "Q049", "Product Technology Leader/Follower", QuestionnaireQuestionType.ShortText, QuestionnaireAnswerRule.Mandatory),
             ("PRODUCT_REGIONAL_SUPPLY", "Q047", "Product Regional Supply", QuestionnaireQuestionType.File, QuestionnaireAnswerRule.Mandatory),
             ("AFTER_SALES_SERVICE_OFFICE_VENDOR", "Q050", "After sales service office/vendor", QuestionnaireQuestionType.ShortText, QuestionnaireAnswerRule.AddedValue)
-        };
+        ];
 
         section.Title = "Product Positioning & Technical Support";
         section.CompanyType = VendorCompanyStatusType.AuthorizedAgent;

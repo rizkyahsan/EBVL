@@ -1,3 +1,4 @@
+using EBVL.FrontEnd.Infrastructure.Authentication;
 using EBVL.FrontEnd.Logics.Modules.Authentication.ExternalUsers.LoginExternalUser;
 using MediatR;
 
@@ -5,21 +6,34 @@ namespace EBVL.FrontEnd.WebUi.Modules.Main.Pages;
 
 public partial class Login
 {
+    #region Dependencies and Parameters
+
     [Inject]
     public required NavigationManager NavigationManager { get; init; }
 
     [Inject]
     public required ISender Sender { get; init; }
 
+    [Inject]
+    public required IHttpContextAccessor HttpContextAccessor { get; init; }
+
     [Parameter]
     [SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
+
+    #endregion
+
+    #region State
 
     protected bool _isLoading;
     protected Exception? _exception;
     private bool _showPassword;
 
     private LoginExternalUserCommand _model = default!;
+
+    #endregion
+
+    #region Lifecycle
 
     protected override void OnInitialized()
     {
@@ -34,6 +48,10 @@ public partial class Login
             ReturnUrl = null;
         }
     }
+
+    #endregion
+
+    #region Event Handlers
 
     private void TogglePasswordVisibility()
     {
@@ -59,10 +77,19 @@ public partial class Login
                 throw new Exception("Invalid username or password.");
             }
 
-            if (response.Item.RequireOtp && response.Item.ExternalLoginId.HasValue)
+            if (!response.Item.Succeeded || string.IsNullOrWhiteSpace(response.Item.UserToken))
             {
-                NavigationManager.NavigateTo(MainRouteFor.LoginOtp($"{response.Item.ExternalLoginId}", ReturnUrl), forceLoad: true);
+                throw new Exception("Invalid username or password.");
             }
+
+            var httpContext = HttpContextAccessor.HttpContext ?? throw new InvalidOperationException();
+            var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var userAgent = httpContext.Request.Headers.UserAgent.ToString();
+            var sessionId = UserTokenStore.CreateSession(response.Item.UserToken, ipAddress, userAgent);
+            var url = string.IsNullOrWhiteSpace(ReturnUrl)
+                ? AuthenticationRouteFor.LocalLoginHandler($"{sessionId}")
+                : AuthenticationRouteFor.LocalLoginHandler($"{sessionId}", ReturnUrl);
+            NavigationManager.NavigateTo(url, forceLoad: true);
         }
         catch (Exception exception)
         {
@@ -72,16 +99,6 @@ public partial class Login
         {
             _isLoading = false;
         }
-    }
-
-    private static bool IsSafeLocalReturnUrl(string? returnUrl)
-    {
-        return !string.IsNullOrWhiteSpace(returnUrl)
-            && returnUrl[0] == '/'
-            && !returnUrl.StartsWith("//", StringComparison.Ordinal)
-            && !returnUrl.StartsWith("/\\", StringComparison.Ordinal)
-            && !returnUrl.Contains('\\')
-            && Uri.IsWellFormedUriString(returnUrl, UriKind.Relative);
     }
 
     private void ExecuteReturn()
@@ -99,4 +116,20 @@ public partial class Login
             _isLoading = false;
         }
     }
+
+    #endregion
+
+    #region Helpers
+
+    private static bool IsSafeLocalReturnUrl(string? returnUrl)
+    {
+        return !string.IsNullOrWhiteSpace(returnUrl)
+            && returnUrl[0] == '/'
+            && !returnUrl.StartsWith("//", StringComparison.Ordinal)
+            && !returnUrl.StartsWith("/\\", StringComparison.Ordinal)
+            && !returnUrl.Contains('\\')
+            && Uri.IsWellFormedUriString(returnUrl, UriKind.Relative);
+    }
+
+    #endregion
 }

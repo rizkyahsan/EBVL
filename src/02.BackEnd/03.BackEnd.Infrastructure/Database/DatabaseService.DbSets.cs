@@ -10,7 +10,6 @@ public partial class DatabaseService : IDatabaseService
     public DbSet<DocumentDefinition> DocumentDefinitions => Set<DocumentDefinition>();
     public DbSet<EmailTemplate> EmailTemplates => Set<EmailTemplate>();
     public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
-    public DbSet<ExternalLoginLog> ExternalLoginLogs => Set<ExternalLoginLog>();
     public DbSet<Domain.Entities.FileStorage> FileStorages => Set<Domain.Entities.FileStorage>();
     public DbSet<LogEmail> LogEmails => Set<LogEmail>();
     public DbSet<Lender> Lenders => Set<Lender>();
@@ -22,9 +21,7 @@ public partial class DatabaseService : IDatabaseService
     public DbSet<QuestionnaireRule> QuestionnaireRules => Set<QuestionnaireRule>();
     public DbSet<VendorRegistration> VendorRegistrations => Set<VendorRegistration>();
     public DbSet<VendorRegistrationDocument> VendorRegistrationDocuments => Set<VendorRegistrationDocument>();
-    public DbSet<QuestionnaireSubmission> QuestionnaireSubmissions => Set<QuestionnaireSubmission>();
     public DbSet<QuestionnaireAnswer> QuestionnaireAnswers => Set<QuestionnaireAnswer>();
-    public DbSet<QuestionnaireAnswerOption> QuestionnaireAnswerOptions => Set<QuestionnaireAnswerOption>();
     public DbSet<QuestionnaireAnswerFile> QuestionnaireAnswerFiles => Set<QuestionnaireAnswerFile>();
     public DbSet<User> Users => Set<User>();
 }

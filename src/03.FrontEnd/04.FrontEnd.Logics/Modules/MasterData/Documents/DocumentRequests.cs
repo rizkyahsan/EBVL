@@ -2,10 +2,16 @@ using EBVL.Shared.Dto.Modules.MasterData.Documents;
 
 namespace EBVL.FrontEnd.Logics.Modules.MasterData.Documents;
 
+#region Requests
+
 public sealed record GetDocumentsQuery : IRequest<GetDocumentsResponse>;
 public sealed record GetDocumentQuery(Guid DocumentId) : IRequest<GetDocumentResponse>;
 public sealed record AddDocumentCommand : AddDocumentRequest, IRequest<GetDocumentResponse>;
 public sealed record UpdateDocumentCommand(Guid DocumentId, UpdateDocumentRequest Document) : IRequest<GetDocumentResponse>;
+
+#endregion
+
+#region Query Handlers
 
 public sealed class GetDocumentsQueryHandler(IBackEndApiService api) : IRequestHandler<GetDocumentsQuery, GetDocumentsResponse>
 {
@@ -28,6 +34,10 @@ public sealed class GetDocumentQueryHandler(IBackEndApiService api) : IRequestHa
     }
 }
 
+#endregion
+
+#region Command Handlers
+
 public sealed class AddDocumentCommandHandler(IBackEndApiService api) : IRequestHandler<AddDocumentCommand, GetDocumentResponse>
 {
     public Task<GetDocumentResponse> Handle(AddDocumentCommand request, CancellationToken cancellationToken)
@@ -35,6 +45,8 @@ public sealed class AddDocumentCommandHandler(IBackEndApiService api) : IRequest
         return api.SendRequestAsync<GetDocumentResponse>(new RestRequest(DocumentRoutes.Add, Method.Post).AddJsonBody(request), cancellationToken);
     }
 }
+
+#endregion
 
 public sealed class UpdateDocumentCommandHandler(IBackEndApiService api) : IRequestHandler<UpdateDocumentCommand, GetDocumentResponse>
 {

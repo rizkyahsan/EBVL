@@ -6,4 +6,5 @@ public sealed record LoginExternalUserResult
     public string? ErrorMessage { get; init; }
     public bool RequireOtp { get; init; }
     public Guid? ExternalLoginId { get; init; }
+    public string? UserToken { get; init; }
 }

@@ -1,18 +1,27 @@
+using System.Text.Json;
+using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire;
-using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence;
-using System.Text.Json;
+using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires;
+using MediatR;
 using Microsoft.JSInterop;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
 
 public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
 {
+    #region Constants
+
     private const string PreRegistrationKey = "ebvl.vendor-registration.step-one";
     private const string QuestionnaireKey = "ebvl.vendor-registration.step-two";
     private const string DocumentEvidenceKey = "ebvl.vendor-registration.step-three";
     private const string VerificationSentKey = "ebvl.vendor-registration.verification-sent";
     private const string EmailVerifiedKey = "ebvl.vendor-registration.email-verified";
+    private const string RuntimeKey = "ebvl.vendor-registration.runtime";
+
+    #endregion
+
+    #region Properties
 
     public PreRegistrationRequest? PreRegistration { get; private set; }
     public QuestionnaireRequest? Questionnaire { get; private set; }
@@ -24,7 +33,19 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
     public bool IsStepThreeCompleted => Questionnaire?.IsSubmitQuestionnaire is true;
     public bool IsVerificationSent { get; private set; }
     public bool IsEmailVerified { get; private set; }
+    public Guid? RegistrationId { get; private set; }
+    public string? ResumeToken { get; private set; }
+    public QuestionnaireRuntimeResponse? Runtime { get; private set; }
+
+    #endregion
+
+    #region Fields
+
     private readonly Dictionary<string, IBrowserFile> _selectedFiles = [];
+
+    #endregion
+
+    #region Public Methods
 
     public async Task CompleteStepOneAsync(PreRegistrationRequest request)
     {
@@ -66,9 +87,16 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
         var documentEvidenceJson = await jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", DocumentEvidenceKey);
         var verificationSent = await jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", VerificationSentKey);
         var emailVerified = await jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", EmailVerifiedKey);
+        var runtimeJson = await jsRuntime.InvokeAsync<string?>("sessionStorage.getItem", RuntimeKey);
 
         IsVerificationSent = bool.TryParse(verificationSent, out var isSent) && isSent;
         IsEmailVerified = bool.TryParse(emailVerified, out var isVerified) && isVerified;
+        if (!string.IsNullOrWhiteSpace(runtimeJson))
+        {
+            var identity = JsonSerializer.Deserialize<RuntimeIdentity>(runtimeJson);
+            RegistrationId = identity?.RegistrationId;
+            ResumeToken = identity?.ResumeToken;
+        }
 
         if (!string.IsNullOrWhiteSpace(preRegistrationJson))
         {
@@ -84,6 +112,29 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
         {
             DocumentEvidence = JsonSerializer.Deserialize<DocumentEvidenceRequest>(documentEvidenceJson);
         }
+    }
+
+    public async Task SetRuntimeAsync(QuestionnaireRuntimeResponse runtime, string? resumeToken = null)
+    {
+        Runtime = runtime;
+        RegistrationId = runtime.RegistrationId;
+        ResumeToken = resumeToken ?? runtime.ResumeToken ?? ResumeToken;
+        PreRegistration = runtime.Profile;
+        await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", RuntimeKey, JsonSerializer.Serialize(new RuntimeIdentity(runtime.RegistrationId, ResumeToken!)));
+        await PersistAsync();
+    }
+
+    public async Task<bool> RestoreRuntimeAsync(ISender sender)
+    {
+        await RestoreAsync();
+        if (RegistrationId is null || string.IsNullOrWhiteSpace(ResumeToken))
+        {
+            return false;
+        }
+
+        Runtime = await sender.Send(new Logics.Modules.Main.VendorRegistrations.Questionnaires.GetQuestionnaireRuntimeQuery(RegistrationId.Value, ResumeToken));
+        PreRegistration = Runtime.Profile;
+        return true;
     }
 
     public async Task MarkVerificationSentAsync()
@@ -123,6 +174,10 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
         await PersistAsync();
     }
 
+    #endregion
+
+    #region Private Methods
+
     private async Task PersistAsync()
     {
         if (PreRegistration is not null)
@@ -140,4 +195,12 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
             await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", DocumentEvidenceKey, JsonSerializer.Serialize(DocumentEvidence));
         }
     }
+
+    #endregion
+
+    #region Nested Types
+
+    private sealed record RuntimeIdentity(Guid RegistrationId, string ResumeToken);
+
+    #endregion
 }

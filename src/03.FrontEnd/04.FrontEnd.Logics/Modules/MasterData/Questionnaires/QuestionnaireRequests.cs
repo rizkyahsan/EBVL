@@ -3,18 +3,37 @@ using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
 #pragma warning disable IDE0021, IDE0022, CA1725
 namespace EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires;
 
+#region Requests
+
 public sealed record GetQuestionnairesQuery : IRequest<GetQuestionnairesResponse>;
 public sealed record GetQuestionnaireQuery(Guid QuestionnaireId) : IRequest<GetQuestionnaireResponse>;
 public sealed record AddQuestionnaireCommand : AddQuestionnaireRequest, IRequest<GetQuestionnaireResponse>;
 public sealed record AddQuestionnaireQuestionCommand(Guid QuestionnaireId, Guid SectionId, AddQuestionnaireQuestionRequest Question) : IRequest<GetQuestionnaireResponse>;
 public sealed record UpdateQuestionnaireSectionCommand(Guid QuestionnaireId, Guid SectionId, AddQuestionnaireRequest Section) : IRequest<GetQuestionnaireResponse>;
 public sealed record UpdateQuestionnaireCommand(Guid QuestionnaireId, UpdateQuestionnaireRequest Questionnaire) : IRequest<GetQuestionnaireResponse>;
+
+#endregion
+
+#region Validation
+
 public sealed class AddQuestionnaireCommandValidator : AbstractValidatorBase<AddQuestionnaireCommand> { public AddQuestionnaireCommandValidator() => Include(new AddQuestionnaireRequestValidator()); }
 public sealed class AddQuestionnaireQuestionCommandValidator : AbstractValidatorBase<AddQuestionnaireQuestionCommand> { public AddQuestionnaireQuestionCommandValidator() => RuleFor(x => x.Question).SetValidator(new AddQuestionnaireQuestionRequestValidator()); }
 public sealed class UpdateQuestionnaireCommandValidator : AbstractValidatorBase<UpdateQuestionnaireCommand> { public UpdateQuestionnaireCommandValidator() => RuleFor(x => x.Questionnaire).SetValidator(new UpdateQuestionnaireRequestValidator()); }
+
+#endregion
+
+#region Query Handlers
+
 public sealed class GetQuestionnairesQueryHandler(IBackEndApiService api) : IRequestHandler<GetQuestionnairesQuery, GetQuestionnairesResponse> { public Task<GetQuestionnairesResponse> Handle(GetQuestionnairesQuery r, CancellationToken ct) => api.SendRequestAsync<GetQuestionnairesResponse>(new RestRequest(QuestionnaireRoutes.List, Method.Get), ct); }
 public sealed class GetQuestionnaireQueryHandler(IBackEndApiService api) : IRequestHandler<GetQuestionnaireQuery, GetQuestionnaireResponse> { public Task<GetQuestionnaireResponse> Handle(GetQuestionnaireQuery r, CancellationToken ct) => api.SendRequestAsync<GetQuestionnaireResponse>(new RestRequest(Uri(QuestionnaireRoutes.Detail, r.QuestionnaireId), Method.Get), ct); private static string Uri(string route, Guid id) => route.Replace("{questionnaireId:guid}", id.ToString()); }
+
+#endregion
+
+#region Command Handlers
+
 public sealed class AddQuestionnaireCommandHandler(IBackEndApiService api) : IRequestHandler<AddQuestionnaireCommand, GetQuestionnaireResponse> { public Task<GetQuestionnaireResponse> Handle(AddQuestionnaireCommand r, CancellationToken ct) => api.SendRequestAsync<GetQuestionnaireResponse>(new RestRequest(QuestionnaireRoutes.Add, Method.Post).AddJsonBody(r), ct); }
 public sealed class AddQuestionnaireQuestionCommandHandler(IBackEndApiService api) : IRequestHandler<AddQuestionnaireQuestionCommand, GetQuestionnaireResponse> { public Task<GetQuestionnaireResponse> Handle(AddQuestionnaireQuestionCommand r, CancellationToken ct) => api.SendRequestAsync<GetQuestionnaireResponse>(new RestRequest(QuestionnaireRoutes.AddQuestion.Replace("{questionnaireId:guid}", r.QuestionnaireId.ToString()).Replace("{sectionId:guid}", r.SectionId.ToString()), Method.Post).AddJsonBody(r.Question), ct); }
 public sealed class UpdateQuestionnaireSectionCommandHandler(IBackEndApiService api) : IRequestHandler<UpdateQuestionnaireSectionCommand, GetQuestionnaireResponse> { public Task<GetQuestionnaireResponse> Handle(UpdateQuestionnaireSectionCommand r, CancellationToken ct) => api.SendRequestAsync<GetQuestionnaireResponse>(new RestRequest(QuestionnaireRoutes.UpdateSection.Replace("{questionnaireId:guid}", r.QuestionnaireId.ToString()).Replace("{sectionId:guid}", r.SectionId.ToString()), Method.Put).AddJsonBody(r.Section), ct); }
 public sealed class UpdateQuestionnaireCommandHandler(IBackEndApiService api) : IRequestHandler<UpdateQuestionnaireCommand, GetQuestionnaireResponse> { public Task<GetQuestionnaireResponse> Handle(UpdateQuestionnaireCommand r, CancellationToken ct) => api.SendRequestAsync<GetQuestionnaireResponse>(new RestRequest(QuestionnaireRoutes.Update.Replace("{questionnaireId:guid}", r.QuestionnaireId.ToString()), Method.Put).AddJsonBody(r.Questionnaire), ct); }
+
+#endregion

@@ -78,4 +78,15 @@ public partial class DatabaseService(
     {
         Entry(registration).Property(x => x.RowVersion).OriginalValue = rowVersion;
     }
+    public void SetVendorRegistrationUnchanged(VendorRegistration registration)
+    {
+        Entry(registration).State = EntityState.Unchanged;
+    }
+    public void SetQuestionnaireRuntimeGraphUnchanged()
+    {
+        foreach (var entry in ChangeTracker.Entries().Where(entry => entry.Entity is VendorRegistration or Questionnaire or QuestionnaireSection or QuestionnaireQuestion or QuestionnaireOption or QuestionnaireRule))
+        {
+            entry.State = EntityState.Unchanged;
+        }
+    }
 }

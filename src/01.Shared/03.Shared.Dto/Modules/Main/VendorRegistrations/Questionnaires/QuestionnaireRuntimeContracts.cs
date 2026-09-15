@@ -20,7 +20,7 @@ public sealed record RegistrationAuthorizationRequest(Guid RegistrationId, strin
 public sealed record ResumeQuestionnaireRequest(Guid RegistrationId, string ResumeToken);
 public sealed record QuestionnaireRuntimeResponse(Guid RegistrationId, string? ResumeToken, string RowVersion, VendorRegistrationStatus Status, PreRegistrationRequest Profile, IReadOnlyList<VendorRegistrationDocumentItem> Documents, bool IsDocumentEvidenceComplete, Guid QuestionnaireId, IReadOnlyList<RuntimeSectionItem> Sections);
 public sealed record UpdateVendorRegistrationProfileRequest(string ResumeToken, string RowVersion, PreRegistrationRequest Profile);
-public sealed record VendorRegistrationDocumentItem(Guid Id, string DefinitionKey, string FileName, string ContentType, long Length);
+public sealed record VendorRegistrationDocumentItem(Guid RequirementId, string DefinitionKey, string Name, int Order, bool IsMandatory, int MaxSizeMb, Guid? DocumentId, string? FileName, string? ContentType, long? Length);
 public sealed record UploadVendorRegistrationDocumentResponse(VendorRegistrationDocumentItem Document, string RowVersion, bool IsDocumentEvidenceComplete);
 public sealed record RuntimeSectionItem(Guid Id, string Code, string Title, int Order, IReadOnlyList<RuntimeQuestionItem> Questions);
 public sealed record RuntimeQuestionItem(Guid Id, string Code, string Label, string? Hint, string? Placeholder, QuestionnaireQuestionType Type, int Order, bool IsRequired, IReadOnlyList<RuntimeOptionItem> Options, QuestionnaireAnswerValue? Answer, IReadOnlyList<RuntimeFileItem> Files);

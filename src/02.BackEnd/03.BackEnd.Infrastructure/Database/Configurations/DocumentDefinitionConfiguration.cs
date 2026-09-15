@@ -6,9 +6,11 @@ public sealed class DocumentDefinitionConfiguration : IEntityTypeConfiguration<D
     {
         _ = builder.ToTable(nameof(IDatabaseService.DocumentDefinitions));
         builder.ConfigureModifiableProperties();
+        _ = builder.Property(x => x.Code).HasColumnType(ColumnTypeFor.Nvarchar(100));
         _ = builder.Property(x => x.BusinessProcess).HasColumnType(ColumnTypeFor.Nvarchar(100));
         _ = builder.Property(x => x.Name).HasColumnType(ColumnTypeFor.Nvarchar(200));
         _ = builder.Property(x => x.RowVersion).IsRowVersion();
+        _ = builder.HasIndex(x => new { x.BusinessProcess, x.Code }).IsUnique().HasFilter("[IsDeleted] = 0");
         _ = builder.HasIndex(x => new { x.BusinessProcess, x.Name }).IsUnique().HasFilter("[IsDeleted] = 0");
     }
 }

@@ -8,6 +8,8 @@ namespace EBVL.FrontEnd.WebUi.Modules.Main.Pages;
 
 public partial class LoginOtp
 {
+    #region Dependencies and Parameters
+
     [Inject]
     public required NavigationManager NavigationManager { get; init; }
 
@@ -27,6 +29,10 @@ public partial class LoginOtp
     [SupplyParameterFromQuery]
     public string? ReturnUrl { get; set; }
 
+    #endregion
+
+    #region State
+
     private bool _isVerifing = true;
     private bool _isLoading = false;
     private bool _isSuccess = false;
@@ -36,6 +42,10 @@ public partial class LoginOtp
     private string _url = string.Empty;
 
     private VerifiedExternalUserCommand _model = default!;
+
+    #endregion
+
+    #region Lifecycle
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,6 +61,10 @@ public partial class LoginOtp
 
         await ValidateAccess();
     }
+
+    #endregion
+
+    #region Event Handlers
 
     protected void ClearException()
     {
@@ -159,7 +173,6 @@ public partial class LoginOtp
 
                 await InvokeAsync(StateHasChanged);
 
-                #region Create Session User Token
                 var httpContext = HttpContextAccessor.HttpContext ?? throw new InvalidOperationException();
                 var ipAddress = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 var userAgent = httpContext.Request.Headers.UserAgent.ToString();
@@ -174,7 +187,6 @@ public partial class LoginOtp
                     _url = AuthenticationRouteFor.LocalLoginHandler($"{sessionId}");
 
                 }
-                #endregion
 
                 await Task.Delay(5000);
 
@@ -192,16 +204,6 @@ public partial class LoginOtp
         }
     }
 
-    private static bool IsSafeLocalReturnUrl(string? returnUrl)
-    {
-        return !string.IsNullOrWhiteSpace(returnUrl)
-            && returnUrl[0] == '/'
-            && !returnUrl.StartsWith("//", StringComparison.Ordinal)
-            && !returnUrl.StartsWith("/\\", StringComparison.Ordinal)
-            && !returnUrl.Contains('\\')
-            && Uri.IsWellFormedUriString(returnUrl, UriKind.Relative);
-    }
-
     private void ExecuteReturn()
     {
         try
@@ -217,4 +219,20 @@ public partial class LoginOtp
             _isLoading = false;
         }
     }
+
+    #endregion
+
+    #region Helpers
+
+    private static bool IsSafeLocalReturnUrl(string? returnUrl)
+    {
+        return !string.IsNullOrWhiteSpace(returnUrl)
+            && returnUrl[0] == '/'
+            && !returnUrl.StartsWith("//", StringComparison.Ordinal)
+            && !returnUrl.StartsWith("/\\", StringComparison.Ordinal)
+            && !returnUrl.Contains('\\')
+            && Uri.IsWellFormedUriString(returnUrl, UriKind.Relative);
+    }
+
+    #endregion
 }

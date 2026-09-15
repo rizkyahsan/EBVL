@@ -1,12 +1,14 @@
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using EBVL.BackEnd.Infrastructure.Database.Interceptors;
 using EBVL.BackEnd.Infrastructure.Database.Seeders;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace EBVL.BackEnd.Infrastructure.Database;
 
 public static class ConfigureDatabase
 {
+    #region Service Registration
+
     public static IServiceCollection AddDatabaseService(this IServiceCollection services, string connectionString, IHealthChecksBuilder healthChecksBuilder)
     {
         _ = services.AddDbContext<IDatabaseService, DatabaseService>(options =>
@@ -38,9 +40,15 @@ public static class ConfigureDatabase
         _ = services.AddTransient<CountrySeeder>();
         _ = services.AddTransient<EmailTemplateSeeder>();
         _ = services.AddTransient<QuestionnaireSeeder>();
+        _ = services.AddTransient<DocumentDefinitionSeeder>();
+        _ = services.AddTransient<DemoExternalUserSeeder>();
 
         return services;
     }
+
+    #endregion
+
+    #region Database Initialization
 
     public static async Task InitializeDatabase(this IHost host, bool isDataSeedingEnabled)
     {
@@ -52,6 +60,9 @@ public static class ConfigureDatabase
 
         var auditSeeder = serviceProvider.GetRequiredService<AuditSeeder>();
         await auditSeeder.RecordSystemStartup();
+
+        var demoExternalUserSeeder = serviceProvider.GetRequiredService<DemoExternalUserSeeder>();
+        await demoExternalUserSeeder.SeedDemoExternalUser();
 
         if (isDataSeedingEnabled)
         {
@@ -66,6 +77,11 @@ public static class ConfigureDatabase
 
             var questionnaireSeeder = serviceProvider.GetRequiredService<QuestionnaireSeeder>();
             await questionnaireSeeder.SeedQuestionnaires();
+
+            var documentDefinitionSeeder = serviceProvider.GetRequiredService<DocumentDefinitionSeeder>();
+            await documentDefinitionSeeder.SeedVendorRegistrationDocuments();
         }
     }
+
+    #endregion
 }

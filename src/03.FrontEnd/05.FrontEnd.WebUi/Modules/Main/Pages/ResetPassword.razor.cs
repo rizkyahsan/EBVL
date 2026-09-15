@@ -7,6 +7,8 @@ namespace EBVL.FrontEnd.WebUi.Modules.Main.Pages;
 
 public partial class ResetPassword
 {
+    #region Dependencies and Parameters
+
     [Inject]
     public required NavigationManager NavigationManager { get; init; }
 
@@ -22,6 +24,10 @@ public partial class ResetPassword
     [SupplyParameterFromQuery]
     public string Token { get; set; } = default!;
 
+    #endregion
+
+    #region State
+
     private bool _isVerifing = true;
     private bool _isLoading = false;
     private bool _isSuccess = false;
@@ -33,6 +39,10 @@ public partial class ResetPassword
 
     private ResetPasswordUserCommand _model = default!;
 
+    #endregion
+
+    #region Lifecycle
+
     protected override async Task OnInitializedAsync()
     {
         if (string.IsNullOrEmpty(Id) || string.IsNullOrEmpty(Token))
@@ -42,6 +52,10 @@ public partial class ResetPassword
 
         await ValidateAccess();
     }
+
+    #endregion
+
+    #region Event Handlers
 
     protected void ClearException()
     {
@@ -176,4 +190,6 @@ public partial class ResetPassword
             _isLoading = false;
         }
     }
+
+    #endregion
 }

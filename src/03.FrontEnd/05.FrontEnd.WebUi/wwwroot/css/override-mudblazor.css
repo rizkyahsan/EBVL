@@ -38,7 +38,34 @@
 .mud-input > input.mud-input-root-outlined,
 div.mud-input-slot.mud-input-root-outlined
 {
-    padding: 16px 14px !important;
+    padding: 14px 14px !important;
+}
+
+/* Keep all MudBlazor form controls visually consistent. */
+.mud-input,
+.mud-input-slot,
+.mud-input input,
+.mud-input textarea,
+.mud-select-input,
+.mud-input-label,
+.mud-shrink ~ label,
+.mud-input-helper-text,
+.mud-input-error,
+.mud-radio,
+.mud-radio-label,
+.mud-radio-content,
+.mud-checkbox,
+.mud-checkbox-label,
+.mud-checkbox-content,
+.mud-switch,
+.mud-switch-label,
+.mud-switch-content,
+.mud-list-item,
+.mud-menu-item,
+.mud-autocomplete,
+.mud-select
+{
+    font-size : 0.750rem!important;
 }
 
 .mud-nav-link.active:not(.mud-nav-link-disabled) .mud-nav-link-text

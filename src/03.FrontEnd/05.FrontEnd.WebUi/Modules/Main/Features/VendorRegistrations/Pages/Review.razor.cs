@@ -1,8 +1,9 @@
+using EBVL.FrontEnd.Logics.Modules.Main.VendorRegistrations.Questionnaires;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
-using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration;
-using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire;
+using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires;
+using MediatR;
 using Microsoft.JSInterop;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
 
@@ -10,7 +11,7 @@ namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Pages;
 
 public partial class Review
 {
-    private const long MaximumReviewFileSize = 25 * 1024 * 1024;
+    #region Dependencies
 
     [Inject]
     public required NavigationManager NavigationManager { get; init; }
@@ -26,11 +27,19 @@ public partial class Review
 
     [Inject]
     public required IJSRuntime JSRuntime { get; init; }
+    [Inject] public required ISender Sender { get; init; }
+
+    #endregion
+
+    #region Fields
 
     private PreRegistrationRequest _preRegistration = new();
-    private DocumentEvidenceRequest _documentEvidence = new();
-    private QuestionnaireRequest _questionnaire = new();
+    private QuestionnaireRuntimeResponse _runtime = default!;
     private bool _isRestoring = true;
+
+    #endregion
+
+    #region Lifecycle
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -39,43 +48,47 @@ public partial class Review
             return;
         }
 
-        await RegistrationState.RestoreAsync();
-
-        if (!RegistrationState.IsStepTwoCompleted)
+        if (!await RegistrationState.RestoreRuntimeAsync(Sender) || RegistrationState.Runtime is null || !RegistrationState.Runtime.IsDocumentEvidenceComplete)
         {
             NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepTwo);
             return;
         }
 
-        if (!RegistrationState.IsStepThreeCompleted ||
-            RegistrationState.PreRegistration is null ||
-            RegistrationState.DocumentEvidence is null ||
-            RegistrationState.Questionnaire is null)
+        if (RegistrationState.PreRegistration is null)
         {
             NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepThree);
             return;
         }
 
         _preRegistration = RegistrationState.PreRegistration;
-        _documentEvidence = RegistrationState.DocumentEvidence;
-        _questionnaire = RegistrationState.Questionnaire;
+        _runtime = RegistrationState.Runtime;
         _isRestoring = false;
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task DownloadDocument(string key)
+    #endregion
+
+    #region Private Methods
+
+    private async Task DownloadDocument(VendorRegistrationDocumentItem document)
     {
-        if (!RegistrationState.SelectedFiles.TryGetValue(key, out var file))
+        if (document.DocumentId is null)
         {
-            Snackbar.AddError("File tidak tersedia. Silakan upload ulang dokumen.");
             return;
         }
 
-        await using var stream = file.OpenReadStream(MaximumReviewFileSize);
-        using var memoryStream = new MemoryStream();
-        await stream.CopyToAsync(memoryStream);
-        var base64Data = Convert.ToBase64String(memoryStream.ToArray());
-        await JSRuntime.InvokeVoidAsync(JavaScriptIdentifierFor.DownloadFile, file.Name, file.ContentType, base64Data);
+        var file = await Sender.Send(new DownloadVendorRegistrationDocumentQuery(_runtime.RegistrationId, document.DocumentId.Value, RegistrationState.ResumeToken!));
+        await Download(file);
+    }
+
+    private async Task DownloadFile(RuntimeFileItem item)
+    {
+        await Download(await Sender.Send(new DownloadQuestionnaireFileQuery(_runtime.RegistrationId, item.Id, RegistrationState.ResumeToken!)));
+    }
+
+    private Task Download(QuestionnaireFileContent file)
+    {
+        return JSRuntime.InvokeVoidAsync(JavaScriptIdentifierFor.DownloadFile, file.FileName, file.ContentType, Convert.ToBase64String(file.Content)).AsTask();
     }
 
     private async Task SendForVerification()
@@ -93,6 +106,8 @@ public partial class Review
             return;
         }
 
+        var runtime = await Sender.Send(new SubmitQuestionnaireCommand(_runtime.RegistrationId, new(RegistrationState.ResumeToken!, _runtime.RowVersion)));
+        await RegistrationState.SetRuntimeAsync(runtime);
         await RegistrationState.MarkVerificationSentAsync();
         NavigationManager.NavigateTo(VendorRegistrationRouteFor.EmailVerification);
     }
@@ -106,4 +121,6 @@ public partial class Review
     {
         NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepThree);
     }
+
+    #endregion
 }

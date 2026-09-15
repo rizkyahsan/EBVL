@@ -24,7 +24,6 @@ public sealed class CheckVerificationUserQueryHandler(ILocalIdentityService loca
     {
         var now = TimeZoneInfo.ConvertTime(DateTimeOffset.Now, TimezoneFor.WibTimeZone);
         var externalLogin = await databaseService.ExternalLogins
-            .Include(x => x.ExternalLoginLog)
             .Where(x => !x.IsDeleted && x.Id == request.ExternalLoginId && !x.IsUsed && x.ExpiredAt > now)
             .SingleOrDefaultAsync(cancellationToken)
             ?? throw new InvalidOperationException($"OTP session expired.");
@@ -38,7 +37,7 @@ public sealed class CheckVerificationUserQueryHandler(ILocalIdentityService loca
 
         if (!verificationCodeIsValid)
         {
-            externalLogin.ExternalLoginLog.FailureReason = $"Invalid OTP.";
+            externalLogin.FailureReason = "Invalid OTP.";
 
             _ = await databaseService.SaveAsync(nameof(VerifiedExternalUser), cancellationToken);
 
@@ -47,8 +46,8 @@ public sealed class CheckVerificationUserQueryHandler(ILocalIdentityService loca
 
         var verifiedAt = TimeZoneInfo.ConvertTime(DateTimeOffset.Now, TimezoneFor.WibTimeZone);
         externalLogin.IsUsed = true;
-        externalLogin.ExternalLoginLog.IsSuccess = true;
-        externalLogin.ExternalLoginLog.VerifiedAt = verifiedAt;
+        externalLogin.IsSuccess = true;
+        externalLogin.VerifiedAt = verifiedAt;
 
         _ = await databaseService.SaveAsync(nameof(VerifiedExternalUser), cancellationToken);
 

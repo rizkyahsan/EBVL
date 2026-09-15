@@ -44,9 +44,10 @@
             </MudExpansionPanel>
         </MudExpansionPanels>
 
-        <QuestionnaireForm Model="_model"
-                           OnBack="BackToStepTwo"
-                           OnNext="ContinueRegistration"
-                           OnChanged="PersistProgress" />
+        <QuestionnaireForm Sections="_sections"
+                            OnBack="BackToStepTwo"
+                            OnNext="ContinueRegistration"
+                            OnFileSelected="UploadFile"
+                            OnFileRemoved="RemoveFile" />
     </section>
 </main>

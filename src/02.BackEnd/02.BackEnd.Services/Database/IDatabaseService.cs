@@ -11,4 +11,6 @@ public partial interface IDatabaseService
     public void SetQuestionnaireOriginalRowVersion(Questionnaire questionnaire, byte[] rowVersion);
     public void SetDocumentDefinitionOriginalRowVersion(DocumentDefinition documentDefinition, byte[] rowVersion);
     public void SetVendorRegistrationOriginalRowVersion(VendorRegistration registration, byte[] rowVersion);
+    public void SetVendorRegistrationUnchanged(VendorRegistration registration);
+    public void SetQuestionnaireRuntimeGraphUnchanged();
 }

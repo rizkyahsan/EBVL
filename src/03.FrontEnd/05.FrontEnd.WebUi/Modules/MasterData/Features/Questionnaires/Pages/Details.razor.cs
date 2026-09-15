@@ -87,10 +87,13 @@ public partial class Details
 
         if (result is { Canceled: false, Data: QuestionnaireItem updated })
         {
+            var sectionCode = _section.Code;
             _item = updated;
-            _section = updated.Sections.Single(x => x.Id == SectionId);
+            Id = updated.QuestionnaireId;
+            _section = updated.Sections.Single(x => x.Code == sectionCode);
+            SectionId = _section.Id;
             Snackbar.AddSuccess("Questionnaire saved.");
-            await InvokeAsync(StateHasChanged);
+            NavigationManager.NavigateTo(QuestionnaireRouteFor.Details(Id, SectionId), replace: true);
         }
     }
 
@@ -120,9 +123,10 @@ public partial class Details
                 IsActive = _item.IsActive,
                 RowVersion = _item.RowVersion,
                 Sections = sections,
-                Rules = _item.Rules.ToList()
+                Rules = [.. _item.Rules]
             };
             _item = (await Sender.Send(new UpdateQuestionnaireCommand(Id, request))).Item;
+            Id = _item.QuestionnaireId;
             _section = _item.Sections.Single(x => x.Code == sectionCode);
             SectionId = _section.Id;
             Snackbar.AddSuccess("Questionnaire saved.");
@@ -177,9 +181,7 @@ public partial class Details
             IsActive = question.IsActive,
             AnswerRule = question.AnswerRule,
             Order = question.Order,
-            Options = question.Options
-                .Select(x => new OptionModel { Code = x.Code, Label = x.Label })
-                .ToList()
+            Options = [.. question.Options.Select(x => new OptionModel { Code = x.Code, Label = x.Label })]
         };
     }
 

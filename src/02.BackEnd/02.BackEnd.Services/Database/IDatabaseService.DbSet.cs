@@ -13,7 +13,6 @@ public partial interface IDatabaseService
     public DbSet<DocumentDefinition> DocumentDefinitions { get; }
     public DbSet<EmailTemplate> EmailTemplates { get; }
     public DbSet<ExternalLogin> ExternalLogins { get; }
-    public DbSet<ExternalLoginLog> ExternalLoginLogs { get; }
     public DbSet<FileStorage> FileStorages { get; }
     public DbSet<LogEmail> LogEmails { get; }
     public DbSet<Lender> Lenders { get; }
@@ -25,9 +24,7 @@ public partial interface IDatabaseService
     public DbSet<QuestionnaireRule> QuestionnaireRules { get; }
     public DbSet<VendorRegistration> VendorRegistrations { get; }
     public DbSet<VendorRegistrationDocument> VendorRegistrationDocuments { get; }
-    public DbSet<QuestionnaireSubmission> QuestionnaireSubmissions { get; }
     public DbSet<QuestionnaireAnswer> QuestionnaireAnswers { get; }
-    public DbSet<QuestionnaireAnswerOption> QuestionnaireAnswerOptions { get; }
     public DbSet<QuestionnaireAnswerFile> QuestionnaireAnswerFiles { get; }
     public DbSet<User> Users { get; }
 }

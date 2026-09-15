@@ -19,22 +19,18 @@
     gap: 12px;
 }
 
-.file-name {
+.document-evidence-scope ::deep .file-name-field {
     min-width: 0;
-    height: 40px;
-    display: flex;
-    align-items: center;
+}
+
+.document-evidence-scope ::deep .file-name-field .mud-input-slot {
     overflow: hidden;
-    padding: 0 14px;
-    border: 1px solid var(--mud-palette-lines-inputs);
-    border-radius: 3px;
-    color: var(--mud-palette-text-disabled);
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-.file-selected {
-    color: var(--mud-palette-text-primary);
+.document-evidence-scope ::deep .file-name-field input {
+    cursor: default;
 }
 
 ::deep .evidence-file-input {
@@ -53,6 +49,7 @@
     color: #2196f3;
     cursor: pointer;
     font-size: .8rem;
+    text-transform: none;
 }
 
 .upload-button:hover {

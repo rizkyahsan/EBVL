@@ -23,6 +23,8 @@ public class AspNetLocalIdentityService(UserManager<AspNetCoreUser> userManager,
     IOptions<LocalIdentityOptions> localIdentityOptions,
     IDatabaseService databaseService) : ILocalIdentityService
 {
+    #region User Registration and Verification
+
     public async Task<Guid> CreateUserAsync(string username, string email, string password)
     {
         var aspNetCoreUser = new AspNetCoreUser
@@ -107,6 +109,10 @@ public class AspNetLocalIdentityService(UserManager<AspNetCoreUser> userManager,
         return user.Id;
     }
 
+    #endregion
+
+    #region Authentication and Eligibility
+
     public async Task<LoginResult> VerifyUserPasswordAsync(string username, string password)
     {
         var user = await userManager.FindByNameAsync(username);
@@ -151,6 +157,10 @@ public class AspNetLocalIdentityService(UserManager<AspNetCoreUser> userManager,
             user.EmailConfirmed &&
             !await userManager.IsLockedOutAsync(user);
     }
+
+    #endregion
+
+    #region User Maintenance
 
     public async Task<Guid> UpdatePasswordAsync(Guid id, string password)
     {
@@ -206,6 +216,10 @@ public class AspNetLocalIdentityService(UserManager<AspNetCoreUser> userManager,
             throw new InvalidOperationException(identityResult.GetErrorSummary());
         }
     }
+
+    #endregion
+
+    #region Login and Token Generation
 
     public async Task<LoginResult> LoginAsync(string username)
     {
@@ -290,4 +304,6 @@ public class AspNetLocalIdentityService(UserManager<AspNetCoreUser> userManager,
 
         return tokenHandler.WriteToken(token);
     }
+
+    #endregion
 }

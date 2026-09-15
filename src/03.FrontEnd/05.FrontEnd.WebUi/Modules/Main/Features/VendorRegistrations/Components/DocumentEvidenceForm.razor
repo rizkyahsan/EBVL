@@ -1,35 +1,40 @@
-@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence
-@using EBVL.Shared.Statics.VendorRegistrations
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires
 
 <div class="document-evidence-scope">
     <MudStack Spacing="3" Class="document-evidence-form">
         <MudGrid Spacing="3">
-            @foreach (var definition in DocumentEvidenceFor.All)
+            @foreach (var definition in Documents.OrderBy(item => item.Order))
             {
-                var document = GetDocument(definition.Key);
-                var inputId = $"evidence-{definition.Key}";
+                var inputId = $"evidence-{definition.DefinitionKey}";
+                var fileName = _fileNames.GetValueOrDefault(definition.DefinitionKey) ?? definition.FileName;
                 <MudItem xs="12" md="6">
                     <div class="document-upload-row">
-                        <MudText Typo="Typo.body1" Class="document-label">@GetDisplayName(definition.Key, definition.Name)</MudText>
+                        <MudText Typo="Typo.body1" Class="document-label">@definition.Name @(definition.IsMandatory ? "*" : null)</MudText>
                         <div class="upload-control">
-                            <div class="file-name @(document.FileName is not null ? "file-selected" : null)" title="@document.FileName">
-                                @(document.FileName ?? "Upload File")
-                            </div>
+                            <MudTextField T="string"
+                                          Value="@(fileName ?? string.Empty)"
+                                          Placeholder="@($"{definition.Name}{(definition.IsMandatory ? " *" : string.Empty)}")"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          ReadOnly="true"
+                                          Class="file-name-field"
+                                          title="@definition.FileName" />
                             <InputFile id="@inputId"
                                        class="evidence-file-input"
-                                       OnChange="eventArgs => SelectFile(definition.Key, eventArgs)"
+                                       style="display: none;"
+                                       OnChange="eventArgs => SelectFile(definition, eventArgs)"
                                        accept="application/pdf,.pdf" />
-                            <label for="@inputId" class="upload-button">
+                            <label for="@inputId" class="upload-button mud-button-root">
                                 <MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Small" />
                                 <span>Upload</span>
                             </label>
-                            @if (document.FileName is not null)
+                            @if (definition.DocumentId is not null)
                             {
                                 <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline"
                                                Color="Color.Error"
                                                Size="Size.Small"
                                                Class="remove-file"
-                                               OnClick="() => RemoveFile(definition.Key)"
+                                               OnClick="() => RemoveFile(definition)"
                                                aria-label="@($"Remove {definition.Name}")" />
                             }
                         </div>

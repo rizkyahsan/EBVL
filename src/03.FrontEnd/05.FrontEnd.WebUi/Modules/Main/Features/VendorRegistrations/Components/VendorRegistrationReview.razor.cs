@@ -1,23 +1,23 @@
-using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence;
+using System.Text.Json;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire;
-using EBVL.Shared.Statics.VendorRegistrations;
+using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Components;
 
 public partial class VendorRegistrationReview
 {
+    #region Parameters
+
     [Parameter]
     public required PreRegistrationRequest PreRegistration { get; init; }
 
     [Parameter]
-    public required DocumentEvidenceRequest DocumentEvidence { get; init; }
+    public required QuestionnaireRuntimeResponse Runtime { get; init; }
 
     [Parameter]
-    public required QuestionnaireRequest Questionnaire { get; init; }
-
-    [Parameter]
-    public required EventCallback<string> OnDownload { get; init; }
+    public required EventCallback<VendorRegistrationDocumentItem> OnDownloadDocument { get; init; }
+    [Parameter] public required EventCallback<RuntimeFileItem> OnDownloadFile { get; init; }
 
     [Parameter]
     public required EventCallback OnSendForVerification { get; init; }
@@ -25,52 +25,45 @@ public partial class VendorRegistrationReview
     [Parameter]
     public required EventCallback OnPrevious { get; init; }
 
+    #endregion
+
+    #region Fields
+
     private bool _isConfirmed;
+
+    #endregion
+
+    #region Private Methods
 
     private string GetBrands()
     {
         return string.Join(", ", new[] { PreRegistration.BrandRepresentative }.Concat(PreRegistration.AdditionalBrands).Where(brand => !string.IsNullOrWhiteSpace(brand)));
     }
 
-    private string? GetFileName(string key)
+    private static string GetAnswer(RuntimeQuestionItem question)
     {
-        return DocumentEvidence.Documents.SingleOrDefault(document => document.Key == key)?.FileName;
-    }
-
-    private string GetAnswer(int questionNumber)
-    {
-        var answer = Questionnaire.Answers.SingleOrDefault(item => item.QuestionNumber == questionNumber);
-        return answer?.FileName ?? answer?.Value ?? "-";
-    }
-
-    private static string FormatAddress(QuestionnaireAddressRequest address)
-    {
-        var values = new[]
+        var answer = question.Answer;
+        if (answer?.OptionIds?.Count > 0)
         {
-            address.Building,
-            address.Street,
-            address.Number,
-            address.City,
-            address.Country,
-            address.Phone,
-            address.Fax,
-            address.Email,
-            address.Website
-        };
+            var selected = answer.OptionIds.ToHashSet();
+            return string.Join(", ", question.Options.Where(option => selected.Contains(option.Id)).Select(option => option.Label));
+        }
 
-        return string.Join(", ", values.Where(value => !string.IsNullOrWhiteSpace(value)));
-    }
-
-    private static string GetSectionTitle(string section)
-    {
-        return section switch
+        if (!string.IsNullOrWhiteSpace(answer?.AddressJson))
         {
-            QuestionnaireFor.GeneralInformation => "General",
-            QuestionnaireFor.VendorRepresentativeOffice => "Vendor / RO (Representative Office)",
-            QuestionnaireFor.SoleAgent => "Sole Agent",
-            QuestionnaireFor.ProductQualityGeneral => "Product Quality - General",
-            QuestionnaireFor.ProductQualitySpecific => "Product Quality - Spesific",
-            _ => "Product Positioning & Technical Support"
-        };
+            try
+            {
+                var address = JsonSerializer.Deserialize<QuestionnaireAddressRequest>(answer.AddressJson);
+                return address is null ? "-" : string.Join(", ", new[] { address.Building, address.Street, address.Number, address.City, address.Country }.Where(value => !string.IsNullOrWhiteSpace(value)));
+            }
+            catch (JsonException)
+            {
+                return "-";
+            }
+        }
+
+        return answer?.TextValue ?? answer?.IntegerValue?.ToString() ?? answer?.DecimalValue?.ToString() ?? answer?.DateValue?.ToString() ?? answer?.BooleanValue?.ToString() ?? (question.Files.Count > 0 ? question.Files[0].FileName : "-");
     }
+
+    #endregion
 }

@@ -1,7 +1,5 @@
-@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.DocumentEvidence
 @using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration
-@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire
-@using EBVL.Shared.Statics.VendorRegistrations
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires
 
 <div class="vendor-review-scope">
     <MudExpansionPanels MultiExpansion="true" Elevation="0">
@@ -26,33 +24,26 @@
 
         <MudExpansionPanel Text="2. Document Evidence" Class="review-accordion">
             <MudGrid Spacing="3">
-                @foreach (var definition in DocumentEvidenceFor.All)
+                @foreach (var document in Runtime.Documents.OrderBy(item => item.Order))
                 {
                     <MudItem xs="12" md="6">
-                        <ReviewDocument Definition="definition" FileName="@GetFileName(definition.Key)" OnDownload="OnDownload" />
+                        <MudText Typo="Typo.body1">@document.Name</MudText>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Info" FullWidth="true" Disabled="@(document.DocumentId is null)" OnClick="() => OnDownloadDocument.InvokeAsync(document)">@(document.FileName ?? "No file uploaded")</MudButton>
                     </MudItem>
                 }
             </MudGrid>
         </MudExpansionPanel>
 
         <MudExpansionPanel Text="3. Questionnaire" Class="review-accordion">
-            @foreach (var section in QuestionnaireFor.All.GroupBy(question => question.Section))
+            @foreach (var section in Runtime.Sections.OrderBy(item => item.Order))
             {
-                <MudText Typo="Typo.h6" Class="questionnaire-section-title">@GetSectionTitle(section.Key)</MudText>
-                @if (section.Key == QuestionnaireFor.GeneralInformation)
-                {
-                    <MudGrid Spacing="2" Class="questionnaire-review-grid">
-                        <MudItem xs="12" md="6"><ReviewField Label="Headquarter Information" Value="@FormatAddress(Questionnaire.HeadquarterAddress)" /></MudItem>
-                        <MudItem xs="12" md="6"><ReviewField Label="Manufacturing Information" Value="@FormatAddress(Questionnaire.ManufacturingAddress)" /></MudItem>
-                        <MudItem xs="12" md="6"><ReviewField Label="Representative Office Information" Value="@FormatAddress(Questionnaire.RepresentativeOfficeAddress)" /></MudItem>
-                        <MudItem xs="12" md="6"><ReviewField Label="Sole Agent Office Information" Value="@FormatAddress(Questionnaire.SoleAgentOfficeAddress)" /></MudItem>
-                    </MudGrid>
-                }
+                <MudText Typo="Typo.h6" Class="questionnaire-section-title">@section.Title</MudText>
                 <MudGrid Spacing="2" Class="questionnaire-review-grid">
-                    @foreach (var question in section.Where(question => question.Number is not (6 or 7 or 8 or 9)))
+                    @foreach (var question in section.Questions.OrderBy(item => item.Order))
                     {
                         <MudItem xs="12" md="6">
-                            <ReviewField Label="@question.Label" Value="@GetAnswer(question.Number)" />
+                            <ReviewField Label="@question.Label" Value="@GetAnswer(question)" />
+                            @foreach (var file in question.Files) { <MudButton Variant="Variant.Text" Color="Color.Info" OnClick="() => OnDownloadFile.InvokeAsync(file)">@file.FileName</MudButton> }
                         </MudItem>
                     }
                 </MudGrid>

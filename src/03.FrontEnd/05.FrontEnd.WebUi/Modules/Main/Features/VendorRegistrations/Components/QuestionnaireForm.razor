@@ -1,37 +1,100 @@
-@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire
-@using EBVL.Shared.Statics.VendorRegistrations
+@using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires
+@using EBVL.Shared.Enums
 
-<MudForm @ref="_form" Model="Model" Validation="_validator.ValidateValue">
-    <div class="questionnaire-form-scope">
-        <MudExpansionPanels MultiExpansion="true" Elevation="0" Class="questionnaire-panels">
-            <MudExpansionPanel Text="General" Expanded="true" Class="questionnaire-panel">
-                <QuestionnaireGeneralForm Model="Model" OnChanged="NotifyChanged" />
-            </MudExpansionPanel>
-            <MudExpansionPanel Text="Vendor / RO (Representative Office)" Class="questionnaire-panel">
-                <QuestionnaireVendorROForm Model="Model" OnChanged="NotifyChanged" />
-            </MudExpansionPanel>
-            <MudExpansionPanel Text="Sole Agent" Class="questionnaire-panel">
-                <QuestionnaireSoleAgentForm Model="Model" OnChanged="NotifyChanged" />
-            </MudExpansionPanel>
-            <MudExpansionPanel Text="Product Quality - General" Class="questionnaire-panel">
-                <QuestionnaireProductQualityGeneralForm Model="Model" OnChanged="NotifyChanged" />
-            </MudExpansionPanel>
-            <MudExpansionPanel Text="Product Quality - Spesific" Class="questionnaire-panel">
-                <QuestionnaireProductQualitySpesificForm Model="Model" OnChanged="NotifyChanged" />
-            </MudExpansionPanel>
-            <MudExpansionPanel Text="Product Positioning &amp; Technical Support" Class="questionnaire-panel">
-                <QuestionnaireProductPositioningQuestionsForm Model="Model" OnChanged="NotifyChanged" />
-            </MudExpansionPanel>
-        </MudExpansionPanels>
-
-        @if (!string.IsNullOrWhiteSpace(_validationError))
+<div class="questionnaire-form-scope">
+    <MudExpansionPanels MultiExpansion="true" Elevation="0" Class="questionnaire-panels">
+        @foreach (var section in Sections.OrderBy(item => item.Order))
         {
-            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">@_validationError</MudAlert>
+            <MudExpansionPanel Text="@section.Title" Expanded="@(section.Order == Sections.Min(item => item.Order))" Class="questionnaire-panel">
+                <MudGrid Spacing="2">
+                    @foreach (var question in section.Questions.OrderBy(item => item.Order))
+                    {
+                        <MudItem xs="12" md="6" Class="question-item">
+                            @if (question.Type == QuestionnaireQuestionType.ShortText)
+                            {
+                                <MudTextField T="string" Label="@QuestionLabel(question)" Value="@GetText(question.Id)" ValueChanged="value => SetText(question.Id, value)" Placeholder="@question.Placeholder" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            }
+                            else if (question.Type == QuestionnaireQuestionType.LongText)
+                            {
+                                <MudTextField T="string" Label="@QuestionLabel(question)" Value="@GetText(question.Id)" ValueChanged="value => SetText(question.Id, value)" Placeholder="@question.Placeholder" Variant="Variant.Outlined" Margin="Margin.Dense" Lines="4" />
+                            }
+                            else if (question.Type == QuestionnaireQuestionType.Address)
+                            {
+                                <QuestionnaireAddressForm Title="@question.Label" Model="@GetAddress(question.Id)" Required="@question.IsRequired" OnChanged="() => AddressChanged(question.Id)" />
+                            }
+                            else if (question.Type == QuestionnaireQuestionType.Integer)
+                            {
+                                <MudNumericField T="long?" Label="@QuestionLabel(question)" Value="@GetInteger(question.Id)" ValueChanged="value => SetInteger(question.Id, value)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            }
+                            else if (question.Type == QuestionnaireQuestionType.Decimal)
+                            {
+                                <MudNumericField T="decimal?" Label="@QuestionLabel(question)" Value="@GetDecimal(question.Id)" ValueChanged="value => SetDecimal(question.Id, value)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            }
+                            else if (question.Type == QuestionnaireQuestionType.Date)
+                            {
+                                <MudDatePicker Label="@QuestionLabel(question)" Date="@GetDate(question.Id)" DateChanged="value => SetDate(question.Id, value)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            }
+                            else if (question.Type == QuestionnaireQuestionType.Boolean)
+                            {
+                                <MudText Typo="Typo.body2">@QuestionLabel(question)</MudText>
+                                <MudRadioGroup T="bool?" Value="@GetBoolean(question.Id)" ValueChanged="value => SetBoolean(question.Id, value)">
+                                    <MudRadio T="bool?" Value="@((bool?)true)">Yes</MudRadio>
+                                    <MudRadio T="bool?" Value="@((bool?)false)">No</MudRadio>
+                                </MudRadioGroup>
+                            }
+                            else if (question.Type == QuestionnaireQuestionType.SingleChoice)
+                            {
+                                <MudSelect T="Guid?" Label="@QuestionLabel(question)" Value="@GetSingleOption(question.Id)" ValueChanged="value => SetSingleOption(question.Id, value)" Variant="Variant.Outlined" Margin="Margin.Dense">
+                                    @foreach (var option in question.Options.OrderBy(item => item.Order))
+                                    {
+                                        <MudSelectItem T="Guid?" Value="@((Guid?)option.Id)">@option.Label</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            }
+                            else if (question.Type == QuestionnaireQuestionType.MultipleChoice)
+                            {
+                                <MudText Typo="Typo.body2">@QuestionLabel(question)</MudText>
+                                @foreach (var option in question.Options.OrderBy(item => item.Order))
+                                {
+                                    <MudCheckBox T="bool" Label="@option.Label" Value="@IsOptionSelected(question.Id, option.Id)" ValueChanged="value => SetOptionSelected(question.Id, option.Id, value)" />
+                                }
+                            }
+                            else if (question.Type == QuestionnaireQuestionType.File)
+                            {
+                                var fileInputId = $"question-{question.Id}";
+                                var uploadedFile = question.Files.FirstOrDefault();
+                                var fileName = _fileNames.GetValueOrDefault(question.Id) ?? uploadedFile?.FileName;
+                                <div class="questionnaire-upload-field">
+                                    <div class="upload-control">
+                                        <MudTextField T="string"
+                                                      Value="@(fileName ?? string.Empty)"
+                                                      Placeholder="@QuestionLabel(question)"
+                                                      Variant="Variant.Outlined"
+                                                      Margin="Margin.Dense"
+                                                      ReadOnly="true"
+                                                      Class="file-name-field"
+                                                      title="@uploadedFile?.FileName" />
+                                        <InputFile id="@fileInputId" class="upload-input" style="display: none;" OnChange="args => SelectFile(question, args)" accept="application/pdf,.pdf" />
+                                        <label for="@fileInputId" class="upload-button mud-button-root">
+                                            <MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Small" />
+                                            <span>Upload</span>
+                                        </label>
+                                        @if (uploadedFile is not null || fileName is not null)
+                                        {
+                                            <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" OnClick="() => RemoveFile(question, uploadedFile)" aria-label="@($"Remove {question.Label}")" />
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudExpansionPanel>
         }
-
-        <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="questionnaire-actions">
-            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Warning" Size="Size.Medium" Class="navigation-button" OnClick="OnBack">Previous</MudButton>
-            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Info" Size="Size.Medium" Class="navigation-button" OnClick="Submit">Next</MudButton>
-        </MudStack>
-    </div>
-</MudForm>
+    </MudExpansionPanels>
+    @if (!string.IsNullOrWhiteSpace(_validationError)) { <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">@_validationError</MudAlert> }
+    <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="questionnaire-actions">
+        <MudButton Variant="Variant.Outlined" Color="Color.Warning" Class="navigation-button" OnClick="OnBack">Previous</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Info" Class="navigation-button" OnClick="Submit">Next</MudButton>
+    </MudStack>
+</div>

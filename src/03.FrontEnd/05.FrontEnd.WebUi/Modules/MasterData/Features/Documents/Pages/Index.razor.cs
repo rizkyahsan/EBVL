@@ -43,6 +43,11 @@ public partial class Index
         }
     }
 
+    private new void ClearException()
+    {
+        throw new NotImplementedException();
+    }
+
     private bool Filter(DocumentListItem item)
     {
         return string.IsNullOrWhiteSpace(_search)

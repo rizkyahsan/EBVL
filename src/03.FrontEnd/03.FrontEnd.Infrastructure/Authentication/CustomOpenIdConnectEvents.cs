@@ -18,8 +18,14 @@ public sealed class CustomOpenIdConnectEvents(
     IUserPositionsService userPositionsService)
     : OpenIdConnectEvents
 {
+    #region Callback Paths
+
     private const string SignInCallbackPath = "/signin-oidc";
     private const string SignOutCallbackPath = "/signout-callback-oidc";
+
+    #endregion
+
+    #region OpenID Connect Events
 
     public override Task RedirectToIdentityProvider(RedirectContext context)
     {
@@ -67,6 +73,10 @@ public sealed class CustomOpenIdConnectEvents(
         await ProcessUserPositions(identity, userId);
         await ProcessPersonalRoles(identity, userId);
     }
+
+    #endregion
+
+    #region Claims Processing
 
     private async Task ProcessUserProfile(ClaimsIdentity identity, string email)
     {
@@ -173,4 +183,6 @@ public sealed class CustomOpenIdConnectEvents(
             }
         }
     }
+
+    #endregion
 }

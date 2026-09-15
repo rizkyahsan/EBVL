@@ -4,6 +4,7 @@ using EBVL.BackEnd.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(DatabaseService))]
-    partial class DatabaseServiceModelSnapshot : ModelSnapshot
+    [Migration("20260914074252_M028AddVendorRegistrationSnapshots")]
+    partial class M028AddVendorRegistrationSnapshots
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -370,9 +373,6 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTimeOffset?>("AttemptedAt")
-                        .HasColumnType("datetimeoffset");
-
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("datetimeoffset");
 
@@ -383,20 +383,60 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Property<DateTimeOffset>("ExpiredAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid>("ExternalLoginLogId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExternalLoginLogId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ExternalLogins", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.ExternalLoginLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("AttemptedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
                     b.Property<string>("FailureReason")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IpAddress")
-                        .HasMaxLength(45)
                         .HasColumnType("nvarchar(45)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsSuccess")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsUsed")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("Modified")
@@ -409,7 +449,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Username")
-                        .HasMaxLength(320)
+                        .IsRequired()
                         .HasColumnType("nvarchar(320)");
 
                     b.Property<DateTimeOffset?>("VerifiedAt")
@@ -417,9 +457,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ExternalLogins", "EBVL");
+                    b.ToTable("ExternalLoginLogs", "EBVL");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.FileStorage", b =>
@@ -741,17 +779,18 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Property<Guid>("QuestionnaireQuestionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("TextValue")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("VendorRegistrationId")
+                    b.Property<Guid>("QuestionnaireSubmissionId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TextValue")
+                        .HasMaxLength(8000)
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("QuestionnaireQuestionId");
 
-                    b.HasIndex("VendorRegistrationId", "QuestionnaireQuestionId")
+                    b.HasIndex("QuestionnaireSubmissionId", "QuestionnaireQuestionId")
                         .IsUnique();
 
                     b.ToTable("QuestionnaireAnswers", "EBVL");
@@ -765,14 +804,15 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.Property<string>("ContentType")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(320)");
 
                     b.Property<Guid>("FileStorageId")
                         .HasColumnType("uniqueidentifier");
@@ -787,11 +827,12 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(320)");
 
                     b.Property<string>("OriginalFileName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(260)
+                        .HasColumnType("nvarchar(260)");
 
                     b.Property<Guid>("QuestionnaireAnswerId")
                         .HasColumnType("uniqueidentifier");
@@ -804,11 +845,50 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileStorageId");
+                    b.HasIndex("FileStorageId")
+                        .IsUnique();
 
                     b.HasIndex("QuestionnaireAnswerId");
 
                     b.ToTable("QuestionnaireAnswerFiles", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireAnswerOption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<Guid>("QuestionnaireAnswerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("QuestionnaireOptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireOptionId");
+
+                    b.HasIndex("QuestionnaireAnswerId", "QuestionnaireOptionId")
+                        .IsUnique();
+
+                    b.ToTable("QuestionnaireAnswerOptions", "EBVL");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireOption", b =>
@@ -855,6 +935,54 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("QuestionnaireOptions", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireOptionSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("QuestionnaireQuestionSnapshotId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SourceOptionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireQuestionSnapshotId");
+
+                    b.ToTable("QuestionnaireOptionSnapshots", "EBVL");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestion", b =>
@@ -934,6 +1062,78 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.ToTable("QuestionnaireQuestions", "EBVL");
                 });
 
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestionSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AnswerRule")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("Hint")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Placeholder")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<Guid>("QuestionnaireSectionSnapshotId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SourceQuestionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireSectionSnapshotId");
+
+                    b.ToTable("QuestionnaireQuestionSnapshots", "EBVL");
+                });
+
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireRule", b =>
                 {
                     b.Property<Guid>("Id")
@@ -987,6 +1187,59 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.ToTable("QuestionnaireRules", "EBVL");
                 });
 
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireRuleSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("Operator")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<Guid>("QuestionnaireSubmissionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SourceQuestionSnapshotId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TargetQuestionSnapshotId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireSubmissionId");
+
+                    b.ToTable("QuestionnaireRuleSnapshots", "EBVL");
+                });
+
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSection", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1038,6 +1291,95 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("QuestionnaireSections", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSectionSnapshot", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("QuestionnaireSubmissionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SourceSectionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionnaireSubmissionId");
+
+                    b.ToTable("QuestionnaireSectionSnapshots", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSubmission", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("QuestionnaireCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("QuestionnaireId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("VendorRegistrationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VendorRegistrationId")
+                        .IsUnique();
+
+                    b.ToTable("QuestionnaireSubmissions", "EBVL");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.User", b =>
@@ -1123,22 +1465,28 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.Property<string>("BrandRepresentative")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("CompanyEmail")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("CompanyPhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("CompanyService")
-                        .HasColumnType("int");
+                    b.Property<string>("CompanyService")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<string>("CompanyType")
                         .IsRequired()
@@ -1154,11 +1502,13 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.Property<string>("FactoryAddress")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<string>("FactoryCountry")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -1173,29 +1523,31 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .HasColumnType("nvarchar(320)");
 
                     b.Property<string>("NormalizedSapVendorNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("PicEmail")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
 
                     b.Property<string>("PicPhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("QuestionnaireId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("RepresentativeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTimeOffset?>("ResumeTokenExpiresAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<byte[]>("ResumeTokenHash")
                         .IsRequired()
-                        .HasColumnType("varbinary(max)");
+                        .HasMaxLength(32)
+                        .HasColumnType("varbinary(32)");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -1204,7 +1556,8 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .HasColumnType("rowversion");
 
                     b.Property<string>("SapVendorNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -1219,13 +1572,18 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.Property<string>("Website")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuestionnaireId");
+                    b.HasIndex("NormalizedSapVendorNumber")
+                        .IsUnique()
+                        .HasFilter("[NormalizedSapVendorNumber] IS NOT NULL AND [IsDeleted] = 0");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL AND [IsDeleted] = 0");
 
                     b.ToTable("VendorRegistrations", "EBVL");
                 });
@@ -1253,7 +1611,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid>("DocumentDefinitionId")
+                    b.Property<Guid?>("DocumentRequirementId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("FileStorageId")
@@ -1262,11 +1620,63 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsMandatory")
-                        .HasColumnType("bit");
-
                     b.Property<long>("Length")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("nvarchar(260)");
+
+                    b.Property<Guid>("VendorRegistrationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentRequirementId");
+
+                    b.HasIndex("FileStorageId")
+                        .IsUnique();
+
+                    b.HasIndex("VendorRegistrationId", "DefinitionKey")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("VendorRegistrationDocuments", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorRegistrationDocumentRequirement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<Guid>("DocumentDefinitionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMandatory")
+                        .HasColumnType("bit");
 
                     b.Property<int>("MaxSizeMb")
                         .HasColumnType("int");
@@ -1285,34 +1695,32 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
-                    b.Property<string>("OriginalFileName")
-                        .IsRequired()
-                        .HasMaxLength(260)
-                        .HasColumnType("nvarchar(260)");
-
                     b.Property<Guid>("VendorRegistrationId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DocumentDefinitionId");
+                    b.HasIndex("VendorRegistrationId", "Code")
+                        .IsUnique();
 
-                    b.HasIndex("FileStorageId");
-
-                    b.HasIndex("VendorRegistrationId", "DefinitionKey")
-                        .IsUnique()
-                        .HasFilter("[IsDeleted] = 0");
-
-                    b.ToTable("VendorRegistrationDocuments", "EBVL");
+                    b.ToTable("VendorRegistrationDocumentRequirements", "EBVL");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.ExternalLogin", b =>
                 {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.ExternalLoginLog", "ExternalLoginLog")
+                        .WithOne("ExternalLogin")
+                        .HasForeignKey("EBVL.BackEnd.Domain.Entities.ExternalLogin", "ExternalLoginLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("EBVL.BackEnd.Domain.Entities.User", "User")
                         .WithMany("ExternalLogins")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("ExternalLoginLog");
 
                     b.Navigation("User");
                 });
@@ -1330,21 +1738,21 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireAnswer", b =>
                 {
-                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestion", "QuestionnaireQuestion")
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestionSnapshot", "QuestionnaireQuestion")
                         .WithMany()
                         .HasForeignKey("QuestionnaireQuestionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("EBVL.BackEnd.Domain.Entities.VendorRegistration", "VendorRegistration")
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireSubmission", "QuestionnaireSubmission")
                         .WithMany("Answers")
-                        .HasForeignKey("VendorRegistrationId")
+                        .HasForeignKey("QuestionnaireSubmissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("QuestionnaireQuestion");
 
-                    b.Navigation("VendorRegistration");
+                    b.Navigation("QuestionnaireSubmission");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireAnswerFile", b =>
@@ -1352,7 +1760,7 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.HasOne("EBVL.BackEnd.Domain.Entities.FileStorage", "FileStorage")
                         .WithMany()
                         .HasForeignKey("FileStorageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireAnswer", "QuestionnaireAnswer")
@@ -1366,6 +1774,25 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Navigation("QuestionnaireAnswer");
                 });
 
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireAnswerOption", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireAnswer", "QuestionnaireAnswer")
+                        .WithMany("SelectedOptions")
+                        .HasForeignKey("QuestionnaireAnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireOptionSnapshot", "QuestionnaireOption")
+                        .WithMany()
+                        .HasForeignKey("QuestionnaireOptionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("QuestionnaireAnswer");
+
+                    b.Navigation("QuestionnaireOption");
+                });
+
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireOption", b =>
                 {
                     b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestion", "QuestionnaireQuestion")
@@ -1375,6 +1802,17 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("QuestionnaireQuestion");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireOptionSnapshot", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestionSnapshot", "QuestionnaireQuestionSnapshot")
+                        .WithMany("Options")
+                        .HasForeignKey("QuestionnaireQuestionSnapshotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QuestionnaireQuestionSnapshot");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestion", b =>
@@ -1388,6 +1826,17 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Navigation("QuestionnaireSection");
                 });
 
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestionSnapshot", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireSectionSnapshot", "QuestionnaireSectionSnapshot")
+                        .WithMany("Questions")
+                        .HasForeignKey("QuestionnaireSectionSnapshotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QuestionnaireSectionSnapshot");
+                });
+
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireRule", b =>
                 {
                     b.HasOne("EBVL.BackEnd.Domain.Entities.Questionnaire", "Questionnaire")
@@ -1399,6 +1848,17 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Navigation("Questionnaire");
                 });
 
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireRuleSnapshot", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireSubmission", "QuestionnaireSubmission")
+                        .WithMany("Rules")
+                        .HasForeignKey("QuestionnaireSubmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QuestionnaireSubmission");
+                });
+
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSection", b =>
                 {
                     b.HasOne("EBVL.BackEnd.Domain.Entities.Questionnaire", "Questionnaire")
@@ -1408,6 +1868,28 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .IsRequired();
 
                     b.Navigation("Questionnaire");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSectionSnapshot", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.QuestionnaireSubmission", "QuestionnaireSubmission")
+                        .WithMany("Sections")
+                        .HasForeignKey("QuestionnaireSubmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("QuestionnaireSubmission");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSubmission", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.VendorRegistration", "VendorRegistration")
+                        .WithOne("Submission")
+                        .HasForeignKey("EBVL.BackEnd.Domain.Entities.QuestionnaireSubmission", "VendorRegistrationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VendorRegistration");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.User", b =>
@@ -1423,26 +1905,20 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorRegistration", b =>
                 {
-                    b.HasOne("EBVL.BackEnd.Domain.Entities.Questionnaire", "Questionnaire")
-                        .WithMany()
-                        .HasForeignKey("QuestionnaireId");
-
                     b.HasOne("EBVL.BackEnd.Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Questionnaire");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorRegistrationDocument", b =>
                 {
-                    b.HasOne("EBVL.BackEnd.Domain.Entities.DocumentDefinition", "DocumentDefinition")
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.VendorRegistrationDocumentRequirement", "DocumentRequirement")
                         .WithMany()
-                        .HasForeignKey("DocumentDefinitionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("DocumentRequirementId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EBVL.BackEnd.Domain.Entities.FileStorage", "FileStorage")
                         .WithMany()
@@ -1456,9 +1932,20 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DocumentDefinition");
+                    b.Navigation("DocumentRequirement");
 
                     b.Navigation("FileStorage");
+
+                    b.Navigation("VendorRegistration");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorRegistrationDocumentRequirement", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.VendorRegistration", "VendorRegistration")
+                        .WithMany("DocumentRequirements")
+                        .HasForeignKey("VendorRegistrationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("VendorRegistration");
                 });
@@ -1466,6 +1953,11 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.Country", b =>
                 {
                     b.Navigation("Lenders");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.ExternalLoginLog", b =>
+                {
+                    b.Navigation("ExternalLogin");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.Lender", b =>
@@ -1483,9 +1975,16 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireAnswer", b =>
                 {
                     b.Navigation("Files");
+
+                    b.Navigation("SelectedOptions");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestion", b =>
+                {
+                    b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireQuestionSnapshot", b =>
                 {
                     b.Navigation("Options");
                 });
@@ -1495,6 +1994,20 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Navigation("Questions");
                 });
 
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSectionSnapshot", b =>
+                {
+                    b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.QuestionnaireSubmission", b =>
+                {
+                    b.Navigation("Answers");
+
+                    b.Navigation("Rules");
+
+                    b.Navigation("Sections");
+                });
+
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.User", b =>
                 {
                     b.Navigation("ExternalLogins");
@@ -1502,9 +2015,12 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.VendorRegistration", b =>
                 {
-                    b.Navigation("Answers");
+                    b.Navigation("DocumentRequirements");
 
                     b.Navigation("Documents");
+
+                    b.Navigation("Submission")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

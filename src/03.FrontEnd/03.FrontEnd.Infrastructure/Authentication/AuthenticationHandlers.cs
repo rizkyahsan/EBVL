@@ -17,6 +17,8 @@ namespace EBVL.FrontEnd.Infrastructure.Authentication;
 
 public static class AuthenticationHandlers
 {
+    #region Authentication Endpoints
+
     public static ChallengeHttpResult LoginHandler(string pathBase, string? returnUrl)
     {
         var authenticationProperties = GenerateAuthenticationProperties(pathBase, returnUrl);
@@ -107,7 +109,6 @@ public static class AuthenticationHandlers
             return TypedResults.Redirect(RouteFor.Landing);
         }
 
-        #region Verification
         var httpContext = httpContextAccessor.HttpContext;
         var userToken = UserTokenStore.GetSession(new Guid(sessionId));
         if (userToken is null)
@@ -127,7 +128,6 @@ public static class AuthenticationHandlers
         {
             return TypedResults.Redirect(RouteFor.Landing);
         }
-        #endregion
 
         var handler = new JwtSecurityTokenHandler();
         var token = handler.ReadJwtToken(userToken.UserToken);
@@ -163,6 +163,10 @@ public static class AuthenticationHandlers
 
         return TypedResults.Redirect(GetSafeLocalReturnUrl(returnUrl));
     }
+
+    #endregion
+
+    #region Claims Processing
 
     private static async Task ProcessPositionRoles(IUserPositionsService userPositionsService, IPositionRolesService positionRolesService, ClaimsIdentity identity, string positionId, string userId)
     {
@@ -216,6 +220,10 @@ public static class AuthenticationHandlers
             }
         }
     }
+
+    #endregion
+
+    #region Authentication Properties
 
     private static async Task<AuthenticationProperties> GetAuthenticationProperties(HttpContext httpContext)
     {
@@ -291,6 +299,10 @@ public static class AuthenticationHandlers
         };
     }
 
+    #endregion
+
+    #region Return URL Validation
+
     private static string GetSafeLocalReturnUrl(string? returnUrl)
     {
         if (string.IsNullOrWhiteSpace(returnUrl)
@@ -305,4 +317,6 @@ public static class AuthenticationHandlers
 
         return returnUrl;
     }
+
+    #endregion
 }

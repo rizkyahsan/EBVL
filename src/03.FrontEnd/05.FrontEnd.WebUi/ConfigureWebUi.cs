@@ -39,7 +39,10 @@ public static class ConfigureWebUi
         CultureInfo.DefaultThreadCurrentCulture = supportedCultures[0];
         CultureInfo.DefaultThreadCurrentUICulture = supportedCultures[0];
 
-        _ = builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+        _ = builder.Services.AddRazorComponents().AddInteractiveServerComponents(options =>
+        {
+            options.DetailedErrors = builder.Environment.IsDevelopment();
+        });
         _ = builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
         _ = builder.Services.AddCascadingAuthenticationState();
         _ = builder.Services.AddScoped<ClipboardService>();

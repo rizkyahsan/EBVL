@@ -3,10 +3,16 @@ using EBVL.Shared.Dto.Modules.MasterData.Documents;
 namespace EBVL.BackEnd.Logics.Modules.MasterData.Documents;
 
 // TODO: Restore document permissions after IdAMan permission setup is complete.
+#region Requests
+
 public sealed record GetDocumentsQuery : IRequest<GetDocumentsResponse>;
 public sealed record GetDocumentQuery(Guid DocumentId) : IRequest<GetDocumentResponse>;
 public sealed record AddDocumentCommand : AddDocumentRequest, IRequest<GetDocumentResponse>;
 public sealed record UpdateDocumentCommand(Guid DocumentId, UpdateDocumentRequest Document) : IRequest<GetDocumentResponse>;
+
+#endregion
+
+#region Validation
 
 public sealed class AddDocumentCommandValidator : AbstractValidatorBase<AddDocumentCommand>
 {
@@ -23,6 +29,10 @@ public sealed class UpdateDocumentCommandValidator : AbstractValidatorBase<Updat
         _ = RuleFor(x => x.Document).SetValidator(new UpdateDocumentRequestValidator());
     }
 }
+
+#endregion
+
+#region Query Handlers
 
 public sealed class GetDocumentsHandler(IDatabaseService db) : IRequestHandler<GetDocumentsQuery, GetDocumentsResponse>
 {
@@ -50,6 +60,10 @@ public sealed class GetDocumentHandler(IDatabaseService db) : IRequestHandler<Ge
     }
 }
 
+#endregion
+
+#region Command Handlers
+
 public sealed class AddDocumentHandler(IDatabaseService db) : IRequestHandler<AddDocumentCommand, GetDocumentResponse>
 {
     public async Task<GetDocumentResponse> Handle(AddDocumentCommand request, CancellationToken cancellationToken)
@@ -63,8 +77,10 @@ public sealed class AddDocumentHandler(IDatabaseService db) : IRequestHandler<Ad
 
         var document = new DocumentDefinition
         {
+            Code = await NextCode(db, businessProcess, cancellationToken),
             BusinessProcess = businessProcess,
             Name = name,
+            Order = (await db.DocumentDefinitions.Where(x => !x.IsDeleted && x.BusinessProcess == businessProcess).Select(x => (int?)x.Order).MaxAsync(cancellationToken) + 1) ?? 1,
             MaxSizeMb = request.MaxSizeMb,
             IsMandatory = request.IsMandatory,
             IsActive = request.IsActive
@@ -78,7 +94,22 @@ public sealed class AddDocumentHandler(IDatabaseService db) : IRequestHandler<Ad
     {
         return new(x.Id, x.BusinessProcess, x.Name, x.MaxSizeMb, x.IsMandatory, x.IsActive, Convert.ToBase64String(x.RowVersion));
     }
+
+    private static async Task<string> NextCode(IDatabaseService db, string businessProcess, CancellationToken cancellationToken)
+    {
+        var prefix = new string([.. businessProcess.Where(char.IsLetterOrDigit).Select(char.ToUpperInvariant)]);
+        var sequence = await db.DocumentDefinitions.CountAsync(x => x.BusinessProcess == businessProcess, cancellationToken) + 1;
+        string code;
+        do
+        {
+            code = $"{prefix}_{sequence++:000}";
+        }
+        while (await db.DocumentDefinitions.AnyAsync(x => x.BusinessProcess == businessProcess && x.Code == code, cancellationToken));
+        return code;
+    }
 }
+
+#endregion
 
 public sealed class UpdateDocumentHandler(IDatabaseService db) : IRequestHandler<UpdateDocumentCommand, GetDocumentResponse>
 {

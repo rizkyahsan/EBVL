@@ -5,6 +5,8 @@ namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Componen
 
 public partial class CompanyProfileForm
 {
+    #region Parameters
+
     [Parameter]
     public required PreRegistrationRequest Model { get; init; }
 
@@ -14,6 +16,10 @@ public partial class CompanyProfileForm
     [Parameter]
     public EventCallback<string> OnSapFound { get; init; }
 
+    #endregion
+
+    #region Fields
+
     private EditForm _form = default!;
     private MudForm _sapForm = default!;
     private readonly SapVendorRequest _sapModel = new();
@@ -22,6 +28,10 @@ public partial class CompanyProfileForm
     private bool _profileExpanded;
     private bool _sapFound;
     private bool _isFindingSap;
+
+    #endregion
+
+    #region Lifecycle
 
     protected override void OnParametersSet()
     {
@@ -33,6 +43,22 @@ public partial class CompanyProfileForm
         _sapModel.SapVendorNumber = Model.SapVendorNumber;
         ShowCompanyProfile();
     }
+
+    #endregion
+
+    #region Public Methods
+
+    public async Task SubmitAsync()
+    {
+        if (_form.EditContext?.Validate() is true)
+        {
+            await OnNext.InvokeAsync(Model);
+        }
+    }
+
+    #endregion
+
+    #region Private Methods
 
     private async Task FindSapVendor()
     {
@@ -91,11 +117,5 @@ public partial class CompanyProfileForm
         Model.AdditionalBrands.RemoveAt(index);
     }
 
-    public async Task SubmitAsync()
-    {
-        if (_form.EditContext?.Validate() is true)
-        {
-            await OnNext.InvokeAsync(Model);
-        }
-    }
+    #endregion
 }

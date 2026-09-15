@@ -23,14 +23,14 @@ public sealed class LoginExternalUserCommandHandler(IDatabaseService databaseSer
     public async Task<LoginExternalUserResponse> Handle(LoginExternalUserCommand request, CancellationToken cancellationToken)
     {
         var attemptedAt = TimeZoneInfo.ConvertTime(DateTimeOffset.Now, TimezoneFor.WibTimeZone);
-        var loginLog = new ExternalLoginLog
+        var loginLog = new ExternalLogin
         {
             Username = request.Username,
             IsSuccess = false,
             AttemptedAt = attemptedAt
         };
 
-        _ = await databaseService.ExternalLoginLogs.AddAsync(loginLog, cancellationToken);
+        _ = await databaseService.ExternalLogins.AddAsync(loginLog, cancellationToken);
         _ = await databaseService.SaveAsync(nameof(LoginExternalUser), cancellationToken);
 
         var result = await localIdentityService.VerifyUserPasswordAsync(request.Username, request.Password);
@@ -77,16 +77,24 @@ public sealed class LoginExternalUserCommandHandler(IDatabaseService databaseSer
 
         loginLog.UserId = user.Id;
 
-        var expiredAt = TimeZoneInfo.ConvertTime(DateTimeOffset.Now.AddMinutes(5), TimezoneFor.WibTimeZone);
-        var externalLogin = new ExternalLogin
+        var loginResult = await localIdentityService.LoginAsync(user.Username);
+        if (!loginResult.Succeeded)
         {
-            UserId = user.Id,
-            ExternalLoginLogId = loginLog.Id,
-            ExpiredAt = expiredAt,
-            IsUsed = false
-        };
+            loginLog.FailureReason = loginResult.ErrorMessage;
+            _ = await databaseService.SaveAsync(nameof(LoginExternalUser), cancellationToken);
 
-        _ = await databaseService.ExternalLogins.AddAsync(externalLogin, cancellationToken);
+            return new LoginExternalUserResponse
+            {
+                Item = new LoginExternalUserResult
+                {
+                    Succeeded = false,
+                    ErrorMessage = "Invalid username or password"
+                }
+            };
+        }
+
+        loginLog.IsSuccess = true;
+        loginLog.VerifiedAt = attemptedAt;
         _ = await databaseService.SaveAsync(nameof(LoginExternalUser), cancellationToken);
 
         return new LoginExternalUserResponse
@@ -94,8 +102,8 @@ public sealed class LoginExternalUserCommandHandler(IDatabaseService databaseSer
             Item = new LoginExternalUserResult
             {
                 Succeeded = true,
-                RequireOtp = true,
-                ExternalLoginId = externalLogin.Id
+                RequireOtp = false,
+                UserToken = localIdentityService.GenerateToken(loginResult.Claims)
             }
         };
     }

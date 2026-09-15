@@ -1,17 +1,18 @@
-using EBVL.FrontEnd.WebUi.Layouts.Models;
-
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Pages;
 
 public partial class Landing
 {
+    #region Dependencies
+
     [Inject]
     public required NavigationManager NavigationManager { get; init; }
 
     [CascadingParameter]
-    public DisplayInfo DisplayInfo { get; set; } = default!;
-
-    [CascadingParameter]
     public Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
+
+    #endregion
+
+    #region State and Content
 
     private int _activeSlide;
     private string? _sapVendorNumber;
@@ -41,6 +42,10 @@ public partial class Landing
         new("Who should I contact for assistance?", "Contact Pertamina Call Center 135 through Main Menu 2, option 4, or email cp@pertamina.com.")
     ];
 
+    #endregion
+
+    #region Lifecycle
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateTask).User;
@@ -49,6 +54,10 @@ public partial class Landing
             NavigationManager.NavigateTo(MainRouteFor.Index, true);
         }
     }
+
+    #endregion
+
+    #region Event Handlers
 
     private void PreviousSlide()
     {
@@ -85,7 +94,13 @@ public partial class Landing
         _trackingResult = $"Registration {_sapVendorNumber.Trim()} is currently waiting for administrator evaluation.";
     }
 
+    #endregion
+
+    #region Content Models
+
     private sealed record HeroSlide(string Title, string Description, string ActionText, string ActionUrl);
     private sealed record OpportunityItem(string Icon, string Title, string Description, string ActionText, string ActionUrl);
     private sealed record FaqItem(string Question, string Answer);
+
+    #endregion
 }
