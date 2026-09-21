@@ -1,51 +1,68 @@
 @page "/MasterData/Questionnaires/Details/{Id:guid}/{SectionId:guid}"
 @inherits PageBase
 @using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
-@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Components
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models
-@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Statics
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+@* TODO: Add the Questionnaire IdAMan permission guard when its permissions are configured. *@
 
-<PageTitle>Questionnaire Detail</PageTitle>
-<MudStack Spacing="3">
-  <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-    <div>
-      <MudText Typo="Typo.h5">Questionnaire Detail</MudText>
-      <MudText Typo="Typo.body2" Color="Color.Secondary">@_item?.BusinessProcess / @_section?.Title</MudText>
-    </div>
+<HtmlHead Title="Detail Section" />
+<Breadcrumbs Items="@_breadcrumbItems" />
+<PageHeader Title="@(_section?.Title ?? "Detail Section")" />
+<ErrorViewer Exception="@_exception" />
+
+<MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4 flex-wrap">
+    @if (_item is not null)
+    {
+        <MudChip T="string" Size="Size.Small">@_item.Status / v@_item.Version</MudChip>
+    }
+    <MudSpacer />
+    @if (_item?.Status != QuestionnaireStatus.Superseded)
+    {
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" Disabled="@_busy" OnClick="AddQuestion">Add New</MudButton>
+    }
     <MudButton Variant="Variant.Outlined" Href="@QuestionnaireRouteFor.Index">Back</MudButton>
-  </MudStack>
-  <ErrorViewer Exception="@_exception" />
-  <LoadingLinear IsVisible="@_isLoading" /> @if (_section is not null) { <MudTable Items="@_section.Questions.OrderBy(x => x.Order)" Filter="Filter" Hover="true" Breakpoint="Breakpoint.Sm">
-    <ToolBarContent>
-      <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="AddQuestion">Add New</MudButton>
-      <MudSpacer />
-      <TextFieldSearch @bind-Value="_search" />
-    </ToolBarContent>
+</MudStack>
+
+@if (_section is not null)
+{
+<TableDefault ServerData="ReloadTable" @ref="_table" Loading="@_isLoading" Hover="true" Breakpoint="Breakpoint.Sm">
+    <ToolBarContent><MudSpacer /><TextFieldSearch ValueChanged="OnSearch" Class="mt-0" /></ToolBarContent>
     <HeaderContent>
-      <MudTh>@QuestionnaireDisplayTextFor.Number</MudTh>
-      <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireQuestionItem, object>(x => x.Label)" InitialDirection="SortDirection.Ascending">@QuestionnaireDisplayTextFor.QuestionnaireName</MudTableSortLabel></MudTh>
-      <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireQuestionItem, object>(x => x.Hint ?? string.Empty)">@QuestionnaireDisplayTextFor.Description</MudTableSortLabel></MudTh>
-      <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireQuestionItem, object>(x => AnswerType(x.Type))">@QuestionnaireDisplayTextFor.AnswerType</MudTableSortLabel></MudTh>
-      <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireQuestionItem, object>(x => AnswerRule(x.AnswerRule))">@QuestionnaireDisplayTextFor.AnswerRule</MudTableSortLabel></MudTh>
-      <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireQuestionItem, object>(x => x.Order)">@QuestionnaireDisplayTextFor.OrderNumber</MudTableSortLabel></MudTh>
-      <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireQuestionItem, object>(x => x.IsActive)">@QuestionnaireDisplayTextFor.Active</MudTableSortLabel></MudTh>
-      <MudTh Class="text-center">@QuestionnaireDisplayTextFor.Action</MudTh>
+        <MudTh>No</MudTh>
+        <MudTh><MudTableSortLabel T="QuestionnaireQuestionItem" SortLabel="label" InitialDirection="SortDirection.Ascending">Questionnaire Name</MudTableSortLabel></MudTh>
+        <MudTh>Description</MudTh>
+        <MudTh>Answer Type</MudTh>
+        <MudTh>Answer Rule</MudTh>
+        <MudTh><MudTableSortLabel T="QuestionnaireQuestionItem" SortLabel="order">Order Number</MudTableSortLabel></MudTh>
+        <MudTh>Status</MudTh>
+        <MudTh Class="text-center">Action</MudTh>
     </HeaderContent>
     <RowTemplate>
-      <MudTd DataLabel="@QuestionnaireDisplayTextFor.Number">@Number(context)</MudTd>
-      <MudTd DataLabel="@QuestionnaireDisplayTextFor.QuestionnaireName"><MudHighlighter Text="@context.Label" HighlightedText="@_search" /></MudTd>
-      <MudTd DataLabel="@QuestionnaireDisplayTextFor.Description"><MudHighlighter Text="@context.Hint" HighlightedText="@_search" /></MudTd>
-      <MudTd DataLabel="@QuestionnaireDisplayTextFor.AnswerType"><MudHighlighter Text="@AnswerType(context.Type)" HighlightedText="@_search" /></MudTd>
-      <MudTd DataLabel="@QuestionnaireDisplayTextFor.AnswerRule"><MudHighlighter Text="@AnswerRule(context.AnswerRule)" HighlightedText="@_search" /></MudTd>
-      <MudTd DataLabel="@QuestionnaireDisplayTextFor.OrderNumber"><MudHighlighter Text="@context.Order.ToString()" HighlightedText="@_search" /></MudTd>
-      <MudTd DataLabel="@QuestionnaireDisplayTextFor.Active"><MudHighlighter Text="@(context.IsActive ? "Yes" : "No")" HighlightedText="@_search" /></MudTd>
-      <MudTd DataLabel="@QuestionnaireDisplayTextFor.Action" Class="text-center">
-        <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => EditQuestion(context))" />
-      </MudTd>
+        <MudTd DataLabel="No">@Number(context)</MudTd>
+        <MudTd DataLabel="Questionnaire Name"><MudHighlighter Text="@context.Label" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="Description"><MudHighlighter Text="@context.Hint" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="Answer Type">@AnswerType(context.Type)</MudTd>
+        <MudTd DataLabel="Answer Rule">@AnswerRule(context.AnswerRule)</MudTd>
+        <MudTd DataLabel="Order Number">@context.Order</MudTd>
+        <MudTd DataLabel="Status"><MudChip T="string" Size="Size.Small" Color="@(context.IsActive ? Color.Success : Color.Default)">@(context.IsActive ? "Active" : "Inactive")</MudChip></MudTd>
+        <MudTd DataLabel="Action" Class="text-center">
+            @if (_item?.Status != QuestionnaireStatus.Superseded)
+            {
+                <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" Disabled="@_busy" OnClick="@(() => EditQuestion(context))" title="Edit" />
+            }
+            @if (_item?.Status == QuestionnaireStatus.Draft)
+            {
+                <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" Disabled="@_busy" OnClick="@(() => DeleteQuestion(context))" title="Delete" />
+            }
+        </MudTd>
     </RowTemplate>
-    <NoRecordsContent>
-      <MudText Class="pa-4">No questionnaires have been added to this section.</MudText>
-    </NoRecordsContent>
-  </MudTable> }
-</MudStack>
+    <NoRecordsContent><MudText Class="pa-4">No questions found in this section.</MudText></NoRecordsContent>
+    <LoadingContent><MudText Class="pa-4">Loading questions...</MudText></LoadingContent>
+    <PagerContent><MudTablePager /></PagerContent>
+</TableDefault>
+}
+else if (_isLoading)
+{
+    <LoadingLinear IsVisible="true" />
+}

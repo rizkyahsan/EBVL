@@ -4,6 +4,7 @@ using EBVL.BackEnd.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(DatabaseService))]
-    partial class DatabaseServiceModelSnapshot : ModelSnapshot
+    [Migration("20260915143109_M032AddQuestionnaireLifecycleVersioning")]
+    partial class M032AddQuestionnaireLifecycleVersioning
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -717,20 +720,20 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasIndex("PreviousVersionId");
 
-                    b.HasIndex("QuestionnaireSeriesId", "Version")
-                        .IsUnique();
+                    b.HasIndex(new[] { "Code" }, "IX_Questionnaires_OneSeriesPerCode")
+                        .IsUnique()
+                        .HasFilter("[Version] = 1 AND [IsDeleted] = 0");
 
                     b.HasIndex(new[] { "QuestionnaireSeriesId" }, "IX_Questionnaires_OneDraftPerSeries")
                         .IsUnique()
                         .HasFilter("[Status] = 'Draft' AND [IsDeleted] = 0");
 
-                    b.HasIndex(new[] { "QuestionnaireSeriesId" }, "IX_Questionnaires_OnePublishPerSeries")
+                    b.HasIndex(new[] { "QuestionnaireSeriesId" }, "IX_Questionnaires_OnePublishedPerSeries")
                         .IsUnique()
-                        .HasFilter("[Status] = 'Publish' AND [IsDeleted] = 0");
+                        .HasFilter("[Status] = 'Published' AND [IsDeleted] = 0");
 
-                    b.HasIndex(new[] { "Code" }, "IX_Questionnaires_OneSeriesPerCode")
-                        .IsUnique()
-                        .HasFilter("[Version] = 1 AND [IsDeleted] = 0");
+                    b.HasIndex("QuestionnaireSeriesId", "Version")
+                        .IsUnique();
 
                     b.ToTable("Questionnaires", "EBVL");
                 });
@@ -889,8 +892,6 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.HasIndex("QuestionnaireQuestionId", "Code")
                         .IsUnique();
 
-                    b.HasIndex("QuestionnaireQuestionId", "Order");
-
                     b.ToTable("QuestionnaireOptions", "EBVL");
                 });
 
@@ -967,8 +968,6 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasIndex("QuestionnaireSectionId", "Code")
                         .IsUnique();
-
-                    b.HasIndex("QuestionnaireSectionId", "Order");
 
                     b.ToTable("QuestionnaireQuestions", "EBVL");
                 });
@@ -1075,8 +1074,6 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
 
                     b.HasIndex("QuestionnaireId", "Code")
                         .IsUnique();
-
-                    b.HasIndex("QuestionnaireId", "Order");
 
                     b.ToTable("QuestionnaireSections", "EBVL");
                 });

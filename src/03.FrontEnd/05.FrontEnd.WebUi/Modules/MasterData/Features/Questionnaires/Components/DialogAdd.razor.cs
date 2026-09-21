@@ -6,9 +6,7 @@ public partial class DialogAdd
 {
     private MudForm _form = default!;
     private string _businessProcess = string.Empty;
-    private string _section = string.Empty;
-    private VendorCompanyStatusType? _vendorType = VendorCompanyStatusType.Manufacture;
-    private bool _isActive = true;
+    private string _code = string.Empty;
 
     private async Task Submit()
     {
@@ -31,12 +29,11 @@ public partial class DialogAdd
             var command = new AddQuestionnaireCommand
             {
                 BusinessProcess = _businessProcess,
-                VendorType = _vendorType,
-                Section = _section,
-                IsActive = _isActive
+                Code = _code,
+                IsActive = false
             };
             var created = await Sender.Send(command);
-            Snackbar.AddSuccess("Questionnaire section added.");
+            Snackbar.AddSuccess("Questionnaire business process added.");
             Dialog.Close(DialogResult.Ok(created.Item));
         }
         catch (Exception exception)
@@ -47,16 +44,5 @@ public partial class DialogAdd
         {
             _isLoading = false;
         }
-    }
-
-    private static string Format(VendorCompanyStatusType value)
-    {
-        return value switch
-        {
-            VendorCompanyStatusType.Manufacture => "Vendor",
-            VendorCompanyStatusType.SoleDistributorAgent => "Sole Agent",
-            VendorCompanyStatusType.AuthorizedAgent => "Representative Office",
-            _ => "Representative Office"
-        };
     }
 }

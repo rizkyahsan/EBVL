@@ -8,8 +8,18 @@ public static class RouteFor
         return $"{Index}/Details/{id}/{sectionId}";
     }
 
+    public static string Details(Guid id)
+    {
+        return $"{Index}/Details/{id}";
+    }
+
     public static string Preview(Guid id)
     {
         return $"{Index}/Preview/{id}";
+    }
+
+    public static string History(Guid seriesId)
+    {
+        return $"{Index}/History/{seriesId}";
     }
 }

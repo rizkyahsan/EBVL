@@ -2,8 +2,8 @@
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models
 @using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
 
-<MudDialog><DialogContent><MudForm @ref="_form"><MudGrid>
-    <MudItem xs="12"><MudSelect T="string" Label="Business Process" @bind-Value="Model.BusinessProcess" Required="true" Variant="Variant.Text" ShrinkLabel="true">@foreach (var process in QuestionnaireBusinessProcessFor.All) { <MudSelectItem Value="@process">@process</MudSelectItem> }</MudSelect></MudItem>
+<MudDialog><DialogContent><ErrorViewer Exception="_exception" /><LoadingLinear IsVisible="_isLoading" /><MudForm @ref="_form"><MudGrid>
+    <MudItem xs="12"><MudSelect T="string" Label="Business Process" @bind-Value="Model.BusinessProcess" Required="true" Variant="Variant.Text" ShrinkLabel="true">@foreach (var item in QuestionnaireBusinessProcessFor.All) { <MudSelectItem Value="@item">@item</MudSelectItem> }</MudSelect></MudItem>
     <MudItem xs="12">
         <MudSelect T="VendorCompanyStatusType?" Label="Vendor Type" @bind-Value="Model.CompanyType" Variant="Variant.Text" ShrinkLabel="true">
             <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)null)">All</MudSelectItem>
@@ -15,4 +15,4 @@
     </MudItem>
     <MudItem xs="12"><MudTextField Label="Section" @bind-Value="Model.Title" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" /></MudItem>
     <MudItem xs="12"><MudRadioGroup T="bool" @bind-Value="Model.IsActive"><MudText Typo="Typo.caption">Active</MudText><MudRadio Value="true">Yes</MudRadio><MudRadio Value="false">No</MudRadio></MudRadioGroup></MudItem>
-</MudGrid></MudForm></DialogContent><DialogActions><ButtonCancel OnClick="Cancel" /><MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Submit">Save</MudButton></DialogActions></MudDialog>
+</MudGrid></MudForm></DialogContent><DialogActions><ButtonCancel OnClick="Cancel" Disabled="_isLoading" /><MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Submit" Disabled="_isLoading">Save</MudButton></DialogActions></MudDialog>

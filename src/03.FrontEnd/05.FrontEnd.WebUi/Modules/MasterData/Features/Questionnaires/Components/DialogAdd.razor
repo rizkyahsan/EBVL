@@ -9,19 +9,12 @@
         <MudForm @ref="_form">
             <MudGrid>
                 <MudItem xs="12"><MudSelect T="string" Label="Business Process" @bind-Value="_businessProcess" Required="true" Variant="Variant.Text" ShrinkLabel="true">@foreach (var process in QuestionnaireBusinessProcessFor.All) { <MudSelectItem Value="@process">@process</MudSelectItem> }</MudSelect></MudItem>
-                <MudItem xs="12">
-                    <MudSelect T="VendorCompanyStatusType?" Label="Vendor Type" @bind-Value="_vendorType" Variant="Variant.Text" ShrinkLabel="true">
-                        <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)null)">All</MudSelectItem>
-                        @foreach (var value in Enum.GetValues<VendorCompanyStatusType>()) { <MudSelectItem T="VendorCompanyStatusType?" Value="@value">@Format(value)</MudSelectItem> }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12"><MudTextField Label="Section" @bind-Value="_section" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" /></MudItem>
-                <MudItem xs="12"><MudRadioGroup T="bool" @bind-Value="_isActive"><MudText Typo="Typo.caption">Active</MudText><MudRadio Value="true">Yes</MudRadio><MudRadio Value="false">No</MudRadio></MudRadioGroup></MudItem>
+                <MudItem xs="12"><MudTextField Label="Code" @bind-Value="_code" Required="true" Variant="Variant.Text" ShrinkLabel="true" /></MudItem>
             </MudGrid>
         </MudForm>
     </DialogContent>
     <DialogActions>
         <ButtonCancel OnClick="Cancel" />
-        <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Submit" Disabled="_isLoading">Save</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Submit" Disabled="_isLoading">Add Business Process</MudButton>
     </DialogActions>
 </MudDialog>

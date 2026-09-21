@@ -3,38 +3,52 @@ using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Components;
 using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models;
 using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
 
+#pragma warning disable IDE0022, IDE0044, IDE0072
 namespace EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Pages;
 
 public partial class Index
 {
-    private List<QuestionnaireListItem> _items = [];
+    private MudTable<QuestionnaireSectionListItem> _table = default!;
+    private List<QuestionnaireListItem> _questionnaires = [];
+    private QuestionnaireListItem? _selected;
+    private Guid? _selectedQuestionnaireId;
     private string? _search;
+    private bool _busy;
+    private int _page;
+    private int _pageSize = 10;
+    private IReadOnlyList<QuestionnaireSectionListItem> _currentRows = [];
+
+    #region Lifecycle
 
     protected override async Task OnInitializedAsync()
     {
         LoadBreadcrumbs();
-        await Load();
+        await LoadQuestionnaires();
     }
 
     protected override void LoadBreadcrumbs()
     {
-        _breadcrumbItems =
-        [
-            MainBreadcrumbFor.Home,
-            MasterDataBreadcrumbFor.Index,
-            CommonBreadcrumbFor.Active("Questionnaire")
-        ];
+        _breadcrumbItems = [MainBreadcrumbFor.Home, MasterDataBreadcrumbFor.Index, CommonBreadcrumbFor.Active("Questionnaire")];
     }
 
-    private async Task Load()
+    #endregion
+
+    #region Loading
+
+    private async Task LoadQuestionnaires(Guid? preferredId = null)
     {
         try
         {
             _isLoading = true;
             ClearException();
-
-            var response = await Sender.Send(new GetQuestionnairesQuery());
-            _items = response.Items.ToList();
+            _questionnaires = [];
+            _selected = null;
+            _selectedQuestionnaireId = null;
+            _questionnaires = [.. (await Sender.Send(new GetQuestionnairesQuery())).Items.OrderBy(x => x.BusinessProcess).ThenBy(x => x.Code)];
+            _selected = _questionnaires.FirstOrDefault(x => x.QuestionnaireId == preferredId)
+                ?? _questionnaires.FirstOrDefault(x => x.QuestionnaireId == _selectedQuestionnaireId)
+                ?? _questionnaires.FirstOrDefault();
+            _selectedQuestionnaireId = _selected?.QuestionnaireId;
         }
         catch (Exception exception)
         {
@@ -46,96 +60,248 @@ public partial class Index
         }
     }
 
-    private bool Filter(QuestionnaireListItem item)
+    private async Task<TableData<QuestionnaireSectionListItem>> ReloadTable(TableState state, CancellationToken token)
     {
-        return string.IsNullOrWhiteSpace(_search)
-            || $"{item.BusinessProcess} {item.Section} {Vendor(item.VendorType)}".Contains(_search, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private int Number(QuestionnaireListItem item)
-    {
-        return _items.IndexOf(item) + 1;
-    }
-
-    private static string Vendor(VendorCompanyStatusType? value)
-    {
-        return value switch
+        _page = state.Page;
+        _pageSize = state.PageSize;
+        if (_selected is null)
         {
-            null => "All",
-            VendorCompanyStatusType.Manufacture => "Vendor",
-            VendorCompanyStatusType.SoleDistributorAgent => "Sole Agent",
-            VendorCompanyStatusType.AuthorizedAgent => "Representative Office",
-            _ => "Representative Office"
-        };
-    }
-
-    private async Task ShowAdd()
-    {
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true
-        };
-        var dialog = await DialogService.ShowAsync<DialogAdd>("Add New Questionnaire Section", options: options);
-        var result = await dialog.Result;
-
-        if (result is not { Canceled: false, Data: QuestionnaireItem created })
-        {
-            return;
+            return new TableData<QuestionnaireSectionListItem>();
         }
 
-        _search = null;
-        _items = created.Sections
-            .Select(section => new QuestionnaireListItem(created.QuestionnaireId, section.Id, created.Code, created.BusinessProcess, section.CompanyType, section.Title, created.IsActive, section.IsActive))
-            .Concat(_items.Where(item => item.QuestionnaireId != created.QuestionnaireId))
-            .OrderBy(item => item.BusinessProcess)
-            .ThenBy(item => item.Section)
-            .ToList();
-
-        await InvokeAsync(StateHasChanged);
-        await Load();
+        try
+        {
+            _isLoading = true;
+            ClearException();
+            var query = new GetQuestionnaireSectionsQuery(_selected.QuestionnaireId)
+            {
+                Page = state.Page + 1,
+                PageSize = state.PageSize,
+                SearchText = _search,
+                SortField = state.SortLabel,
+                SortOrder = state.SortDirection switch
+                {
+                    SortDirection.Ascending => Pertamina.Common.Dto.Enums.SortOrder.Ascending,
+                    SortDirection.Descending => Pertamina.Common.Dto.Enums.SortOrder.Descending,
+                    _ => null
+                }
+            };
+            var response = await Sender.Send(query, token);
+            _currentRows = response.Items.ToList();
+            return response.ToTableData();
+        }
+        catch (Exception exception)
+        {
+            _exception = exception;
+            return new TableData<QuestionnaireSectionListItem>();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
     }
 
-    private async Task EditSection(QuestionnaireListItem row)
+    private async Task SelectQuestionnaire(Guid? id)
     {
-        var questionnaire = (await Sender.Send(new GetQuestionnaireQuery(row.QuestionnaireId))).Item;
-        var section = questionnaire.Sections.Single(item => item.Id == row.SectionId);
-        var model = new SectionModel
+        _selectedQuestionnaireId = id;
+        _selected = _questionnaires.FirstOrDefault(x => x.QuestionnaireId == id);
+        _search = null;
+        await _table.ReloadServerData();
+    }
+
+    private string QuestionnaireText(Guid? id)
+    {
+        var questionnaire = _questionnaires.FirstOrDefault(x => x.QuestionnaireId == id);
+        return questionnaire is null ? string.Empty : $"{questionnaire.BusinessProcess} ({Status(questionnaire.Status)}, v{questionnaire.Version})";
+    }
+
+    private async Task OnSearch(string value)
+    {
+        _search = value.Trim();
+        await _table.ReloadServerData();
+    }
+
+    #endregion
+
+    #region Section Actions
+
+    private Task AddSection()
+    {
+        if (_selected is null)
         {
-            Id = section.Id,
-            BusinessProcess = questionnaire.BusinessProcess,
-            Code = section.Code,
-            Title = section.Title,
-            CompanyType = section.CompanyType,
-            IsActive = section.IsActive
-        };
+            return Task.CompletedTask;
+        }
+
+        return OpenSection(new SectionModel { BusinessProcess = _selected.BusinessProcess, Order = int.MaxValue });
+    }
+
+    private Task EditSection(QuestionnaireSectionListItem section)
+    {
+        return OpenSection(new SectionModel { Id = section.Id, BusinessProcess = section.BusinessProcess, Code = section.Code, Title = section.Title, CompanyType = section.VendorType, Order = section.Order, IsActive = section.IsActive }, section.Code);
+    }
+
+    private async Task OpenSection(SectionModel model, string? stableCode = null)
+    {
         var parameters = new DialogParameters<DialogSection>
         {
-            { component => component.Model, model }
+            { x => x.Model, model },
+            { x => x.OnSubmit, EventCallback.Factory.Create<SectionModel>(this, changed => SaveSection(changed, stableCode)) }
         };
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true
-        };
-        var dialog = await DialogService.ShowAsync<DialogSection>("Edit Questionnaire Section", parameters, options);
-        var result = await dialog.Result;
+        var dialog = await DialogService.ShowAsync<DialogSection>(model.Id == Guid.Empty ? "Add Section" : "Edit Section", parameters, new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true });
+        _ = await dialog.Result;
+    }
 
-        if (result is null || result.Canceled || result.Data is not SectionModel changed)
+    private async Task SaveSection(SectionModel model, string? stableCode)
+    {
+        if (_selected is null || _busy)
         {
             return;
         }
 
-        var request = new AddQuestionnaireRequest
+        try
         {
-            BusinessProcess = changed.BusinessProcess,
-            VendorType = changed.CompanyType,
-            Section = changed.Title,
-            IsActive = changed.IsActive
-        };
-        _ = await Sender.Send(new UpdateQuestionnaireSectionCommand(row.QuestionnaireId, row.SectionId, request));
+            _busy = true;
+            var item = await EditableItem(_selected.QuestionnaireId);
+            if (stableCode is null)
+            {
+                item = (await Sender.Send(new AddQuestionnaireSectionCommand(item.QuestionnaireId, new()
+                {
+                    BusinessProcess = model.BusinessProcess,
+                    VendorType = model.CompanyType,
+                    Code = model.Code,
+                    Title = model.Title,
+                    Order = model.Order,
+                    IsActive = model.IsActive,
+                    RowVersion = item.RowVersion
+                }))).Item;
+            }
+            else
+            {
+                var section = item.Sections.Single(x => x.Code == stableCode);
+                item = (await Sender.Send(new UpdateQuestionnaireSectionCommand(item.QuestionnaireId, section.Id, new()
+                {
+                    BusinessProcess = model.BusinessProcess,
+                    VendorType = model.CompanyType,
+                    Code = model.Code,
+                    Section = model.Title,
+                    Order = model.Order,
+                    IsActive = model.IsActive,
+                    RowVersion = item.RowVersion
+                }))).Item;
+            }
 
-        Snackbar.AddSuccess("Questionnaire section updated.");
-        await Load();
+            Snackbar.AddSuccess("Questionnaire section saved.");
+            await Refresh(item.QuestionnaireId);
+        }
+        catch (Exception exception)
+        {
+            _exception = exception;
+            throw;
+        }
+        finally
+        {
+            _busy = false;
+        }
     }
+
+    private async Task DeleteSection(QuestionnaireSectionListItem section)
+    {
+        if (_selected?.Status != QuestionnaireStatus.Draft || _busy)
+        {
+            return;
+        }
+
+        var confirmed = await DialogService.ShowMessageBox("Delete Section", $"Delete section '{section.Title}'?", yesText: "Delete", cancelText: "Cancel");
+        if (confirmed != true)
+        {
+            return;
+        }
+
+        await Run(async () =>
+        {
+            var item = (await Sender.Send(new GetQuestionnaireQuery(_selected.QuestionnaireId))).Item;
+            item = (await Sender.Send(new DeleteQuestionnaireSectionCommand(item.QuestionnaireId, section.Id, item.RowVersion))).Item;
+            Snackbar.AddSuccess("Questionnaire section deleted.");
+            await Refresh(item.QuestionnaireId);
+        });
+    }
+
+    private async Task Publish()
+    {
+        if (_selected?.CanPublish != true || _busy)
+        {
+            return;
+        }
+
+        var confirmed = await DialogService.ShowMessageBox("Publish Questionnaire", $"Publish version {_selected.Version}?", yesText: "Publish", cancelText: "Cancel");
+        if (confirmed != true)
+        {
+            return;
+        }
+
+        await Run(async () =>
+        {
+            var item = (await Sender.Send(new GetQuestionnaireQuery(_selected.QuestionnaireId))).Item;
+            item = (await Sender.Send(new PublishQuestionnaireCommand(item.QuestionnaireId, item.RowVersion))).Item;
+            Snackbar.AddSuccess($"Questionnaire version {item.Version} published.");
+            await Refresh(item.QuestionnaireId);
+        });
+    }
+
+    #endregion
+
+    #region Helpers
+
+    private async Task<QuestionnaireItem> EditableItem(Guid id)
+    {
+        var item = (await Sender.Send(new GetQuestionnaireQuery(id))).Item;
+        if (item.Status == QuestionnaireStatus.Publish)
+        {
+            item = (await Sender.Send(new CreateQuestionnaireDraftCommand(id))).Item;
+        }
+
+        if (item.Status != QuestionnaireStatus.Draft)
+        {
+            throw new InvalidOperationException("Historical questionnaire versions are read-only.");
+        }
+
+        return item;
+    }
+
+    private async Task Refresh(Guid questionnaireId)
+    {
+        await LoadQuestionnaires(questionnaireId);
+        await _table.ReloadServerData();
+    }
+
+    private async Task Run(Func<Task> action)
+    {
+        try
+        {
+            _busy = true;
+            ClearException();
+            await action();
+        }
+        catch (Exception exception)
+        {
+            _exception = exception;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private int Number(QuestionnaireSectionListItem item) => (_page * _pageSize) + _currentRows.ToList().IndexOf(item) + 1;
+    private static string Status(QuestionnaireStatus? status) => status?.ToString() ?? "-";
+    private static string Vendor(VendorCompanyStatusType? value) => value switch
+    {
+        null => "All",
+        VendorCompanyStatusType.Manufacture => "Vendor",
+        VendorCompanyStatusType.SoleDistributorAgent => "Sole Agent",
+        VendorCompanyStatusType.AuthorizedAgent => "Representative Office",
+        _ => value.ToString()!
+    };
+
+    #endregion
 }

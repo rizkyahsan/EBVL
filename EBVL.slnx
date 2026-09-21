@@ -23,4 +23,7 @@
     <Project Path="src/03.FrontEnd/04.FrontEnd.Logics/04.FrontEnd.Logics.csproj" />
     <Project Path="src/03.FrontEnd/05.FrontEnd.WebUi/05.FrontEnd.WebUi.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EBVL.BackEnd.Logics.Tests/EBVL.BackEnd.Logics.Tests.csproj" />
+  </Folder>
 </Solution>

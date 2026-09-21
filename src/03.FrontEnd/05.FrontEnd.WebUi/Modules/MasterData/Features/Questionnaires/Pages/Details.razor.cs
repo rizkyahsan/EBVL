@@ -3,6 +3,7 @@ using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Components;
 using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models;
 using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
 
+#pragma warning disable IDE0022, IDE0044, IDE0072
 namespace EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Pages;
 
 public partial class Details
@@ -10,27 +11,29 @@ public partial class Details
     [Parameter] public Guid Id { get; set; }
     [Parameter] public Guid SectionId { get; set; }
 
+    private MudTable<QuestionnaireQuestionItem> _table = default!;
     private QuestionnaireItem? _item;
     private QuestionnaireSectionItem? _section;
     private string? _search;
+    private bool _busy;
+    private int _page;
+    private int _pageSize = 10;
+    private IReadOnlyList<QuestionnaireQuestionItem> _currentRows = [];
+
+    #region Lifecycle
 
     protected override async Task OnParametersSetAsync()
     {
         LoadBreadcrumbs();
-        await Load();
+        await LoadHeader();
     }
 
     protected override void LoadBreadcrumbs()
     {
-        _breadcrumbItems =
-        [
-            MainBreadcrumbFor.Home,
-            MasterDataBreadcrumbFor.Index,
-            CommonBreadcrumbFor.Active("Questionnaire Detail")
-        ];
+        _breadcrumbItems = [MainBreadcrumbFor.Home, MasterDataBreadcrumbFor.Index, new BreadcrumbItem("Questionnaire", QuestionnaireRouteFor.Index), CommonBreadcrumbFor.Active("Detail Section")];
     }
 
-    private async Task Load()
+    private async Task LoadHeader()
     {
         try
         {
@@ -49,181 +52,240 @@ public partial class Details
         }
     }
 
-    private Task AddQuestion()
+    #endregion
+
+    #region Table
+
+    private async Task<TableData<QuestionnaireQuestionItem>> ReloadTable(TableState state, CancellationToken token)
     {
-        return OpenQuestion(null);
+        _page = state.Page;
+        _pageSize = state.PageSize;
+        if (_item is null || _section is null)
+        {
+            return new TableData<QuestionnaireQuestionItem>();
+        }
+
+        try
+        {
+            _isLoading = true;
+            ClearException();
+            var query = new GetQuestionnaireQuestionsQuery(_item.QuestionnaireId, _section.Id)
+            {
+                Page = state.Page + 1,
+                PageSize = state.PageSize,
+                SearchText = _search,
+                SortField = state.SortLabel,
+                SortOrder = state.SortDirection switch
+                {
+                    SortDirection.Ascending => Pertamina.Common.Dto.Enums.SortOrder.Ascending,
+                    SortDirection.Descending => Pertamina.Common.Dto.Enums.SortOrder.Descending,
+                    _ => null
+                }
+            };
+            var response = await Sender.Send(query, token);
+            _currentRows = response.Items.ToList();
+            return response.ToTableData();
+        }
+        catch (Exception exception)
+        {
+            _exception = exception;
+            return new TableData<QuestionnaireQuestionItem>();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
     }
 
-    private Task EditQuestion(QuestionnaireQuestionItem question)
+    private async Task OnSearch(string value)
     {
-        return OpenQuestion(question);
+        _search = value.Trim();
+        await _table.ReloadServerData();
     }
+
+    #endregion
+
+    #region Question Actions
+
+    private Task AddQuestion() => OpenQuestion(null);
+    private Task EditQuestion(QuestionnaireQuestionItem question) => OpenQuestion(question);
 
     private async Task OpenQuestion(QuestionnaireQuestionItem? question)
     {
-        if (_item is null || _section is null)
-        {
-            return;
-        }
-
         var model = question is null ? null : ToModel(question);
         var parameters = new DialogParameters<DialogQuestion>
         {
             { x => x.Model, model },
             { x => x.QuestionnaireId, Id },
             { x => x.SectionId, SectionId },
-            { x => x.NextOrder, _section.Questions.Count + 1 },
-            { x => x.OnSubmit, EventCallback.Factory.Create<QuestionModel>(this, SaveQuestion) }
-        };
-        var options = new DialogOptions
-        {
-            MaxWidth = MaxWidth.Small,
-            FullWidth = true,
-            CloseButton = true
+            { x => x.NextOrder, Math.Max(1, (_section?.Questions.Count ?? 0) + 1) },
+            { x => x.OnSubmit, EventCallback.Factory.Create<QuestionModel>(this, changed => SaveQuestion(changed, question?.Code)) }
         };
         var title = question is null ? "Add Questionnaire" : "Edit Questionnaire";
-        var dialog = await DialogService.ShowAsync<DialogQuestion>(title, parameters, options);
-        var result = await dialog.Result;
-
-        if (result is { Canceled: false, Data: QuestionnaireItem updated })
-        {
-            var sectionCode = _section.Code;
-            _item = updated;
-            Id = updated.QuestionnaireId;
-            _section = updated.Sections.Single(x => x.Code == sectionCode);
-            SectionId = _section.Id;
-            Snackbar.AddSuccess("Questionnaire saved.");
-            NavigationManager.NavigateTo(QuestionnaireRouteFor.Details(Id, SectionId), replace: true);
-        }
+        var dialog = await DialogService.ShowAsync<DialogQuestion>(title, parameters, new DialogOptions { MaxWidth = MaxWidth.Small, FullWidth = true, CloseButton = true });
+        _ = await dialog.Result;
     }
 
-    private async Task SaveQuestion(QuestionModel changed)
+    private async Task SaveQuestion(QuestionModel model, string? stableCode)
     {
-        if (_item is null || _section is null)
+        if (_item is null || _section is null || _busy)
         {
             return;
         }
 
         try
         {
+            _busy = true;
             var sectionCode = _section.Code;
-            var sections = _item.Sections
-                .Select(section => new QuestionnaireSectionItem(
-                    section.Id,
-                    section.Code,
-                    section.Title,
-                    section.Order,
-                    section.CompanyType,
-                    section.IsActive,
-                    section.Id == SectionId ? Apply(section.Questions, changed) : section.Questions))
-                .ToList();
-            var request = new UpdateQuestionnaireRequest
+            var item = await EditableItem();
+            var section = item.Sections.Single(x => x.Code == sectionCode);
+            if (stableCode is null)
             {
-                BusinessProcess = _item.BusinessProcess,
-                IsActive = _item.IsActive,
-                RowVersion = _item.RowVersion,
-                Sections = sections,
-                Rules = [.. _item.Rules]
-            };
-            _item = (await Sender.Send(new UpdateQuestionnaireCommand(Id, request))).Item;
-            Id = _item.QuestionnaireId;
-            _section = _item.Sections.Single(x => x.Code == sectionCode);
-            SectionId = _section.Id;
+                item = (await Sender.Send(new AddQuestionnaireQuestionCommand(item.QuestionnaireId, section.Id, new()
+                {
+                    Code = model.Code,
+                    Label = model.Label,
+                    Hint = model.Hint,
+                    Placeholder = model.Placeholder,
+                    Type = model.Type,
+                    VendorType = model.CompanyType,
+                    AnswerRule = model.AnswerRule,
+                    Order = model.Order,
+                    IsVisible = model.IsVisible,
+                    IsActive = model.IsActive,
+                    Options = [.. model.Options.Select((x, index) => new QuestionnaireOptionRequest(null, x.Code, x.Label, index + 1))],
+                    RowVersion = item.RowVersion
+                }))).Item;
+                Snackbar.AddSuccess("Questionnaire saved.");
+                await NavigateAndRefresh(item, sectionCode);
+                return;
+            }
+
+            var question = section.Questions.Single(x => x.Code == stableCode);
+            item = (await Sender.Send(new UpdateQuestionnaireQuestionCommand(item.QuestionnaireId, section.Id, question.Id, ToRequest(model, item.RowVersion)))).Item;
             Snackbar.AddSuccess("Questionnaire saved.");
-            NavigationManager.NavigateTo(QuestionnaireRouteFor.Details(Id, SectionId), replace: true);
+            await NavigateAndRefresh(item, sectionCode);
         }
         catch (Exception exception)
         {
             _exception = exception;
             throw;
         }
-    }
-
-    private static IReadOnlyList<QuestionnaireQuestionItem> Apply(
-        IReadOnlyList<QuestionnaireQuestionItem> questions,
-        QuestionModel changed)
-    {
-        var rows = questions.Where(x => x.Id != changed.Id).OrderBy(x => x.Order).ToList();
-        var options = changed.Options
-            .Select((x, i) => new QuestionnaireOptionItem(Guid.Empty, x.Code, x.Label, i + 1))
-            .ToList();
-        var item = new QuestionnaireQuestionItem(
-            changed.Id,
-            changed.Code,
-            changed.Label,
-            changed.Hint,
-            changed.Placeholder,
-            changed.Type,
-            null,
-            changed.Order,
-            changed.AnswerRule == QuestionnaireAnswerRule.Mandatory,
-            changed.IsVisible,
-            changed.IsActive,
-            changed.AnswerRule,
-            options);
-
-        rows.Insert(Math.Clamp(changed.Order - 1, 0, rows.Count), item);
-        return rows.Select((row, index) => row with { Order = index + 1 }).ToList();
-    }
-
-    private static QuestionModel ToModel(QuestionnaireQuestionItem question)
-    {
-        return new QuestionModel
+        finally
         {
-            Id = question.Id,
-            Code = question.Code,
-            Label = question.Label,
-            Hint = question.Hint,
-            Placeholder = question.Placeholder,
-            Type = question.Type,
-            IsRequired = question.IsRequired,
-            IsVisible = question.IsVisible,
-            IsActive = question.IsActive,
-            AnswerRule = question.AnswerRule,
-            Order = question.Order,
-            Options = [.. question.Options.Select(x => new OptionModel { Code = x.Code, Label = x.Label })]
-        };
+            _busy = false;
+        }
     }
 
-    private bool Filter(QuestionnaireQuestionItem question)
+    private async Task DeleteQuestion(QuestionnaireQuestionItem question)
     {
-        return string.IsNullOrWhiteSpace(_search)
-            || $"{question.Label} {question.Hint} {AnswerType(question.Type)} {AnswerRule(question.AnswerRule)} {question.Order} {(question.IsActive ? "Yes" : "No")}".Contains(_search, StringComparison.OrdinalIgnoreCase);
-    }
-
-    private int Number(QuestionnaireQuestionItem question)
-    {
-        return _section is null
-            ? 0
-            : _section.Questions.OrderBy(x => x.Order).ToList().IndexOf(question) + 1;
-    }
-
-    private static string AnswerType(QuestionnaireQuestionType value)
-    {
-        return value switch
+        if (_item?.Status != QuestionnaireStatus.Draft || _section is null || _busy)
         {
-            QuestionnaireQuestionType.ShortText => "Textbox",
-            QuestionnaireQuestionType.LongText => "Textarea",
-            QuestionnaireQuestionType.Boolean => value.ToString(),
-            QuestionnaireQuestionType.Integer => value.ToString(),
-            QuestionnaireQuestionType.Decimal => value.ToString(),
-            QuestionnaireQuestionType.Date => value.ToString(),
-            QuestionnaireQuestionType.SingleChoice => value.ToString(),
-            QuestionnaireQuestionType.MultipleChoice => value.ToString(),
-            QuestionnaireQuestionType.Address => "Address",
-            QuestionnaireQuestionType.File => "Upload File",
-            _ => value.ToString()
-        };
+            return;
+        }
+
+        var confirmed = await DialogService.ShowMessageBox("Delete Questionnaire", $"Delete '{question.Label}'?", yesText: "Delete", cancelText: "Cancel");
+        if (confirmed != true)
+        {
+            return;
+        }
+
+        try
+        {
+            _busy = true;
+            var item = (await Sender.Send(new GetQuestionnaireQuery(_item.QuestionnaireId))).Item;
+            var sectionCode = _section.Code;
+            item = (await Sender.Send(new DeleteQuestionnaireQuestionCommand(item.QuestionnaireId, _section.Id, question.Id, item.RowVersion))).Item;
+            Snackbar.AddSuccess("Questionnaire deleted.");
+            await NavigateAndRefresh(item, sectionCode);
+        }
+        catch (Exception exception)
+        {
+            _exception = exception;
+        }
+        finally
+        {
+            _busy = false;
+        }
     }
 
-    private static string AnswerRule(QuestionnaireAnswerRule value)
+    #endregion
+
+    #region Helpers
+
+    private async Task<QuestionnaireItem> EditableItem()
     {
-        return value switch
+        var item = (await Sender.Send(new GetQuestionnaireQuery(Id))).Item;
+        if (item.Status == QuestionnaireStatus.Publish)
         {
-            QuestionnaireAnswerRule.Mandatory => "Mandatory (*)",
-            QuestionnaireAnswerRule.AddedValue => "Added Value (**)",
-            QuestionnaireAnswerRule.Optional => "Optional",
-            _ => "Optional"
-        };
+            item = (await Sender.Send(new CreateQuestionnaireDraftCommand(item.QuestionnaireId))).Item;
+        }
+
+        if (item.Status != QuestionnaireStatus.Draft)
+        {
+            throw new InvalidOperationException("Historical questionnaire versions are read-only.");
+        }
+
+        return item;
     }
+
+    private async Task NavigateAndRefresh(QuestionnaireItem item, string sectionCode)
+    {
+        _item = item;
+        _section = item.Sections.Single(x => x.Code == sectionCode);
+        Id = item.QuestionnaireId;
+        SectionId = _section.Id;
+        NavigationManager.NavigateTo(QuestionnaireRouteFor.Details(Id, SectionId), replace: true);
+        await _table.ReloadServerData();
+    }
+
+    private static UpdateQuestionnaireQuestionRequest ToRequest(QuestionModel model, string rowVersion) => new()
+    {
+        Code = model.Code,
+        Label = model.Label,
+        Hint = model.Hint,
+        Placeholder = model.Placeholder,
+        Type = model.Type,
+        VendorType = model.CompanyType,
+        Order = model.Order,
+        AnswerRule = model.AnswerRule,
+        IsVisible = model.IsVisible,
+        IsActive = model.IsActive,
+        Options = [.. model.Options.Select((x, index) => new QuestionnaireOptionRequest(null, x.Code, x.Label, index + 1))],
+        RowVersion = rowVersion
+    };
+
+    private static QuestionModel ToModel(QuestionnaireQuestionItem question) => new()
+    {
+        Id = question.Id,
+        Code = question.Code,
+        Label = question.Label,
+        Hint = question.Hint,
+        Placeholder = question.Placeholder,
+        Type = question.Type,
+        CompanyType = question.CompanyType,
+        IsRequired = question.IsRequired,
+        IsVisible = question.IsVisible,
+        IsActive = question.IsActive,
+        AnswerRule = question.AnswerRule,
+        Order = question.Order,
+        Options = [.. question.Options.OrderBy(x => x.Order).Select(x => new OptionModel { Code = x.Code, Label = x.Label })]
+    };
+
+    private int Number(QuestionnaireQuestionItem item) => (_page * _pageSize) + _currentRows.ToList().IndexOf(item) + 1;
+    private static string AnswerType(QuestionnaireQuestionType value) => value switch
+    {
+        QuestionnaireQuestionType.ShortText => "Textbox",
+        QuestionnaireQuestionType.LongText => "Textarea",
+        QuestionnaireQuestionType.File => "Upload File",
+        _ => value.ToString()
+    };
+    private static string AnswerRule(QuestionnaireAnswerRule value) => value switch
+    {
+        QuestionnaireAnswerRule.Mandatory => "Mandatory (*)",
+        QuestionnaireAnswerRule.AddedValue => "Added Value (**)",
+        _ => "Optional"
+    };
+
+    #endregion
 }

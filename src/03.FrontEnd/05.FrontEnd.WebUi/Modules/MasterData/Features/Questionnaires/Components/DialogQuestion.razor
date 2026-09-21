@@ -7,16 +7,29 @@
     <DialogContent>
         <ErrorViewer Exception="@_exception" />
         <LoadingLinear IsVisible="@_isLoading" />
-        <MudForm @ref="_form">
+        <MudForm @ref="_form"><fieldset style="border:0;padding:0;margin:0">
             <MudGrid>
                 <MudItem xs="12"><MudTextField Label="Questionnaire Name" @bind-Value="_model.Label" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" /></MudItem>
                 <MudItem xs="12"><MudTextField Label="Description" @bind-Value="_model.Hint" Lines="3" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" /></MudItem>
-                <MudItem xs="12"><MudRadioGroup T="QuestionnaireQuestionType" @bind-Value="_model.Type"><MudText Typo="Typo.caption">Answer Type</MudText><MudRadio Value="@QuestionnaireQuestionType.ShortText">Textbox</MudRadio><MudRadio Value="@QuestionnaireQuestionType.LongText">Textarea</MudRadio><MudRadio Value="@QuestionnaireQuestionType.Address">Address</MudRadio><MudRadio Value="@QuestionnaireQuestionType.File">Upload File</MudRadio></MudRadioGroup></MudItem>
+                <MudItem xs="12"><MudTextField Label="Placeholder" @bind-Value="_model.Placeholder" Variant="Variant.Text" ShrinkLabel="true" /></MudItem>
+                <MudItem xs="12"><MudSelect T="QuestionnaireQuestionType" Label="Answer Type" @bind-Value="_model.Type" Required="true"><MudSelectItem Value="@QuestionnaireQuestionType.ShortText">Textbox</MudSelectItem><MudSelectItem Value="@QuestionnaireQuestionType.LongText">Textarea</MudSelectItem><MudSelectItem Value="@QuestionnaireQuestionType.File">Upload File</MudSelectItem><MudSelectItem Value="@QuestionnaireQuestionType.Address">Address</MudSelectItem></MudSelect></MudItem>
+                @if (_model.Type is QuestionnaireQuestionType.SingleChoice or QuestionnaireQuestionType.MultipleChoice)
+                {
+                    <MudItem xs="12"><MudText Typo="Typo.subtitle2">Options</MudText></MudItem>
+                    @foreach (var option in _model.Options)
+                    {
+                        <MudItem xs="5"><MudTextField Label="Code" @bind-Value="option.Code" Required="true" /></MudItem>
+                        <MudItem xs="6"><MudTextField Label="Label" @bind-Value="option.Label" Required="true" /></MudItem>
+                        <MudItem xs="1"><MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="@(() => RemoveOption(option))" /></MudItem>
+                    }
+                    <MudItem xs="12"><MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Outlined.Add" OnClick="AddOption">Add Option</MudButton></MudItem>
+                }
                 <MudItem xs="12"><MudRadioGroup T="QuestionnaireAnswerRule" @bind-Value="_model.AnswerRule"><MudText Typo="Typo.caption">Answer Rule</MudText><MudRadio Value="@QuestionnaireAnswerRule.Mandatory">Mandatory (*)</MudRadio><MudRadio Value="@QuestionnaireAnswerRule.Optional">Optional</MudRadio><MudRadio Value="@QuestionnaireAnswerRule.AddedValue">Added Value (**)</MudRadio></MudRadioGroup></MudItem>
                 <MudItem xs="12" sm="6"><MudNumericField T="int" Label="Order" @bind-Value="_model.Order" Min="1" Required="true" Variant="Variant.Outlined" /></MudItem>
+                <MudItem xs="12"><MudRadioGroup T="bool" @bind-Value="_model.IsVisible"><MudText Typo="Typo.caption">Visible</MudText><MudRadio Value="true">Yes</MudRadio><MudRadio Value="false">No</MudRadio></MudRadioGroup></MudItem>
                 <MudItem xs="12"><MudRadioGroup T="bool" @bind-Value="_model.IsActive"><MudText Typo="Typo.caption">Active</MudText><MudRadio Value="true">Yes</MudRadio><MudRadio Value="false">No</MudRadio></MudRadioGroup></MudItem>
             </MudGrid>
-        </MudForm>
+        </fieldset></MudForm>
     </DialogContent>
     <DialogActions><ButtonCancel OnClick="Cancel" Disabled="_isLoading" /><MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Submit" Disabled="_isLoading">Save</MudButton></DialogActions>
 </MudDialog>

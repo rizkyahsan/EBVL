@@ -13,25 +13,12 @@ public sealed class QuestionnaireSeeder(IDatabaseService db)
 
     public async Task SeedQuestionnaires()
     {
-        var existing = await db.Questionnaires.Include(x => x.Sections).ThenInclude(x => x.Questions)
-            .SingleOrDefaultAsync(x => x.Code == "VENDOR_REGISTRATION");
-        if (existing is not null)
+        if (await db.Questionnaires.AnyAsync(x => x.Code == "VENDOR_REGISTRATION" && !x.IsDeleted))
         {
-            if (await db.VendorRegistrations.AnyAsync(registration => registration.QuestionnaireId == existing.Id))
-            {
-                return;
-            }
-
-            await EnsureGeneralQuestions(existing);
-            await EnsureVendorRepresentativeOfficeQuestions(existing);
-            await EnsureSoleAgentQuestions(existing);
-            await EnsureProductQualityGeneralQuestions(existing);
-            await EnsureProductQualitySpecificQuestions(existing);
-            await EnsureProductPositioningQuestions(existing);
             return;
         }
 
-        var questionnaire = new Questionnaire { Id = _questionnaireId, Code = "VENDOR_REGISTRATION", BusinessProcess = "Vendor Registration", IsActive = true };
+        var questionnaire = new Questionnaire { Id = _questionnaireId, QuestionnaireSeriesId = _questionnaireId, Code = "VENDOR_REGISTRATION", BusinessProcess = "Vendor Registration", Version = 1, Status = QuestionnaireStatus.Publish, IsActive = true, PublishedAt = DateTimeOffset.UtcNow, PublishedBy = "EBVLSystem" };
         (string Title, string Code, VendorCompanyStatusType? CompanyType, int[] Order)[] definitions =
         [
             (QuestionnaireFor.GeneralInformation, "GENERAL", null, [.. Enumerable.Range(1,13)]),

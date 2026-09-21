@@ -67,8 +67,8 @@ public sealed class StartQuestionnaireHandler(IDatabaseService db, ICurrentUserS
         }
 
         var questionnaire = await db.Questionnaires.Include(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
-            .Include(x => x.Rules).SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration", cancellationToken)
-            ?? throw new InvalidOperationException("No active vendor registration questionnaire is available.");
+            .Include(x => x.Rules).SingleOrDefaultAsync(x => !x.IsDeleted && x.Status == QuestionnaireStatus.Publish && x.IsActive && x.Code == "VENDOR_REGISTRATION", cancellationToken)
+            ?? throw new ValidationException("No published vendor registration questionnaire is available. Registration cannot be started.");
         var documentDefinitions = await db.DocumentDefinitions.AsNoTracking().Where(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration").OrderBy(x => x.Order).ThenBy(x => x.Code).ToListAsync(cancellationToken);
         var tokenBytes = RandomNumberGenerator.GetBytes(32);
         var token = Convert.ToBase64String(tokenBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
@@ -335,13 +335,7 @@ internal static class QuestionnaireRuntime
         var r = await query.SingleOrDefaultAsync(ct) ?? throw new InvalidOperationException("Registration was not found.");
         if (r.Questionnaire is null)
         {
-            var questionnaire = await db.Questionnaires
-                .Include(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
-                .Include(x => x.Rules)
-                .SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration", ct)
-                ?? throw new InvalidOperationException("The active vendor registration questionnaire was not found.");
-            r.QuestionnaireId = questionnaire.Id;
-            r.Questionnaire = questionnaire;
+            throw new InvalidOperationException("This registration is not linked to a questionnaire version. Historical registrations must be repaired explicitly before they can be opened.");
         }
 
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(token ?? string.Empty));

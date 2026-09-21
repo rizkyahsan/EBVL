@@ -2,10 +2,17 @@ namespace EBVL.BackEnd.Domain.Entities;
 
 public sealed class Questionnaire : ModifiableEntity
 {
+    public Guid QuestionnaireSeriesId { get; set; }
     public required string Code { get; set; }
     public required string BusinessProcess { get; set; }
+    public int Version { get; set; } = 1;
+    public QuestionnaireStatus Status { get; set; } = QuestionnaireStatus.Draft;
+    public Guid? PreviousVersionId { get; set; }
+    public DateTimeOffset? PublishedAt { get; set; }
+    public string? PublishedBy { get; set; }
     public bool IsActive { get; set; }
     public byte[] RowVersion { get; set; } = [];
+    public Questionnaire? PreviousVersion { get; set; }
     public ICollection<QuestionnaireSection> Sections { get; set; } = new HashSet<QuestionnaireSection>();
     public ICollection<QuestionnaireRule> Rules { get; set; } = new HashSet<QuestionnaireRule>();
 }

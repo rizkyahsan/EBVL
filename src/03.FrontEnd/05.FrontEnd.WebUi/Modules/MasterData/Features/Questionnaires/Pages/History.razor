@@ -1,0 +1,30 @@
+@page "/MasterData/Questionnaires/History/{SeriesId:guid}"
+@inherits PageBase
+@using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Statics
+
+<HtmlHead Title="Questionnaire Version History" />
+<PageHeader Title="Questionnaire Version History" />
+<ErrorViewer Exception="@_exception" />
+<MudTable Items="@_items" Loading="@_isLoading">
+    <HeaderContent><MudTh>Version</MudTh><MudTh>Status</MudTh><MudTh>Published At</MudTh><MudTh>Published By</MudTh><MudTh>Created At</MudTh><MudTh>Action</MudTh></HeaderContent>
+    <RowTemplate>
+        <MudTd>v@context.Version</MudTd><MudTd>@context.Status</MudTd><MudTd>@context.PublishedAt?.ToLocalTime().ToString("g")</MudTd><MudTd>@context.PublishedBy</MudTd><MudTd>@context.CreatedAt.ToLocalTime().ToString("g")</MudTd>
+        <MudTd><ButtonDetails Href="@QuestionnaireRouteFor.Preview(context.QuestionnaireId)" /></MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    [Parameter] public Guid SeriesId { get; set; }
+    private IReadOnlyList<QuestionnaireVersionItem> _items = [];
+    protected override void LoadBreadcrumbs()
+    {
+    }
+    protected override async Task OnParametersSetAsync()
+    {
+        try { _isLoading = true; _items = [.. (await Sender.Send(new GetQuestionnaireVersionHistoryQuery(SeriesId))).Items]; }
+        catch (Exception exception) { _exception = exception; }
+        finally { _isLoading = false; }
+    }
+}

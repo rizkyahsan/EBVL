@@ -2,44 +2,63 @@
 @inherits PageBase
 @using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Components
-@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models
-@using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Statics
-@* TODO: Restore QuestionnairePermissions.Read after IdAMan permission setup is complete. *@
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+@* TODO: Add the Questionnaire IdAMan permission guard when its permissions are configured. *@
 
 <HtmlHead Title="Questionnaire" />
 <Breadcrumbs Items="@_breadcrumbItems" />
 <PageHeader Title="Questionnaire" />
 <ErrorViewer Exception="@_exception" />
-@* TODO: Restore QuestionnairePermissions.Write after IdAMan permission setup is complete. *@
-<TableDefault Items="_items" Loading="_isLoading" Filter="Filter">
+
+<MudStack Row="true" AlignItems="AlignItems.End" Class="mb-4 flex-wrap">
+    <MudSelect T="Guid?" Label="Questionnaire Series" Value="@_selectedQuestionnaireId" ValueChanged="SelectQuestionnaire" ToStringFunc="QuestionnaireText" Variant="Variant.Outlined" Style="min-width: 20rem">
+        @foreach (var questionnaire in _questionnaires)
+        {
+            <MudSelectItem T="Guid?" Value="@((Guid?)questionnaire.QuestionnaireId)">@questionnaire.BusinessProcess (@Status(questionnaire.Status), v@questionnaire.Version)</MudSelectItem>
+        }
+    </MudSelect>
+    <MudSpacer />
+    @if (_selected?.CanPublish == true)
+    {
+        <MudButton Variant="Variant.Filled" Color="Color.Success" StartIcon="@Icons.Material.Outlined.Publish" Disabled="@_busy" OnClick="Publish">Publish</MudButton>
+    }
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" Disabled="@(_selected is null || _busy)" OnClick="AddSection">Add New</MudButton>
+</MudStack>
+
+<TableDefault ServerData="ReloadTable" @ref="_table" Loading="@_isLoading" Hover="true" Breakpoint="Breakpoint.Sm">
     <ToolBarContent>
-        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="ShowAdd">Add New</MudButton>
+        <MudText Typo="Typo.subtitle2">@(_selected is null ? "No questionnaire series" : $"{_selected.BusinessProcess} / v{_selected.Version} / {Status(_selected.Status)}")</MudText>
         <MudSpacer />
-        <TextFieldSearch @bind-Value="_search" />
+        <TextFieldSearch ValueChanged="OnSearch" Class="mt-0" />
     </ToolBarContent>
     <HeaderContent>
-        <MudTh>@QuestionnaireDisplayTextFor.Number</MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireListItem, object>(x => x.BusinessProcess)" InitialDirection="SortDirection.Ascending">@QuestionnaireDisplayTextFor.BusinessProcess</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireListItem, object>(x => Vendor(x.VendorType))">@QuestionnaireDisplayTextFor.VendorType</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireListItem, object>(x => x.Section)">@QuestionnaireDisplayTextFor.Section</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<QuestionnaireListItem, object>(x => x.IsSectionActive)">@QuestionnaireDisplayTextFor.Active</MudTableSortLabel></MudTh>
-        <MudTh Class="text-center">@QuestionnaireDisplayTextFor.Action</MudTh>
+        <MudTh>No</MudTh>
+        <MudTh><MudTableSortLabel T="QuestionnaireSectionListItem" SortLabel="title">Business Process</MudTableSortLabel></MudTh>
+        <MudTh>Vendor Type</MudTh>
+        <MudTh><MudTableSortLabel T="QuestionnaireSectionListItem" SortLabel="title" InitialDirection="SortDirection.Ascending">Section</MudTableSortLabel></MudTh>
+        <MudTh>Status / Active</MudTh>
+        <MudTh Class="text-center">Action</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="@QuestionnaireDisplayTextFor.Number">@Number(context)</MudTd>
-        <MudTd DataLabel="@QuestionnaireDisplayTextFor.BusinessProcess">
-            <MudHighlighter Text="@context.BusinessProcess" HighlightedText="@_search" />
-        </MudTd>
-        <MudTd DataLabel="@QuestionnaireDisplayTextFor.VendorType"><MudHighlighter Text="@Vendor(context.VendorType)" HighlightedText="@_search" /></MudTd>
-        <MudTd DataLabel="@QuestionnaireDisplayTextFor.Section"><MudHighlighter Text="@context.Section" HighlightedText="@_search" /></MudTd>
-        <MudTd DataLabel="@QuestionnaireDisplayTextFor.Active"><MudHighlighter Text="@(context.IsSectionActive ? "Yes" : "No")" HighlightedText="@_search" /></MudTd>
-        <MudTd DataLabel="@QuestionnaireDisplayTextFor.Action" Class="text-center">
-            <ButtonDetails Href="@QuestionnaireRouteFor.Details(context.QuestionnaireId, context.SectionId)" />
-            <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => EditSection(context))" />
+        <MudTd DataLabel="No">@Number(context)</MudTd>
+        <MudTd DataLabel="Business Process"><MudHighlighter Text="@context.BusinessProcess" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="Vendor Type">@Vendor(context.VendorType)</MudTd>
+        <MudTd DataLabel="Section"><MudHighlighter Text="@context.Title" HighlightedText="@_search" /></MudTd>
+        <MudTd DataLabel="Status / Active"><MudChip T="string" Size="Size.Small" Color="@(context.IsActive ? Color.Success : Color.Default)">@Status(_selected?.Status) / @(context.IsActive ? "Active" : "Inactive")</MudChip></MudTd>
+        <MudTd DataLabel="Action" Class="text-center">
+            <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Color="Color.Info" Href="@QuestionnaireRouteFor.Details(_selected!.QuestionnaireId, context.Id)" title="View" />
+            @if (_selected?.Status != QuestionnaireStatus.Superseded)
+            {
+                <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" Disabled="@_busy" OnClick="@(() => EditSection(context))" title="Edit" />
+            }
+            @if (_selected?.Status == QuestionnaireStatus.Draft)
+            {
+                <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" Disabled="@_busy" OnClick="@(() => DeleteSection(context))" title="Delete" />
+            }
         </MudTd>
     </RowTemplate>
-    <PagerContent>
-        <MudTablePager />
-    </PagerContent>
+    <NoRecordsContent><MudText Class="pa-4">No sections found for this questionnaire version.</MudText></NoRecordsContent>
+    <LoadingContent><MudText Class="pa-4">Loading sections...</MudText></LoadingContent>
+    <PagerContent><MudTablePager /></PagerContent>
 </TableDefault>

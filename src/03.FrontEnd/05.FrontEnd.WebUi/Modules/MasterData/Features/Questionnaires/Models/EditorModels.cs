@@ -6,6 +6,7 @@ public sealed class SectionModel
     public string BusinessProcess { get; set; } = string.Empty;
     public string Code { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
+    public int Order { get; set; } = 1;
     public VendorCompanyStatusType? CompanyType { get; set; } = VendorCompanyStatusType.Manufacture;
     public bool IsActive { get; set; } = true;
     public List<QuestionModel> Questions { get; set; } = [];
@@ -19,6 +20,7 @@ public sealed class QuestionModel
     public string? Hint { get; set; }
     public string? Placeholder { get; set; }
     public QuestionnaireQuestionType Type { get; set; } = QuestionnaireQuestionType.ShortText;
+    public VendorCompanyStatusType? CompanyType { get; set; }
     public bool IsRequired { get; set; }
     public bool IsVisible { get; set; } = true;
     public bool IsActive { get; set; } = true;

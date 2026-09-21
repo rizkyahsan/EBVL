@@ -1,9 +1,8 @@
-using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires;
 using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models;
-using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
 
 namespace EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Components;
 
+#pragma warning disable IDE0044
 public partial class DialogQuestion
 {
     [Parameter] public QuestionModel? Model { get; set; }
@@ -31,14 +30,13 @@ public partial class DialogQuestion
             Hint = Model.Hint,
             Placeholder = Model.Placeholder,
             Type = Model.Type,
+            CompanyType = Model.CompanyType,
             IsRequired = Model.IsRequired,
             IsVisible = Model.IsVisible,
             IsActive = Model.IsActive,
             AnswerRule = Model.AnswerRule,
             Order = Model.Order,
-            Options = Model.Options
-                .Select(x => new OptionModel { Code = x.Code, Label = x.Label })
-                .ToList()
+            Options = [.. Model.Options.Select(x => new OptionModel { Code = x.Code, Label = x.Label })]
         };
     }
 
@@ -57,41 +55,35 @@ public partial class DialogQuestion
 
             if (!_form.IsValid)
             {
+                _isLoading = false;
                 return;
             }
 
             _model.Code = string.IsNullOrWhiteSpace(_model.Code) ? Code(_model.Label) : _model.Code;
             _model.IsRequired = _model.AnswerRule == QuestionnaireAnswerRule.Mandatory;
-            _model.IsVisible = true;
 
             if (Model is null)
             {
-                var request = new AddQuestionnaireQuestionRequest
-                {
-                    Name = _model.Label,
-                    Code = _model.Code,
-                    Description = _model.Hint,
-                    AnswerType = _model.Type,
-                    AnswerRule = _model.AnswerRule,
-                    Order = _model.Order,
-                    IsActive = _model.IsActive
-                };
-                var command = new AddQuestionnaireQuestionCommand(QuestionnaireId, SectionId, request);
-                var response = await Sender.Send(command);
-                Dialog.Close(DialogResult.Ok(response.Item));
+                await OnSubmit.InvokeAsync(_model);
+                _isLoading = false;
+                Dialog.Close(DialogResult.Ok(_model));
             }
             else
             {
+                if (HasNoChanges())
+                {
+                    Dialog.Cancel();
+                    return;
+                }
+
                 await OnSubmit.InvokeAsync(_model);
-                Dialog.Close();
+                _isLoading = false;
+                Dialog.Close(DialogResult.Ok(_model));
             }
         }
         catch (Exception exception)
         {
             _exception = exception;
-        }
-        finally
-        {
             _isLoading = false;
         }
     }
@@ -101,5 +93,30 @@ public partial class DialogQuestion
         return string.Join(
             '_',
             value.Trim().ToUpperInvariant().Split([' ', '-', '/'], StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    private bool HasNoChanges()
+    {
+        return Model is not null
+            && Model.Label == _model.Label
+            && Model.Hint == _model.Hint
+            && Model.Placeholder == _model.Placeholder
+            && Model.Type == _model.Type
+            && Model.CompanyType == _model.CompanyType
+            && Model.IsVisible == _model.IsVisible
+            && Model.AnswerRule == _model.AnswerRule
+            && Model.Order == _model.Order
+            && Model.IsActive == _model.IsActive
+            && Model.Options.Select(x => (x.Code, x.Label)).SequenceEqual(_model.Options.Select(x => (x.Code, x.Label)));
+    }
+
+    private void AddOption()
+    {
+        _model.Options.Add(new OptionModel());
+    }
+
+    private void RemoveOption(OptionModel option)
+    {
+        _ = _model.Options.Remove(option);
     }
 }

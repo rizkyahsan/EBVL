@@ -10,7 +10,7 @@
 <LoadingLinear IsVisible="@_isLoading" /><ErrorViewer Exception="@_exception" />
 @if (_item is not null)
 {
-    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-4">Preview uses the current questionnaire graph. Conditional rules are listed but not executed.</MudAlert>
+    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-4">Version @_item.Version / @_item.Status. This is a read-only view of this exact questionnaire version.</MudAlert>
     <MudPaper Class="pa-4 pa-sm-6" Outlined="true"><MudText Typo="Typo.h4">@_item.BusinessProcess</MudText><MudText Typo="Typo.caption">@_item.Code</MudText>
         @foreach (var section in _item.Sections)
         {
