@@ -69,7 +69,8 @@ public sealed class StartQuestionnaireHandler(IDatabaseService db, ICurrentUserS
         var questionnaire = await db.Questionnaires.Include(x => x.Sections).ThenInclude(x => x.Questions).ThenInclude(x => x.Options)
             .Include(x => x.Rules).SingleOrDefaultAsync(x => !x.IsDeleted && x.Status == QuestionnaireStatus.Publish && x.IsActive && x.Code == "VENDOR_REGISTRATION", cancellationToken)
             ?? throw new ValidationException("No published vendor registration questionnaire is available. Registration cannot be started.");
-        var documentDefinitions = await db.DocumentDefinitions.AsNoTracking().Where(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration").OrderBy(x => x.Order).ThenBy(x => x.Code).ToListAsync(cancellationToken);
+        var documentRequirementSet = await db.DocumentRequirementSets.SingleOrDefaultAsync(x => !x.IsDeleted && x.Status == QuestionnaireStatus.Publish && x.BusinessProcess == "Vendor Registration", cancellationToken)
+            ?? throw new ValidationException("No published vendor registration document requirement set is available. Registration cannot be started.");
         var tokenBytes = RandomNumberGenerator.GetBytes(32);
         var token = Convert.ToBase64String(tokenBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
         var registration = new VendorRegistration
@@ -94,7 +95,8 @@ public sealed class StartQuestionnaireHandler(IDatabaseService db, ICurrentUserS
             ResumeTokenHash = SHA256.HashData(Encoding.UTF8.GetBytes(token)),
             ResumeTokenExpiresAt = DateTimeOffset.UtcNow.AddDays(30),
             Status = VendorRegistrationStatus.Draft,
-            QuestionnaireId = questionnaire.Id
+            QuestionnaireId = questionnaire.Id,
+            DocumentRequirementSetId = documentRequirementSet.Id
         };
         _ = await db.VendorRegistrations.AddAsync(registration, cancellationToken);
         _ = await db.SaveAsync(nameof(StartQuestionnaireCommand), cancellationToken);
@@ -274,7 +276,7 @@ public sealed class UploadVendorRegistrationDocumentHandler(IDatabaseService db,
         var registration = await QuestionnaireRuntime.Load(db, command.RegistrationId, command.ResumeToken, true, cancellationToken);
         QuestionnaireRuntime.EnsureDraft(registration);
         db.SetQuestionnaireRuntimeGraphUnchanged();
-        var definition = await db.DocumentDefinitions.SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration" && x.Code == command.DefinitionKey, cancellationToken) ?? throw new ValidationException("The document definition is invalid.");
+        var definition = await db.DocumentDefinitions.SingleOrDefaultAsync(x => !x.IsDeleted && x.IsActive && x.DocumentRequirementSetId == registration.DocumentRequirementSetId && x.Code == command.DefinitionKey, cancellationToken) ?? throw new ValidationException("The document definition is invalid.");
         QuestionnaireRuntime.ValidatePdf(command.File, definition.MaxSizeMb);
         var stored = await storage.CreateAsync(command.File, cancellationToken);
         var current = registration.Documents.SingleOrDefault(x => !x.IsDeleted && x.DocumentDefinitionId == definition.Id);
@@ -395,7 +397,7 @@ internal static class QuestionnaireRuntime
     public static async Task<bool> IsDocumentEvidenceComplete(IDatabaseService db, VendorRegistration registration, CancellationToken cancellationToken)
     {
         var mandatoryDefinitionIds = await db.DocumentDefinitions.AsNoTracking()
-            .Where(x => !x.IsDeleted && x.IsActive && x.IsMandatory && x.BusinessProcess == "Vendor Registration")
+            .Where(x => !x.IsDeleted && x.IsActive && x.IsMandatory && x.DocumentRequirementSetId == registration.DocumentRequirementSetId)
             .Select(x => x.Id)
             .ToListAsync(cancellationToken);
         var uploadedDefinitionIds = registration.Documents
@@ -568,7 +570,7 @@ internal static class QuestionnaireRuntime
             return new RuntimeQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, q.Order, IsRequired(r, q), q.Options.Where(o => !o.IsDeleted).OrderBy(o => o.Order).Select(o => new RuntimeOptionItem(o.Id, o.Code, o.Label, o.Order)).ToList(), a is null ? null : ToValue(a), a?.Files.Where(f => !f.IsDeleted).Select(f => new RuntimeFileItem(f.Id, f.OriginalFileName, f.ContentType, f.Length)).ToList() ?? []);
         }).ToList())).Where(s => s.Questions.Count != 0).ToList();
         var definitions = await db.DocumentDefinitions.AsNoTracking()
-            .Where(x => !x.IsDeleted && x.IsActive && x.BusinessProcess == "Vendor Registration")
+            .Where(x => !x.IsDeleted && x.IsActive && x.DocumentRequirementSetId == r.DocumentRequirementSetId)
             .OrderBy(x => x.Order).ThenBy(x => x.Code)
             .ToListAsync(ct);
         var uploaded = r.Documents.Where(x => !x.IsDeleted).ToDictionary(x => x.DocumentDefinitionId);

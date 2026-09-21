@@ -74,6 +74,10 @@ public partial class DatabaseService(
     {
         Entry(documentDefinition).Property(x => x.RowVersion).OriginalValue = rowVersion;
     }
+    public void SetDocumentRequirementSetOriginalRowVersion(DocumentRequirementSet documentRequirementSet, byte[] rowVersion)
+    {
+        Entry(documentRequirementSet).Property(x => x.RowVersion).OriginalValue = rowVersion;
+    }
     public void SetVendorRegistrationOriginalRowVersion(VendorRegistration registration, byte[] rowVersion)
     {
         Entry(registration).Property(x => x.RowVersion).OriginalValue = rowVersion;

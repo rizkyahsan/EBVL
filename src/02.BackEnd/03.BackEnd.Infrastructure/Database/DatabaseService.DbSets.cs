@@ -8,6 +8,7 @@ public partial class DatabaseService : IDatabaseService
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<DocumentDefinition> DocumentDefinitions => Set<DocumentDefinition>();
+    public DbSet<DocumentRequirementSet> DocumentRequirementSets => Set<DocumentRequirementSet>();
     public DbSet<EmailTemplate> EmailTemplates => Set<EmailTemplate>();
     public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
     public DbSet<Domain.Entities.FileStorage> FileStorages => Set<Domain.Entities.FileStorage>();

@@ -7,16 +7,21 @@ public partial class DialogDocument
 {
     [Parameter]
     public DocumentListItem? Document { get; set; }
+    [Parameter]
+    public required DocumentRequirementSetItem RequirementSet { get; set; }
 
     private MudForm _form = default!;
     private string _businessProcess = string.Empty;
     private string _name = string.Empty;
     private int _maxSizeMb = 1;
+    private int _order = 1;
     private bool _isMandatory;
     private bool _isActive = true;
 
     protected override void OnInitialized()
     {
+        _businessProcess = RequirementSet.BusinessProcess;
+        _order = RequirementSet.Requirements.Count + 1;
         if (Document is null)
         {
             return;
@@ -25,6 +30,7 @@ public partial class DialogDocument
         _businessProcess = Document.BusinessProcess;
         _name = Document.Name;
         _maxSizeMb = Document.MaxSizeMb;
+        _order = Document.Order;
         _isMandatory = Document.IsMandatory;
         _isActive = Document.IsActive;
     }
@@ -50,14 +56,16 @@ public partial class DialogDocument
             GetDocumentResponse response;
             if (Document is null)
             {
-                response = await Sender.Send(new AddDocumentCommand
+                response = await Sender.Send(new AddDocumentCommand(RequirementSet.Id, new AddDocumentRequest
                 {
                     BusinessProcess = _businessProcess,
                     Name = _name,
                     MaxSizeMb = _maxSizeMb,
+                    Order = _order,
                     IsMandatory = _isMandatory,
-                    IsActive = _isActive
-                });
+                    IsActive = _isActive,
+                    RowVersion = RequirementSet.RowVersion
+                }));
             }
             else
             {
@@ -66,11 +74,12 @@ public partial class DialogDocument
                     BusinessProcess = _businessProcess,
                     Name = _name,
                     MaxSizeMb = _maxSizeMb,
+                    Order = _order,
                     IsMandatory = _isMandatory,
                     IsActive = _isActive,
-                    RowVersion = Document.RowVersion
+                    RowVersion = RequirementSet.RowVersion
                 };
-                response = await Sender.Send(new UpdateDocumentCommand(Document.Id, request));
+                response = await Sender.Send(new UpdateDocumentCommand(RequirementSet.Id, Document.Id, request));
             }
 
             Snackbar.AddSuccess(Document is null ? "Document added." : "Document updated.");

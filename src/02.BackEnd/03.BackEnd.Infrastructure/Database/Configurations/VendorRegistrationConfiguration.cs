@@ -12,6 +12,7 @@ public sealed class VendorRegistrationConfiguration : IEntityTypeConfiguration<V
         _ = builder.Property(x => x.RowVersion).IsRowVersion();
         _ = builder.HasMany(x => x.Documents).WithOne(x => x.VendorRegistration).HasForeignKey(x => x.VendorRegistrationId).OnDelete(DeleteBehavior.Cascade);
         _ = builder.HasMany(x => x.Answers).WithOne(x => x.VendorRegistration).HasForeignKey(x => x.VendorRegistrationId).OnDelete(DeleteBehavior.Cascade);
+        _ = builder.HasOne(x => x.DocumentRequirementSet).WithMany().HasForeignKey(x => x.DocumentRequirementSetId).OnDelete(DeleteBehavior.Restrict);
     }
 }
 public sealed class VendorRegistrationDocumentConfiguration : IEntityTypeConfiguration<VendorRegistrationDocument>

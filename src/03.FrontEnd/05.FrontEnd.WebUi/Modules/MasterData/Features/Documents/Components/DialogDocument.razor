@@ -11,7 +11,7 @@
                     <MudTextField Label="Document Type Name" @bind-Value="_name" Required="true" Variant="Variant.Text" ShrinkLabel="true" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudSelect T="string" Label="Business Process" @bind-Value="_businessProcess" Required="true" Variant="Variant.Text" ShrinkLabel="true">
+                    <MudSelect T="string" Label="Business Process" @bind-Value="_businessProcess" Required="true" Variant="Variant.Text" ShrinkLabel="true" Disabled="true">
                         @foreach (var process in QuestionnaireBusinessProcessFor.All)
                         {
                             <MudSelectItem Value="@process">@process</MudSelectItem>
@@ -20,6 +20,9 @@
                 </MudItem>
                 <MudItem xs="12">
                     <MudNumericField T="int" Label="Maximal Size (MB)" @bind-Value="_maxSizeMb" Min="1" Max="100" Required="true" Variant="Variant.Text" ShrinkLabel="true" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudNumericField T="int" Label="Order" @bind-Value="_order" Min="1" Required="true" Variant="Variant.Text" ShrinkLabel="true" />
                 </MudItem>
                 <MudItem xs="12" sm="6">
                     <MudRadioGroup T="bool" @bind-Value="_isMandatory">

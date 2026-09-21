@@ -1,38 +1,38 @@
 @page "/MasterData/Documents"
 @inherits PageBase
 @using EBVL.Shared.Dto.Modules.MasterData.Documents
+@using EBVL.Shared.Enums
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Documents.Statics
-@* TODO: Add the Documents IdAMan permission guard when its permissions are configured. *@
 
 <HtmlHead Title="@DisplayTextFor.Documents" />
 <Breadcrumbs Items="@_breadcrumbItems" />
 <PageHeader Title="@DisplayTextFor.Documents" />
 <ErrorViewer Exception="@_exception" />
-<TableDefault Items="_items" Loading="_isLoading" Filter="Filter">
+<MudPaper Class="pa-4 mb-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center">
+        <MudSelect T="Guid?" Label="Requirement Set" Value="_selectedSetId" ValueChanged="SelectSet" Style="min-width:280px">
+            @foreach (var set in _sets)
+            {
+                <MudSelectItem T="Guid?" Value="set.Id">@set.BusinessProcess - v@set.Version (@set.Status)</MudSelectItem>
+            }
+        </MudSelect>
+        @if (_selected is not null)
+        {
+            @if (_selected.Status == QuestionnaireStatus.Draft)
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Publish">Publish</MudButton>
+            }
+        }
+    </MudStack>
+</MudPaper>
+<TableDefault Items="@(_selected?.Requirements ?? [])" Loading="_isLoading" Filter="Filter">
     <ToolBarContent>
-        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="ShowAdd">Add New</MudButton>
-        <MudSpacer />
-        <TextFieldSearch @bind-Value="_search" />
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="ShowAdd" Disabled="@(_selected is null || _selected.Status == QuestionnaireStatus.Superseded)">Add New</MudButton>
+        <MudSpacer /><TextFieldSearch @bind-Value="_search" />
     </ToolBarContent>
-    <HeaderContent>
-        <MudTh>@DisplayTextFor.Number</MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.BusinessProcess)" InitialDirection="SortDirection.Ascending">@DisplayTextFor.BusinessProcess</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.Name)">@DisplayTextFor.Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.MaxSizeMb)">@DisplayTextFor.MaxSizeMb</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.IsMandatory)">@DisplayTextFor.Mandatory</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.IsActive)">@DisplayTextFor.Active</MudTableSortLabel></MudTh>
-        <MudTh Class="text-center">@DisplayTextFor.Action</MudTh>
-    </HeaderContent>
+    <HeaderContent><MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.Order)" InitialDirection="SortDirection.Ascending">Order</MudTableSortLabel></MudTh><MudTh>Name</MudTh><MudTh>Max Size</MudTh><MudTh>Mandatory</MudTh><MudTh>Status</MudTh><MudTh Style="width: 150px;">Action</MudTh></HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="@DisplayTextFor.Number">@Number(context)</MudTd>
-        <MudTd DataLabel="@DisplayTextFor.BusinessProcess"><MudHighlighter Text="@context.BusinessProcess" HighlightedText="@_search" /></MudTd>
-        <MudTd DataLabel="@DisplayTextFor.Name"><MudHighlighter Text="@context.Name" HighlightedText="@_search" /></MudTd>
-        <MudTd DataLabel="@DisplayTextFor.MaxSizeMb"><MudHighlighter Text="@context.MaxSizeMb.ToString()" HighlightedText="@_search" /></MudTd>
-        <MudTd DataLabel="@DisplayTextFor.Mandatory"><MudIcon Icon="@(context.IsMandatory ? Icons.Material.Outlined.CheckBox : Icons.Material.Outlined.CheckBoxOutlineBlank)" Color="Color.Primary" Title="@(context.IsMandatory ? "Mandatory: Yes" : "Mandatory: No")" aria-label="@(context.IsMandatory ? "Mandatory: Yes" : "Mandatory: No")" /></MudTd>
-        <MudTd DataLabel="@DisplayTextFor.Active"><MudIcon Icon="@(context.IsActive ? Icons.Material.Outlined.CheckBox : Icons.Material.Outlined.CheckBoxOutlineBlank)" Color="Color.Primary" Title="@(context.IsActive ? "Active: Yes" : "Active: No")" aria-label="@(context.IsActive ? "Active: Yes" : "Active: No")" /></MudTd>
-        <MudTd DataLabel="@DisplayTextFor.Action" Class="text-center">
-            <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => ShowEdit(context))" aria-label="Edit document" />
-        </MudTd>
+        <MudTd>@context.Order</MudTd><MudTd>@context.Name</MudTd><MudTd>@context.MaxSizeMb MB</MudTd><MudTd><MudCheckBox T="bool" Value="context.IsMandatory" ReadOnly="true" Color="Color.Primary" /></MudTd><MudTd><MudChip T="string" Size="Size.Small" Color="@StatusColor(_selected?.Status)">@_selected?.Status</MudChip></MudTd>
+        <MudTd Style="width: 150px;"><MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => ShowEdit(context))" Disabled="@(_selected is null || _selected.Status == QuestionnaireStatus.Superseded)" aria-label="Edit document" /><MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="@(() => Delete(context))" Disabled="@(_selected is null || _selected.Status == QuestionnaireStatus.Superseded)" aria-label="Delete document" /></MudTd>
     </RowTemplate>
-    <PagerContent><MudTablePager /></PagerContent>
 </TableDefault>

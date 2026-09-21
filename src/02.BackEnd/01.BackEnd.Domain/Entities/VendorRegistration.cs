@@ -27,6 +27,8 @@ public sealed class VendorRegistration : ModifiableEntity
     public User? User { get; set; }
     public Guid? QuestionnaireId { get; set; }
     public Questionnaire? Questionnaire { get; set; }
+    public Guid DocumentRequirementSetId { get; set; }
+    public DocumentRequirementSet? DocumentRequirementSet { get; set; }
     public ICollection<QuestionnaireAnswer> Answers { get; set; } = new HashSet<QuestionnaireAnswer>();
     public ICollection<VendorRegistrationDocument> Documents { get; set; } = new HashSet<VendorRegistrationDocument>();
 }
