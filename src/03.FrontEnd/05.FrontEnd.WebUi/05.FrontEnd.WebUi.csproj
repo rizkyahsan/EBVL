@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <UseRazorSourceGenerator>false</UseRazorSourceGenerator>
     <RootNamespace>EBVL.FrontEnd.WebUi</RootNamespace>
     <AssemblyName>EBVL.FrontEnd.WebUi</AssemblyName>
     <Version>1.0.3</Version>

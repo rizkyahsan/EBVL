@@ -1,5 +1,6 @@
 using EBVL.FrontEnd.Logics.Modules.Main.VendorRegistrations.Questionnaires;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
+using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires;
 using MediatR;
 using VendorRegistrationRouteFor = EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Statics.RouteFor;
@@ -59,6 +60,13 @@ public partial class StepThree
             var latestRuntime = await Sender.Send(new GetQuestionnaireRuntimeQuery(RegistrationState.RegistrationId!.Value, RegistrationState.ResumeToken!));
             var runtime = await Sender.Send(new SaveQuestionnaireAnswersCommand(RegistrationState.RegistrationId!.Value, new(RegistrationState.ResumeToken!, latestRuntime.RowVersion, answers)));
             await RegistrationState.SetRuntimeAsync(runtime);
+            _sections = runtime.Sections;
+            if (runtime.Sections.SelectMany(section => section.Questions).Any(question => question.IsRequired && !HasValue(question)))
+            {
+                Snackbar.AddWarning("Additional required questions are now available. Complete them before continuing.");
+                return;
+            }
+
             NavigationManager.NavigateTo(VendorRegistrationRouteFor.Review);
         }
         catch (Exception exception)
@@ -97,6 +105,50 @@ public partial class StepThree
         var runtime = await Sender.Send(new GetQuestionnaireRuntimeQuery(RegistrationState.RegistrationId!.Value, RegistrationState.ResumeToken!));
         await RegistrationState.SetRuntimeAsync(runtime);
         _sections = runtime.Sections;
+    }
+
+    private static bool HasValue(RuntimeQuestionItem question)
+    {
+        var value = question.Answer;
+        return question.Type switch
+        {
+            QuestionnaireQuestionType.ShortText or QuestionnaireQuestionType.LongText => !string.IsNullOrWhiteSpace(value?.TextValue),
+            QuestionnaireQuestionType.Address => IsCompleteAddress(value?.AddressJson),
+            QuestionnaireQuestionType.Integer => value?.IntegerValue is not null,
+            QuestionnaireQuestionType.Decimal => value?.DecimalValue is not null,
+            QuestionnaireQuestionType.Date => value?.DateValue is not null,
+            QuestionnaireQuestionType.Boolean => value?.BooleanValue is not null,
+            QuestionnaireQuestionType.SingleChoice or QuestionnaireQuestionType.MultipleChoice => value?.OptionIds?.Count > 0,
+            QuestionnaireQuestionType.File => question.Files.Count > 0,
+            _ => false
+        };
+    }
+
+    private static bool IsCompleteAddress(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return false;
+        }
+
+        try
+        {
+            var address = System.Text.Json.JsonSerializer.Deserialize<QuestionnaireAddressRequest>(json);
+            return address is not null
+                && !string.IsNullOrWhiteSpace(address.Country)
+                && !string.IsNullOrWhiteSpace(address.Building)
+                && !string.IsNullOrWhiteSpace(address.Street)
+                && !string.IsNullOrWhiteSpace(address.Number)
+                && !string.IsNullOrWhiteSpace(address.City)
+                && !string.IsNullOrWhiteSpace(address.Phone)
+                && !string.IsNullOrWhiteSpace(address.Fax)
+                && !string.IsNullOrWhiteSpace(address.Email)
+                && !string.IsNullOrWhiteSpace(address.Website);
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return false;
+        }
     }
 
     #endregion

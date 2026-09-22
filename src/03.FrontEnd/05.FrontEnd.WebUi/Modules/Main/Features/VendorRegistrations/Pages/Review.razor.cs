@@ -36,6 +36,7 @@ public partial class Review
     private PreRegistrationRequest _preRegistration = new();
     private QuestionnaireRuntimeResponse _runtime = default!;
     private bool _isRestoring = true;
+    private bool _isSubmitting;
 
     #endregion
 
@@ -93,6 +94,11 @@ public partial class Review
 
     private async Task SendForVerification()
     {
+        if (_isSubmitting)
+        {
+            return;
+        }
+
         var dialog = await DialogService.ShowAsync<DialogSendVendorData>(string.Empty, new DialogOptions
         {
             MaxWidth = MaxWidth.Small,
@@ -106,10 +112,22 @@ public partial class Review
             return;
         }
 
-        var runtime = await Sender.Send(new SubmitQuestionnaireCommand(_runtime.RegistrationId, new(RegistrationState.ResumeToken!, _runtime.RowVersion)));
-        await RegistrationState.SetRuntimeAsync(runtime);
-        await RegistrationState.MarkVerificationSentAsync();
-        NavigationManager.NavigateTo(VendorRegistrationRouteFor.EmailVerification);
+        try
+        {
+            _isSubmitting = true;
+            var runtime = await Sender.Send(new SubmitQuestionnaireCommand(_runtime.RegistrationId, new(RegistrationState.ResumeToken!, _runtime.RowVersion)));
+            await RegistrationState.SetRuntimeAsync(runtime);
+            await RegistrationState.MarkVerificationSentAsync();
+            NavigationManager.NavigateTo(VendorRegistrationRouteFor.EmailVerification);
+        }
+        catch (Exception exception)
+        {
+            Snackbar.AddError(exception.Message);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
     }
 
     private void BackToGuidance()

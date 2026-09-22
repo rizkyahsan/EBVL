@@ -4,6 +4,7 @@ using System.Text.Json;
 using EBVL.BackEnd.Logics.Common.Services.FileStorageDb;
 using EBVL.Shared.Dto.Common.FileStorages;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.PreRegistration;
+using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaire;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires;
 using Pertamina.Services.CurrentUser;
 
@@ -140,6 +141,7 @@ public sealed class SaveQuestionnaireAnswersHandler(IDatabaseService db) : IRequ
 {
     public async Task<QuestionnaireRuntimeResponse> Handle(SaveQuestionnaireAnswersCommand command, CancellationToken cancellationToken)
     {
+        await using var tx = await db.BeginTransactionAsync(cancellationToken);
         var registration = await QuestionnaireRuntime.Load(db, command.RegistrationId, command.Request.ResumeToken, true, cancellationToken);
         QuestionnaireRuntime.EnsureDraft(registration);
         QuestionnaireRuntime.SetConcurrency(db, registration, command.Request.RowVersion);
@@ -169,6 +171,7 @@ public sealed class SaveQuestionnaireAnswersHandler(IDatabaseService db) : IRequ
             .ExecuteDeleteAsync(cancellationToken);
         await db.QuestionnaireAnswers.AddRangeAsync(answers, cancellationToken);
         _ = await db.SaveAsync(nameof(SaveQuestionnaireAnswersCommand), cancellationToken);
+        await tx.CommitAsync(cancellationToken);
         return await QuestionnaireRuntime.LoadResponse(db, registration.Id, command.Request.ResumeToken, null, cancellationToken);
     }
 }
@@ -236,9 +239,20 @@ public sealed class UploadQuestionnaireFileHandler(IDatabaseService db, IFileSto
         }
 
         var stored = await storage.CreateAsync(c.File, cancellationToken);
+        var existingFiles = answer.Files.Where(x => !x.IsDeleted).ToList();
+        foreach (var existingFile in existingFiles)
+        {
+            existingFile.IsDeleted = true;
+        }
+
         var file = new QuestionnaireAnswerFile { VendorRegistrationId = r.Id, QuestionnaireQuestionId = q.Id, FileStorageId = stored.Id, OriginalFileName = Path.GetFileName(c.File.FileName), ContentType = "application/pdf", Length = c.File.FileContent.LongLength };
         answer.Files.Add(file);
         _ = await db.SaveAsync(nameof(UploadQuestionnaireFileCommand), cancellationToken);
+        foreach (var existingFile in existingFiles)
+        {
+            await storage.DeleteAsync(existingFile.FileStorageId, cancellationToken);
+        }
+
         return new(new(file.Id, file.OriginalFileName, file.ContentType, file.Length), Convert.ToBase64String(r.RowVersion));
     }
 }
@@ -506,7 +520,11 @@ internal static class QuestionnaireRuntime
         {
             try
             {
-                using var _ = JsonDocument.Parse(v.AddressJson);
+                using var document = JsonDocument.Parse(v.AddressJson);
+                if (document.RootElement.ValueKind != JsonValueKind.Object || JsonSerializer.Deserialize<QuestionnaireAddressRequest>(v.AddressJson) is null)
+                {
+                    throw new ValidationException("The address value must be a JSON object.");
+                }
             }
             catch (JsonException)
             {
@@ -553,7 +571,34 @@ internal static class QuestionnaireRuntime
 
     public static bool HasValue(QuestionnaireAnswerValue? v, QuestionnaireAnswer? a)
     {
-        return v is not null && ((v.TextValue is not null && !string.IsNullOrWhiteSpace(v.TextValue)) || v.IntegerValue is not null || v.DecimalValue is not null || v.DateValue is not null || v.BooleanValue is not null || v.AddressJson is not null || v.OptionIds?.Count > 0 || a?.Files.Any(x => !x.IsDeleted) == true);
+        return v is not null && ((v.TextValue is not null && !string.IsNullOrWhiteSpace(v.TextValue)) || v.IntegerValue is not null || v.DecimalValue is not null || v.DateValue is not null || v.BooleanValue is not null || HasCompleteAddress(v.AddressJson) || v.OptionIds?.Count > 0 || a?.Files.Any(x => !x.IsDeleted) == true);
+    }
+
+    private static bool HasCompleteAddress(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return false;
+        }
+
+        try
+        {
+            var address = JsonSerializer.Deserialize<QuestionnaireAddressRequest>(json);
+            return address is not null
+                && !string.IsNullOrWhiteSpace(address.Country)
+                && !string.IsNullOrWhiteSpace(address.Building)
+                && !string.IsNullOrWhiteSpace(address.Street)
+                && !string.IsNullOrWhiteSpace(address.Number)
+                && !string.IsNullOrWhiteSpace(address.City)
+                && !string.IsNullOrWhiteSpace(address.Phone)
+                && !string.IsNullOrWhiteSpace(address.Fax)
+                && !string.IsNullOrWhiteSpace(address.Email)
+                && !string.IsNullOrWhiteSpace(address.Website);
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
     }
 
     #endregion

@@ -26,7 +26,7 @@ public sealed class QuestionnaireRuntimeEndpoints : IEndpoint
         _ = app.MapPost(QuestionnaireRuntimeRoutes.Document + "/download", async (Guid registrationId, Guid documentId, FileAuthorizationRequest body, ISender sender, CancellationToken ct) =>
         {
             var file = await sender.Send(new DownloadVendorRegistrationDocumentQuery(registrationId, documentId, body.ResumeToken), ct);
-            return Results.File(file.Content, file.ContentType, file.FileName);
+            return Results.Ok(file);
         }).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.DownloadDocument");
         _ = app.MapDelete(QuestionnaireRuntimeRoutes.Document, async (Guid registrationId, Guid documentId, [FromQuery] string resumeToken, ISender sender, CancellationToken ct) =>
         {
@@ -36,7 +36,7 @@ public sealed class QuestionnaireRuntimeEndpoints : IEndpoint
         _ = app.MapPost(QuestionnaireRuntimeRoutes.File + "/download", async (Guid registrationId, Guid fileId, FileAuthorizationRequest body, ISender sender, CancellationToken ct) =>
         {
             var file = await sender.Send(new DownloadQuestionnaireFileQuery(registrationId, fileId, body.ResumeToken), ct);
-            return Results.File(file.Content, file.ContentType, file.FileName);
+            return Results.Ok(file);
         }).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.DownloadFile");
         return app.MapDelete(QuestionnaireRuntimeRoutes.File, async (Guid registrationId, Guid fileId, [FromQuery] string resumeToken, ISender sender, CancellationToken ct) =>
         {

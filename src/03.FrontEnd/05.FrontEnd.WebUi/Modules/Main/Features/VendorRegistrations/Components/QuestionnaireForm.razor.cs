@@ -27,6 +27,7 @@ public partial class QuestionnaireForm
     private readonly Dictionary<Guid, bool?> _booleans = [];
     private readonly Dictionary<Guid, HashSet<Guid>> _optionIds = [];
     private string? _validationError;
+    private bool _isSubmitting;
 
     #endregion
 
@@ -203,16 +204,36 @@ public partial class QuestionnaireForm
 
     private async Task RemoveFile(RuntimeQuestionItem question, RuntimeFileItem? file)
     {
-        _ = _fileNames.Remove(question.Id);
-        await InvokeAsync(StateHasChanged);
-        if (file is not null)
+        try
         {
-            await OnFileRemoved.InvokeAsync(file);
+            if (file is not null)
+            {
+                await OnFileRemoved.InvokeAsync(file);
+            }
+
+            _ = _fileNames.Remove(question.Id);
+            _validationError = null;
+        }
+        catch (Exception exception)
+        {
+            _validationError = exception.Message;
         }
     }
 
-    private Task Submit()
+    private async Task Submit()
     {
+        if (_isSubmitting)
+        {
+            return;
+        }
+
+        var missingQuestion = Sections.SelectMany(section => section.Questions).FirstOrDefault(question => question.IsRequired && !HasValue(question));
+        if (missingQuestion is not null)
+        {
+            _validationError = $"'{missingQuestion.Label}' is required.";
+            return;
+        }
+
         var answers = Sections.SelectMany(section => section.Questions).Where(question => question.Type != QuestionnaireQuestionType.File).Select(question =>
             new QuestionnaireAnswerValue(question.Id, question.Type is QuestionnaireQuestionType.ShortText or QuestionnaireQuestionType.LongText ? _texts.GetValueOrDefault(question.Id) : null, null, null, null, null,
                 question.Type == QuestionnaireQuestionType.Address ? JsonSerializer.Serialize(GetAddress(question.Id)) : null, null) with
@@ -224,7 +245,44 @@ public partial class QuestionnaireForm
                 OptionIds = question.Type is QuestionnaireQuestionType.SingleChoice or QuestionnaireQuestionType.MultipleChoice ? _optionIds.GetValueOrDefault(question.Id)?.ToList() : null
             }).ToList();
         _validationError = null;
-        return OnNext.InvokeAsync(answers);
+        try
+        {
+            _isSubmitting = true;
+            await OnNext.InvokeAsync(answers);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+
+    private bool HasValue(RuntimeQuestionItem question)
+    {
+        return question.Type switch
+        {
+            QuestionnaireQuestionType.ShortText or QuestionnaireQuestionType.LongText => !string.IsNullOrWhiteSpace(_texts.GetValueOrDefault(question.Id)),
+            QuestionnaireQuestionType.Address => IsComplete(GetAddress(question.Id)),
+            QuestionnaireQuestionType.Integer => _integers.GetValueOrDefault(question.Id) is not null,
+            QuestionnaireQuestionType.Decimal => _decimals.GetValueOrDefault(question.Id) is not null,
+            QuestionnaireQuestionType.Date => _dates.GetValueOrDefault(question.Id) is not null,
+            QuestionnaireQuestionType.Boolean => _booleans.GetValueOrDefault(question.Id) is not null,
+            QuestionnaireQuestionType.SingleChoice or QuestionnaireQuestionType.MultipleChoice => _optionIds.GetValueOrDefault(question.Id)?.Count > 0,
+            QuestionnaireQuestionType.File => question.Files.Count > 0,
+            _ => false
+        };
+    }
+
+    private static bool IsComplete(QuestionnaireAddressRequest address)
+    {
+        return !string.IsNullOrWhiteSpace(address.Country)
+            && !string.IsNullOrWhiteSpace(address.Building)
+            && !string.IsNullOrWhiteSpace(address.Street)
+            && !string.IsNullOrWhiteSpace(address.Number)
+            && !string.IsNullOrWhiteSpace(address.City)
+            && !string.IsNullOrWhiteSpace(address.Phone)
+            && !string.IsNullOrWhiteSpace(address.Fax)
+            && !string.IsNullOrWhiteSpace(address.Email)
+            && !string.IsNullOrWhiteSpace(address.Website);
     }
 
     #endregion

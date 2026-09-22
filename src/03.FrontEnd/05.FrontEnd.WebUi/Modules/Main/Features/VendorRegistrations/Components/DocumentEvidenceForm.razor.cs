@@ -82,7 +82,16 @@ public partial class DocumentEvidenceForm
         _validationError = null;
         _fileNames[definition.DefinitionKey] = file.Name;
         await InvokeAsync(StateHasChanged);
-        await OnFileSelected(definition, file);
+        try
+        {
+            await OnFileSelected(definition, file);
+        }
+        catch
+        {
+            _ = _fileNames.Remove(definition.DefinitionKey);
+            await InvokeAsync(StateHasChanged);
+            throw;
+        }
     }
 
     private Task RemoveFile(VendorRegistrationDocumentItem definition)
