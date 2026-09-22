@@ -36,7 +36,7 @@ public sealed class CustomOpenIdConnectEvents(
 
     public override Task RedirectToIdentityProviderForSignOut(RedirectContext context)
     {
-        context.ProtocolMessage.PostLogoutRedirectUri = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.PathBase}{SignOutCallbackPath}";
+        context.ProtocolMessage.PostLogoutRedirectUri = $"{context.Request.Scheme}://{context.Request.Host}{SignOutCallbackPath}";
 
         return Task.CompletedTask;
     }

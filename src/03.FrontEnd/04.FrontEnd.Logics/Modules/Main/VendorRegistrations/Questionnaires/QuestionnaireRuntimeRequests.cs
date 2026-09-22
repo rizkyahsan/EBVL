@@ -6,6 +6,7 @@ namespace EBVL.FrontEnd.Logics.Modules.Main.VendorRegistrations.Questionnaires;
 #region Requests
 
 public sealed record StartQuestionnaireCommand(PreRegistrationRequest Request) : IRequest<QuestionnaireRuntimeResponse>;
+public sealed record CheckSapAvailabilityQuery(string SapVendorNumber, Guid? RegistrationId) : IRequest<SapAvailabilityResponse>;
 public sealed record GetQuestionnaireRuntimeQuery(Guid RegistrationId, string ResumeToken) : IRequest<QuestionnaireRuntimeResponse>;
 public sealed record UpdateVendorRegistrationProfileCommand(Guid RegistrationId, UpdateVendorRegistrationProfileRequest Request) : IRequest<QuestionnaireRuntimeResponse>;
 public sealed record SaveQuestionnaireAnswersCommand(Guid RegistrationId, SaveAnswersRequest Request) : IRequest<QuestionnaireRuntimeResponse>;
@@ -33,6 +34,21 @@ internal static class RuntimeUri
 #endregion
 
 #region Questionnaire Lifecycle Handlers
+
+public sealed class CheckSapAvailabilityHandler(IBackEndApiService api) : IRequestHandler<CheckSapAvailabilityQuery, SapAvailabilityResponse>
+{
+    public Task<SapAvailabilityResponse> Handle(CheckSapAvailabilityQuery query, CancellationToken cancellationToken)
+    {
+        var request = new RestRequest(QuestionnaireRuntimeRoutes.SapAvailability)
+            .AddQueryParameter("sapVendorNumber", query.SapVendorNumber);
+        if (query.RegistrationId is not null)
+        {
+            _ = request.AddQueryParameter("registrationId", query.RegistrationId.Value);
+        }
+
+        return api.SendRequestAsync<SapAvailabilityResponse>(request, cancellationToken);
+    }
+}
 
 public sealed class StartQuestionnaireHandler(IBackEndApiService api) : IRequestHandler<StartQuestionnaireCommand, QuestionnaireRuntimeResponse>
 {

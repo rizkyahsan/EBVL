@@ -7,6 +7,7 @@ public static class RouteConfig { public const string Tag = "Vendor Registration
 public static class QuestionnaireRuntimeRoutes
 {
     public const string Start = RouteConfig.BasePath + "/start";
+    public const string SapAvailability = RouteConfig.BasePath + "/sap-availability";
     public const string Get = RouteConfig.BasePath + "/{registrationId:guid}";
     public const string Answers = Get + "/answers";
     public const string Profile = Get + "/profile";
@@ -16,6 +17,7 @@ public static class QuestionnaireRuntimeRoutes
     public const string File = Get + "/files/{fileId:guid}";
     public const string Submit = Get + "/submit";
 }
+public sealed record SapAvailabilityResponse(bool IsAvailable, string? Message);
 public sealed record RegistrationAuthorizationRequest(Guid RegistrationId, string ResumeToken);
 public sealed record ResumeQuestionnaireRequest(Guid RegistrationId, string ResumeToken);
 public sealed record QuestionnaireRuntimeResponse(Guid RegistrationId, string? ResumeToken, string RowVersion, VendorRegistrationStatus Status, PreRegistrationRequest Profile, IReadOnlyList<VendorRegistrationDocumentItem> Documents, bool IsDocumentEvidenceComplete, Guid QuestionnaireId, IReadOnlyList<RuntimeSectionItem> Sections);

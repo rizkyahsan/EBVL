@@ -3,7 +3,7 @@ using EBVL.Shared.Dto.Modules.Administration.Audits.GetAudit;
 
 namespace EBVL.BackEnd.Logics.Modules.Administration.Audits.GetAudit;
 
-[AuthorizeRequestByPermission(Permissions.AdministrationAuditsRead)]
+[AuthorizeRequestByPermission(Permissions.AdministrationAuditsView)]
 public sealed record GetAuditQuery : GetAuditRequest, IRequest<GetAuditResponse>
 {
 }

@@ -5,9 +5,11 @@ namespace EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
 public static class RouteConfig { public const string Tag = "Master Data Questionnaires"; public const string BasePath = "/api/master-data/questionnaires"; }
 public static class QuestionnairePermissions
 {
-    public const string Read = "ebvl.md.questionnaires.read";
-    public const string Write = "ebvl.md.questionnaires.write";
-    public static readonly string[] All = [Read, Write];
+    public const string View = "ebvl.questionnaire.view";
+    public const string Manage = "ebvl.questionnaire.manage";
+    public const string Read = View;
+    public const string Write = Manage;
+    public static readonly string[] All = [View, Manage];
 }
 public static class QuestionnaireMaximumLengthFor { public const int Code = 50; public const int BusinessProcess = 100; public const int Title = 300; public const int Label = 1000; public const int HelpText = 1000; public const int RuleValue = 1000; public const long FileBytes = 50L * 1024 * 1024; public const string PdfContentType = "application/pdf"; }
 public static class QuestionnaireBusinessProcessFor

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using EBVL.BackEnd.Infrastructure.Authentication;
 using EBVL.BackEnd.Infrastructure.BackgroundJob;
 using EBVL.BackEnd.Infrastructure.Cryptography;
@@ -17,6 +18,8 @@ using EBVL.BackEnd.Infrastructure.Otp;
 using EBVL.BackEnd.Infrastructure.PublicHolidays;
 using EBVL.BackEnd.Infrastructure.Secret;
 using EBVL.BackEnd.Services.AppConfigBackEnd;
+using EBVL.Shared.Dto.Modules.MasterData.Documents;
+using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
 
 namespace EBVL.BackEnd.Infrastructure;
 
@@ -67,7 +70,13 @@ public static class ConfigureInfrastructure
         _ = builder.Services.AddFileStorageService(builder.Configuration, healthChecksBuilder);
         _ = builder.Services.AddMonitoringService(appConfigBackEndOptions.AppNickName, applicationInsightsConnectionString);
         _ = builder.Services.AddOtpService(builder.Configuration);
-        _ = builder.Services.AddAuthorization();
+        _ = builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy(QuestionnairePermissions.View, policy => policy.RequireAssertion(context =>
+                HasScope(context.User, QuestionnairePermissions.View, QuestionnairePermissions.Manage)));
+            options.AddPolicy(DocumentPermissions.View, policy => policy.RequireAssertion(context =>
+                HasScope(context.User, DocumentPermissions.View, DocumentPermissions.Manage)));
+        });
         _ = builder.Services.AddOpenApi(options => _ = options.AddSchemaTransformer(new CustomSchemaTransformer()));
 
         var idAManClientId = secrets[SecretKeyFor.IdAManClientId];
@@ -92,5 +101,16 @@ public static class ConfigureInfrastructure
             options.Issuer = secrets[SecretKeyFor.LocalIdentityIssuer];
         });
         _ = builder.Services.AddLocalIdentityService(localIdentityDatabaseConnectionString);
+    }
+
+    private static bool HasScope(ClaimsPrincipal user, params string[] acceptedScopes)
+    {
+        return user.Claims
+            .Where(claim => claim.Type.Equals("permission", StringComparison.OrdinalIgnoreCase)
+                || claim.Type.Equals("scope", StringComparison.OrdinalIgnoreCase)
+                || claim.Type.Equals("scp", StringComparison.OrdinalIgnoreCase))
+            .SelectMany(claim => claim.Value.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            .Select(value => value.Trim('[', ']', '"'))
+            .Any(scope => acceptedScopes.Contains(scope, StringComparer.Ordinal));
     }
 }

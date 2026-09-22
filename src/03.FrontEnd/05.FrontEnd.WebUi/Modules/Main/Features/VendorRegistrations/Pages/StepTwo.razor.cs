@@ -69,12 +69,20 @@ public partial class StepTwo
 
     private async Task SelectFile(VendorRegistrationDocumentItem definition, IBrowserFile file)
     {
-        await using var stream = file.OpenReadStream(definition.MaxSizeMb * 1024L * 1024L);
-        using var memory = new MemoryStream();
-        await stream.CopyToAsync(memory);
-        var response = await Sender.Send(new UploadVendorRegistrationDocumentCommand(RegistrationState.RegistrationId!.Value, definition.DefinitionKey, RegistrationState.ResumeToken!, file.Name, memory.ToArray()));
-        _documents = _documents.Select(item => item.RequirementId == response.Document.RequirementId ? response.Document : item).ToList();
-        await RefreshRuntime();
+        try
+        {
+            await using var stream = file.OpenReadStream(definition.MaxSizeMb * 1024L * 1024L);
+            using var memory = new MemoryStream();
+            await stream.CopyToAsync(memory);
+            var response = await Sender.Send(new UploadVendorRegistrationDocumentCommand(RegistrationState.RegistrationId!.Value, definition.DefinitionKey, RegistrationState.ResumeToken!, file.Name, memory.ToArray()));
+            _documents = _documents.Select(item => item.RequirementId == response.Document.RequirementId ? response.Document : item).ToList();
+            await RefreshRuntime();
+        }
+        catch (Exception exception)
+        {
+            Snackbar.AddError(exception.Message);
+            throw;
+        }
     }
 
     private async Task RemoveFile(VendorRegistrationDocumentItem definition)

@@ -14,7 +14,7 @@ public partial class CompanyProfileForm
     public required EventCallback<PreRegistrationRequest> OnNext { get; init; }
 
     [Parameter]
-    public EventCallback<string> OnSapFound { get; init; }
+    public required Func<string, Task<bool>> OnSapFound { get; init; }
 
     #endregion
 
@@ -76,8 +76,10 @@ public partial class CompanyProfileForm
                 return;
             }
 
-            await OnSapFound.InvokeAsync(_sapModel.SapVendorNumber);
-            ShowCompanyProfile();
+            if (await OnSapFound(_sapModel.SapVendorNumber))
+            {
+                ShowCompanyProfile();
+            }
         }
         finally
         {

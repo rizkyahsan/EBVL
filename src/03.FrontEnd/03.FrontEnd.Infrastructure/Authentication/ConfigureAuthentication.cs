@@ -31,12 +31,13 @@ public static class ConfigureAuthentication
             options.ClientId = idAManOptions.ClientId;
             options.ClientSecret = idAManOptions.ClientSecret;
             options.CallbackPath = "/signin-oidc";
-            options.CorrelationCookie.Path = "/signin-oidc";
-            options.NonceCookie.Path = "/signin-oidc";
+            options.CorrelationCookie.Path = "/";
+            options.NonceCookie.Path = "/";
             options.ResponseType = OpenIdConnectResponseType.CodeIdToken;
             options.EventsType = typeof(CustomOpenIdConnectEvents);
             options.Scope.Add(OpenIdConnectScope.Email);
             options.Scope.Add(OpenIdConnectScope.OfflineAccess);
+            options.Scope.Add(idAManOptions.Authentication.ApiAudienceScope);
 
             options.TokenValidationParameters = new()
             {

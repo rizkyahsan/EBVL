@@ -88,7 +88,6 @@ public static class ConfigureAuthentication
             {
                 OnTokenValidated = ctx =>
                 {
-                    //Add scope from permission
                     var identity = ctx.Principal?.Identity as ClaimsIdentity;
 
                     var permissions = identity?.FindAll("permission").ToList();

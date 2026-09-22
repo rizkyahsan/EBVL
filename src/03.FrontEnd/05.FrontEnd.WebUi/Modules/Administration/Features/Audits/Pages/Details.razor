@@ -1,6 +1,6 @@
 @page "/Administration/Audits/Details/{Id:guid}"
 @inherits PageBase
-@attribute [Authorize(Policy = AdministrationPermissions.AdministrationAuditsRead)]
+@attribute [Authorize(Policy = AdministrationPermissions.AdministrationAuditsView)]
 
 <HtmlHead Title="@(_pageTitle)" />
 <Breadcrumbs Items="@(_breadcrumbItems)" />

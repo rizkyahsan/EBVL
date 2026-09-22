@@ -18,6 +18,7 @@ public partial class StepOne
     [Inject]
     public required VendorRegistrationState RegistrationState { get; init; }
     [Inject] public required ISender Sender { get; init; }
+    [Inject] public required ISnackbar Snackbar { get; init; }
 
     #endregion
 
@@ -79,8 +80,23 @@ public partial class StepOne
         NavigationManager.NavigateTo(VendorRegistrationRouteFor.Index);
     }
 
-    private void SapFound(string sapVendorNumber)
+    private async Task<bool> SapFound(string sapVendorNumber)
     {
+        try
+        {
+            var availability = await Sender.Send(new CheckSapAvailabilityQuery(sapVendorNumber, RegistrationState.RegistrationId));
+            if (!availability.IsAvailable)
+            {
+                Snackbar.AddWarning(availability.Message ?? "This SAP vendor number is already used.");
+                return false;
+            }
+        }
+        catch (Exception exception)
+        {
+            Snackbar.AddError(exception.Message);
+            return false;
+        }
+
         if (!string.Equals(_model.SapVendorNumber, sapVendorNumber, StringComparison.Ordinal))
         {
             _model = new PreRegistrationRequest
@@ -90,23 +106,31 @@ public partial class StepOne
         }
 
         _sapFound = true;
+        return true;
     }
 
     private async Task ContinueRegistration(PreRegistrationRequest model)
     {
-        QuestionnaireRuntimeResponse runtime;
-        if (RegistrationState.RegistrationId is not null && !string.IsNullOrWhiteSpace(RegistrationState.ResumeToken) && RegistrationState.Runtime is not null)
+        try
         {
-            runtime = await Sender.Send(new UpdateVendorRegistrationProfileCommand(RegistrationState.RegistrationId.Value,
-                new(RegistrationState.ResumeToken, RegistrationState.Runtime.RowVersion, model)));
-        }
-        else
-        {
-            runtime = await Sender.Send(new StartQuestionnaireCommand(model));
-        }
+            QuestionnaireRuntimeResponse runtime;
+            if (RegistrationState.RegistrationId is not null && !string.IsNullOrWhiteSpace(RegistrationState.ResumeToken) && RegistrationState.Runtime is not null)
+            {
+                runtime = await Sender.Send(new UpdateVendorRegistrationProfileCommand(RegistrationState.RegistrationId.Value,
+                    new(RegistrationState.ResumeToken, RegistrationState.Runtime.RowVersion, model)));
+            }
+            else
+            {
+                runtime = await Sender.Send(new StartQuestionnaireCommand(model));
+            }
 
-        await RegistrationState.SetRuntimeAsync(runtime);
-        NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepTwo);
+            await RegistrationState.SetRuntimeAsync(runtime);
+            NavigationManager.NavigateTo(VendorRegistrationRouteFor.StepTwo);
+        }
+        catch (Exception exception)
+        {
+            Snackbar.AddError(exception.Message);
+        }
     }
 
     private Task SubmitCompanyProfile()

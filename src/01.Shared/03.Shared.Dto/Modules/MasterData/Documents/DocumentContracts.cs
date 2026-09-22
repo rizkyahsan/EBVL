@@ -4,7 +4,7 @@ using EBVL.Shared.Enums;
 namespace EBVL.Shared.Dto.Modules.MasterData.Documents;
 
 public static class RouteConfig { public const string Tag = "Master Data Documents"; public const string BasePath = "/api/master-data/documents"; }
-public static class DocumentPermissions { public const string Read = "ebvl.md.documents.read"; public const string Write = "ebvl.md.documents.write"; public static readonly string[] All = [Read, Write]; }
+public static class DocumentPermissions { public const string View = "ebvl.document.view"; public const string Manage = "ebvl.document.manage"; public const string Read = View; public const string Write = Manage; public static readonly string[] All = [View, Manage]; }
 
 public sealed record DocumentRequirementSetListItem(Guid Id, Guid SeriesId, string BusinessProcess, int Version, QuestionnaireStatus Status, DateTimeOffset ModifiedAt, int RequirementCount, string RowVersion);
 public sealed record GetDocumentsResponse : ListResponse<DocumentRequirementSetListItem>;

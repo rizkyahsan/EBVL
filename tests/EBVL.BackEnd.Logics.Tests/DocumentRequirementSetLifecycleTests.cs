@@ -1,5 +1,5 @@
 using EBVL.BackEnd.Domain.Entities;
-using EBVL.BackEnd.Logics.Modules.MasterData.Documents;
+using EBVL.BackEnd.Logics.Modules.MasterData.Documents.Common;
 using EBVL.Shared.Enums;
 using FluentValidation;
 using Xunit;

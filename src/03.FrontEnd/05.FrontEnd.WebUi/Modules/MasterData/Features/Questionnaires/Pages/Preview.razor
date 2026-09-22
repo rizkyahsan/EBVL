@@ -1,8 +1,8 @@
 @page "/MasterData/Questionnaires/Preview/{Id:guid}"
+@attribute [Authorize(Policy = QuestionnairePermissions.View)]
 @inherits PageBase
 @using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
 @using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
-@* TODO: Restore QuestionnairePermissions.Read after IdAMan permission setup is complete. *@
 
 <HtmlHead Title="Questionnaire Preview" />
 <Breadcrumbs Items="@_breadcrumbItems" />

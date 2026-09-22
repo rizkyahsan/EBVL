@@ -1,9 +1,11 @@
-@* TODO: Restore AuthorizeView after Questionnaire permissions are configured in IdAMan. *@
+@using EBVL.Shared.Dto.Modules.MasterData.Documents
+@using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
+
 <NavGroupDefault Title="Master Data" Icon="@Icons.Material.TwoTone.Storage">
-    <MudNavLink Href="@QuestionnaireRouteFor.Index" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.TwoTone.Quiz">
-        Questionnaire
-    </MudNavLink>
-    <MudNavLink Href="@DocumentRouteFor.Index" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.TwoTone.Description">
-        Document
-    </MudNavLink>
+    <AuthorizeView Policy="@QuestionnairePermissions.View">
+        <MudNavLink Href="@QuestionnaireRouteFor.Index" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.TwoTone.Quiz">Questionnaire</MudNavLink>
+    </AuthorizeView>
+    <AuthorizeView Policy="@DocumentPermissions.View">
+        <MudNavLink Href="@DocumentRouteFor.Index" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.TwoTone.Description">Document</MudNavLink>
+    </AuthorizeView>
 </NavGroupDefault>

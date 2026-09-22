@@ -1,4 +1,5 @@
 @page "/MasterData/Documents"
+@attribute [Authorize(Policy = DocumentPermissions.View)]
 @inherits PageBase
 @using EBVL.Shared.Dto.Modules.MasterData.Documents
 @using EBVL.Shared.Enums
@@ -18,21 +19,23 @@
         </MudSelect>
         @if (_selected is not null)
         {
-            @if (_selected.Status == QuestionnaireStatus.Draft)
-            {
-                <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Publish">Publish</MudButton>
-            }
+            <AuthorizeView Policy="@DocumentPermissions.Manage" Context="authorization">
+                @if (_selected.Status == QuestionnaireStatus.Draft)
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="Publish">Publish</MudButton>
+                }
+            </AuthorizeView>
         }
     </MudStack>
 </MudPaper>
 <TableDefault Items="@(_selected?.Requirements ?? [])" Loading="_isLoading" Filter="Filter">
     <ToolBarContent>
-        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="ShowAdd" Disabled="@(_selected is null || _selected.Status == QuestionnaireStatus.Superseded)">Add New</MudButton>
+        <AuthorizeView Policy="@DocumentPermissions.Manage" Context="authorization"><MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" OnClick="ShowAdd" Disabled="@(_selected is null || _selected.Status == QuestionnaireStatus.Superseded)">Add New</MudButton></AuthorizeView>
         <MudSpacer /><TextFieldSearch @bind-Value="_search" />
     </ToolBarContent>
     <HeaderContent><MudTh><MudTableSortLabel SortBy="new Func<DocumentListItem, object>(x => x.Order)" InitialDirection="SortDirection.Ascending">Order</MudTableSortLabel></MudTh><MudTh>Name</MudTh><MudTh>Max Size</MudTh><MudTh>Mandatory</MudTh><MudTh>Status</MudTh><MudTh Style="width: 150px;">Action</MudTh></HeaderContent>
     <RowTemplate>
         <MudTd>@context.Order</MudTd><MudTd>@context.Name</MudTd><MudTd>@context.MaxSizeMb MB</MudTd><MudTd><MudCheckBox T="bool" Value="context.IsMandatory" ReadOnly="true" Color="Color.Primary" /></MudTd><MudTd><MudChip T="string" Size="Size.Small" Color="@StatusColor(_selected?.Status)">@_selected?.Status</MudChip></MudTd>
-        <MudTd Style="width: 150px;"><MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => ShowEdit(context))" Disabled="@(_selected is null || _selected.Status == QuestionnaireStatus.Superseded)" aria-label="Edit document" /><MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="@(() => Delete(context))" Disabled="@(_selected is null || _selected.Status == QuestionnaireStatus.Superseded)" aria-label="Delete document" /></MudTd>
+        <MudTd Style="width: 150px;"><AuthorizeView Policy="@DocumentPermissions.Manage" Context="authorization"><MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" OnClick="@(() => ShowEdit(context))" Disabled="@(_selected is null || _selected.Status == QuestionnaireStatus.Superseded)" aria-label="Edit document" /><MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" OnClick="@(() => Delete(context))" Disabled="@(_selected is null || _selected.Status == QuestionnaireStatus.Superseded)" aria-label="Delete document" /></AuthorizeView></MudTd>
     </RowTemplate>
 </TableDefault>

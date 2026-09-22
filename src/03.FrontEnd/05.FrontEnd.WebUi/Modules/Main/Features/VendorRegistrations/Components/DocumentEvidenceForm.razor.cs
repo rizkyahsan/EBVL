@@ -86,11 +86,11 @@ public partial class DocumentEvidenceForm
         {
             await OnFileSelected(definition, file);
         }
-        catch
+        catch (Exception exception)
         {
             _ = _fileNames.Remove(definition.DefinitionKey);
+            _validationError = exception.Message;
             await InvokeAsync(StateHasChanged);
-            throw;
         }
     }
 

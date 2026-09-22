@@ -1,10 +1,10 @@
 @page "/MasterData/Questionnaires/Details/{Id:guid}/{SectionId:guid}"
+@attribute [Authorize(Policy = QuestionnairePermissions.View)]
 @inherits PageBase
 @using EBVL.FrontEnd.Logics.Modules.MasterData.Questionnaires
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Components
 @using EBVL.FrontEnd.WebUi.Modules.MasterData.Features.Questionnaires.Models
 @using EBVL.Shared.Dto.Modules.MasterData.Questionnaires
-@* TODO: Add the Questionnaire IdAMan permission guard when its permissions are configured. *@
 
 <HtmlHead Title="Detail Section" />
 <Breadcrumbs Items="@_breadcrumbItems" />
@@ -17,10 +17,12 @@
         <MudChip T="string" Size="Size.Small">@_item.Status / v@_item.Version</MudChip>
     }
     <MudSpacer />
-    @if (_item?.Status != QuestionnaireStatus.Superseded)
-    {
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" Disabled="@_busy" OnClick="AddQuestion">Add New</MudButton>
-    }
+    <AuthorizeView Policy="@QuestionnairePermissions.Manage" Context="authorization">
+        @if (_item?.Status != QuestionnaireStatus.Superseded)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Outlined.Add" Disabled="@_busy" OnClick="AddQuestion">Add New</MudButton>
+        }
+    </AuthorizeView>
     <MudButton Variant="Variant.Outlined" Href="@QuestionnaireRouteFor.Index">Back</MudButton>
 </MudStack>
 
@@ -47,14 +49,16 @@
         <MudTd DataLabel="Order Number">@context.Order</MudTd>
         <MudTd DataLabel="Status"><MudChip T="string" Size="Size.Small" Color="@(context.IsActive ? Color.Success : Color.Default)">@(context.IsActive ? "Active" : "Inactive")</MudChip></MudTd>
         <MudTd DataLabel="Action" Class="text-center">
-            @if (_item?.Status != QuestionnaireStatus.Superseded)
-            {
-                <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" Disabled="@_busy" OnClick="@(() => EditQuestion(context))" title="Edit" />
-            }
-            @if (_item?.Status == QuestionnaireStatus.Draft)
-            {
-                <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" Disabled="@_busy" OnClick="@(() => DeleteQuestion(context))" title="Delete" />
-            }
+            <AuthorizeView Policy="@QuestionnairePermissions.Manage" Context="authorization">
+                @if (_item?.Status != QuestionnaireStatus.Superseded)
+                {
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" Disabled="@_busy" OnClick="@(() => EditQuestion(context))" title="Edit" />
+                }
+                @if (_item?.Status == QuestionnaireStatus.Draft)
+                {
+                    <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" Disabled="@_busy" OnClick="@(() => DeleteQuestion(context))" title="Delete" />
+                }
+            </AuthorizeView>
         </MudTd>
     </RowTemplate>
     <NoRecordsContent><MudText Class="pa-4">No questions found in this section.</MudText></NoRecordsContent>

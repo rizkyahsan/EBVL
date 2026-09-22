@@ -1,5 +1,5 @@
 using EBVL.BackEnd.Domain.Entities;
-using EBVL.BackEnd.Logics.Modules.MasterData.Questionnaires;
+using EBVL.BackEnd.Logics.Modules.MasterData.Questionnaires.Common;
 using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
 using EBVL.Shared.Enums;
 using FluentValidation;
