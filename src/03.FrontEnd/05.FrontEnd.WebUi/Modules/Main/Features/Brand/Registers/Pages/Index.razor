@@ -1,0 +1,75 @@
+@page "/Brand/Register"
+@inherits PageBase
+@attribute [Authorize]
+
+<HtmlHead Title="@BrandRegistersDisplayTextFor.BrandVendorList" />
+<Breadcrumbs Items="@_breadcrumbItems" />
+<PageHeader Title="@BrandRegistersDisplayTextFor.BrandVendorList" />
+
+<section class="brand-register-content">
+    <MudPaper Elevation="2" Class="filter-panel">
+        <MudGrid Spacing="3" Class="filter-grid">
+            <MudItem xs="12" sm="6" lg="3">
+                <MudSelect T="string" Label="Brand" Value="@_brand" ValueChanged="SetBrand" Variant="Variant.Outlined" Margin="Margin.Dense">
+                    @foreach (var brand in _brands)
+                    {
+                        <MudSelectItem T="string" Value="@brand">@brand</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="6" lg="3">
+                <MudSelect T="string" Label="Group" Value="@_group" ValueChanged="SetGroup" Variant="Variant.Outlined" Margin="Margin.Dense">
+                    @foreach (var group in _groups)
+                    {
+                        <MudSelectItem T="string" Value="@group">@group</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="6" lg="3">
+                <MudTextField T="string" Label="Product" Value="@_product" ValueChanged="SetProduct" Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" />
+            </MudItem>
+            <MudItem xs="12" sm="6" lg="2">
+                <MudSelect T="string" Label="Status" Value="@_status" ValueChanged="SetStatus" Variant="Variant.Outlined" Margin="Margin.Dense">
+                    @foreach (var status in _statuses)
+                    {
+                        <MudSelectItem T="string" Value="@status">@status</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" lg="1" Class="search-column">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Search" OnClick="Search">Search</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Class="request-button" OnClick="RequestNewBrand">
+        Request New Brand
+    </MudButton>
+
+    <MudPaper Elevation="0" Class="table-shell">
+        <MudTable T="BrandRegisterItem" Items="@_filteredItems" @ref="_table" Hover="true" Breakpoint="Breakpoint.Sm" RowsPerPage="10" Class="brand-register-table">
+            <HeaderContent>
+                <MudTh Class="number-column">No</MudTh>
+                <MudTh><MudTableSortLabel T="BrandRegisterItem" SortBy="item => item.Product">Product</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="BrandRegisterItem" SortBy="item => item.Brand">Brand</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="BrandRegisterItem" SortBy="item => item.Status">Status</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="BrandRegisterItem" SortBy="item => item.SubmittedAt">Submitted Datetime</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="BrandRegisterItem" SortBy="item => item.LastUpdatedAt">Last Updated Date</MudTableSortLabel></MudTh>
+                <MudTh Class="action-column">Action</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="No" Class="number-column">@context.Number</MudTd>
+                <MudTd DataLabel="Product">@context.Product</MudTd>
+                <MudTd DataLabel="Brand">@context.Brand</MudTd>
+                <MudTd DataLabel="Status"><MudChip T="string" Size="Size.Small" Color="@StatusColor(context.Status)" Variant="Variant.Text">@context.Status</MudChip></MudTd>
+                <MudTd DataLabel="Submitted Datetime">@FormatWib(context.SubmittedAt)</MudTd>
+                <MudTd DataLabel="Last Updated Date">@FormatWib(context.LastUpdatedAt)</MudTd>
+                <MudTd DataLabel="Action" Class="action-column">
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" aria-label="@($"View {context.Brand}")" OnClick="@(() => ViewBrand(context))" />
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent><MudText Class="pa-4">No brand registrations found.</MudText></NoRecordsContent>
+            <PagerContent><MudTablePager PageSizeOptions="@(new[] { 10, 25, 50 })" /></PagerContent>
+        </MudTable>
+    </MudPaper>
+</section>
