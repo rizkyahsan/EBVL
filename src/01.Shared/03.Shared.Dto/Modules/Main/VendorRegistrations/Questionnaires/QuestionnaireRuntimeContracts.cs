@@ -17,7 +17,7 @@ public static class QuestionnaireRuntimeRoutes
     public const string File = Get + "/files/{fileId:guid}";
     public const string Submit = Get + "/submit";
 }
-public sealed record SapAvailabilityResponse(bool IsAvailable, string? Message);
+public sealed record SapAvailabilityResponse(bool IsAvailable, string? Message, QuestionnaireRuntimeResponse? Runtime = null);
 public sealed record RegistrationAuthorizationRequest(Guid RegistrationId, string ResumeToken);
 public sealed record ResumeQuestionnaireRequest(Guid RegistrationId, string ResumeToken);
 public sealed record QuestionnaireRuntimeResponse(Guid RegistrationId, string? ResumeToken, string RowVersion, VendorRegistrationStatus Status, PreRegistrationRequest Profile, IReadOnlyList<VendorRegistrationDocumentItem> Documents, bool IsDocumentEvidenceComplete, Guid QuestionnaireId, IReadOnlyList<RuntimeSectionItem> Sections);

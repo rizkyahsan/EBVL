@@ -3,11 +3,11 @@
 
 <div class="questionnaire-form-scope">
     <MudExpansionPanels MultiExpansion="true" Elevation="0" Class="questionnaire-panels">
-        @foreach (var section in Sections.OrderBy(item => item.Order))
+        @foreach (var section in Sections.OrderBy(item => item.Order).ThenBy(item => item.Code))
         {
             <MudExpansionPanel Text="@section.Title" Expanded="@(section.Order == Sections.Min(item => item.Order))" Class="questionnaire-panel">
                 <MudGrid Spacing="2">
-                    @foreach (var question in section.Questions.OrderBy(item => item.Order))
+                    @foreach (var question in section.Questions.OrderBy(item => item.Order).ThenBy(item => item.Code))
                     {
                         <MudItem xs="12" md="6" Class="question-item">
                             @if (question.Type == QuestionnaireQuestionType.ShortText)
@@ -45,7 +45,7 @@
                             else if (question.Type == QuestionnaireQuestionType.SingleChoice)
                             {
                                 <MudSelect T="Guid?" Label="@QuestionLabel(question)" Value="@GetSingleOption(question.Id)" ValueChanged="value => SetSingleOption(question.Id, value)" Variant="Variant.Outlined" Margin="Margin.Dense">
-                                    @foreach (var option in question.Options.OrderBy(item => item.Order))
+                                    @foreach (var option in question.Options.OrderBy(item => item.Order).ThenBy(item => item.Code))
                                     {
                                         <MudSelectItem T="Guid?" Value="@((Guid?)option.Id)">@option.Label</MudSelectItem>
                                     }
@@ -54,7 +54,7 @@
                             else if (question.Type == QuestionnaireQuestionType.MultipleChoice)
                             {
                                 <MudText Typo="Typo.body2">@QuestionLabel(question)</MudText>
-                                @foreach (var option in question.Options.OrderBy(item => item.Order))
+                                @foreach (var option in question.Options.OrderBy(item => item.Order).ThenBy(item => item.Code))
                                 {
                                     <MudCheckBox T="bool" Label="@option.Label" Value="@IsOptionSelected(question.Id, option.Id)" ValueChanged="value => SetOptionSelected(question.Id, option.Id, value)" />
                                 }

@@ -267,7 +267,8 @@ public partial class QuestionnaireForm
             QuestionnaireQuestionType.Date => _dates.GetValueOrDefault(question.Id) is not null,
             QuestionnaireQuestionType.Boolean => _booleans.GetValueOrDefault(question.Id) is not null,
             QuestionnaireQuestionType.SingleChoice or QuestionnaireQuestionType.MultipleChoice => _optionIds.GetValueOrDefault(question.Id)?.Count > 0,
-            QuestionnaireQuestionType.File => question.Files.Count > 0,
+            QuestionnaireQuestionType.File => question.Files.Count > 0
+                || !string.IsNullOrWhiteSpace(_fileNames.GetValueOrDefault(question.Id)),
             _ => false
         };
     }

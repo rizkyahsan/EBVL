@@ -116,11 +116,30 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
 
     public async Task SetRuntimeAsync(QuestionnaireRuntimeResponse runtime, string? resumeToken = null)
     {
+        var registrationChanged = RegistrationId != runtime.RegistrationId;
+        if (registrationChanged)
+        {
+            DocumentEvidence = null;
+            Questionnaire = null;
+            _selectedFiles.Clear();
+            IsVerificationSent = false;
+            IsEmailVerified = false;
+            await jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", QuestionnaireKey);
+            await jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", DocumentEvidenceKey);
+            await jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", VerificationSentKey);
+            await jsRuntime.InvokeVoidAsync("sessionStorage.removeItem", EmailVerifiedKey);
+        }
+
         Runtime = runtime;
         RegistrationId = runtime.RegistrationId;
-        ResumeToken = resumeToken ?? runtime.ResumeToken ?? ResumeToken;
+        ResumeToken = resumeToken ?? runtime.ResumeToken ?? (registrationChanged ? null : ResumeToken);
+        if (string.IsNullOrWhiteSpace(ResumeToken))
+        {
+            throw new InvalidOperationException("The registration resume token is missing.");
+        }
+
         PreRegistration = runtime.Profile;
-        await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", RuntimeKey, JsonSerializer.Serialize(new RuntimeIdentity(runtime.RegistrationId, ResumeToken!)));
+        await jsRuntime.InvokeVoidAsync("sessionStorage.setItem", RuntimeKey, JsonSerializer.Serialize(new RuntimeIdentity(runtime.RegistrationId, ResumeToken)));
         await PersistAsync();
     }
 
@@ -132,8 +151,8 @@ public sealed class VendorRegistrationState(IJSRuntime jsRuntime)
             return false;
         }
 
-        Runtime = await sender.Send(new Logics.Modules.Main.VendorRegistrations.Questionnaires.GetQuestionnaireRuntimeQuery(RegistrationId.Value, ResumeToken));
-        PreRegistration = Runtime.Profile;
+        var runtime = await sender.Send(new Logics.Modules.Main.VendorRegistrations.Questionnaires.GetQuestionnaireRuntimeQuery(RegistrationId.Value, ResumeToken));
+        await SetRuntimeAsync(runtime, ResumeToken);
         return true;
     }
 

@@ -15,10 +15,13 @@
         <div class="registration-step completed"><span>3</span><p>Questionnaire</p></div>
         <div class="registration-step active"><span>4</span><p>Review</p></div>
     </nav>
-    <VendorRegistrationReview PreRegistration="_preRegistration"
-                               Runtime="_runtime"
-                               OnDownloadDocument="DownloadDocument"
-                               OnDownloadFile="DownloadFile"
-                               OnPrevious="BackToStepThree"
-                               OnSendForVerification="SendForVerification" />
+    @if (!_isRestoring)
+    {
+        <VendorRegistrationReview PreRegistration="_preRegistration"
+                                  Runtime="_runtime"
+                                  OnDownloadDocument="DownloadDocument"
+                                  OnDownloadFile="DownloadFile"
+                                  OnPrevious="BackToStepThree"
+                                  OnSendForVerification="SendForVerification" />
+    }
 </main>

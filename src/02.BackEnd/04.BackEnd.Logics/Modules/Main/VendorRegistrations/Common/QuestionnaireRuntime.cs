@@ -116,12 +116,10 @@ internal static class QuestionnaireRuntime
     {
         var questions = r.Questionnaire!.Sections
             .Where(section => !section.IsDeleted
-                && section.IsActive
-                && (section.CompanyType is null || section.CompanyType == r.CompanyType))
+                && section.IsActive)
             .SelectMany(section => section.Questions)
             .Where(question => !question.IsDeleted
-                && question.IsActive
-                && (question.CompanyType is null || question.CompanyType == r.CompanyType))
+                && question.IsActive)
             .ToList();
         var visible = questions.Where(x => x.IsVisible).Select(x => x.Id).ToHashSet();
         var values = r.Answers.Select(ToValue).Concat(incoming).GroupBy(x => x.QuestionId).ToDictionary(x => x.Key, x => x.Last());
@@ -284,11 +282,11 @@ internal static class QuestionnaireRuntime
     {
         var r = await Load(db, id, authToken, false, ct);
         var applicable = ApplicableQuestions(r, []).ToHashSet();
-        var sections = r.Questionnaire!.Sections.Where(s => !s.IsDeleted).OrderBy(s => s.Order).Select(s => new RuntimeSectionItem(s.Id, s.Code, s.Title, s.Order, s.Questions.Where(applicable.Contains).OrderBy(q => q.Order).Select(q =>
+        var sections = r.Questionnaire!.Sections.Where(s => !s.IsDeleted && s.IsActive).OrderBy(s => s.Order).ThenBy(s => s.Code).Select(s => new RuntimeSectionItem(s.Id, s.Code, s.Title, s.Order, s.Questions.Where(applicable.Contains).OrderBy(q => q.Order).ThenBy(q => q.Code).Select(q =>
         {
             var a = r.Answers.SingleOrDefault(x => x.QuestionnaireQuestionId == q.Id);
-            return new RuntimeQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, q.Order, IsRequired(r, q), q.Options.Where(o => !o.IsDeleted).OrderBy(o => o.Order).Select(o => new RuntimeOptionItem(o.Id, o.Code, o.Label, o.Order)).ToList(), a is null ? null : ToValue(a), a?.Files.Where(f => !f.IsDeleted).Select(f => new RuntimeFileItem(f.Id, f.OriginalFileName, f.ContentType, f.Length)).ToList() ?? []);
-        }).ToList())).Where(s => s.Questions.Count != 0).ToList();
+            return new RuntimeQuestionItem(q.Id, q.Code, q.Label, q.Hint, q.Placeholder, q.Type, q.Order, IsRequired(r, q), q.Options.Where(o => !o.IsDeleted).OrderBy(o => o.Order).ThenBy(o => o.Code).Select(o => new RuntimeOptionItem(o.Id, o.Code, o.Label, o.Order)).ToList(), a is null ? null : ToValue(a), a?.Files.Where(f => !f.IsDeleted).Select(f => new RuntimeFileItem(f.Id, f.OriginalFileName, f.ContentType, f.Length)).ToList() ?? []);
+        }).ToList())).ToList();
         var definitions = await db.DocumentDefinitions.AsNoTracking()
             .Where(x => !x.IsDeleted && x.IsActive && x.DocumentRequirementSetId == r.DocumentRequirementSetId)
             .OrderBy(x => x.Order).ThenBy(x => x.Code)

@@ -36,7 +36,7 @@
     </nav>
 
     <section class="registration-sections">
-        <CompanyProfileForm @ref="_companyProfileForm" Model="_model" OnSapFound="SapFound" OnNext="ContinueRegistration" />
+        <CompanyProfileForm @key="_model" @ref="_companyProfileForm" Model="_model" OnSapFound="SapFound" OnNext="ContinueRegistration" />
         @if (_sapFound)
         {
             <MudStack Row="true" Justify="Justify.Center" Spacing="3" Class="page-actions">

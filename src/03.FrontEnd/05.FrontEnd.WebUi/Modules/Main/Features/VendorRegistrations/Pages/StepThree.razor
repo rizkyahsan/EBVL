@@ -44,7 +44,8 @@
             </MudExpansionPanel>
         </MudExpansionPanels>
 
-        <QuestionnaireForm Sections="_sections"
+        <QuestionnaireForm @key="RegistrationState.Runtime"
+                            Sections="_sections"
                             OnBack="BackToStepTwo"
                             OnNext="ContinueRegistration"
                             OnFileSelected="UploadFile"

@@ -31,12 +31,15 @@ public partial class DocumentEvidenceForm
 
     protected override void OnParametersSet()
     {
+        var currentKeys = Documents.Select(document => document.DefinitionKey).ToHashSet(StringComparer.Ordinal);
+        foreach (var staleKey in _fileNames.Keys.Where(key => !currentKeys.Contains(key)).ToList())
+        {
+            _ = _fileNames.Remove(staleKey);
+        }
+
         foreach (var document in Documents)
         {
-            if (!_fileNames.ContainsKey(document.DefinitionKey))
-            {
-                _fileNames[document.DefinitionKey] = document.FileName;
-            }
+            _fileNames[document.DefinitionKey] = document.FileName;
         }
     }
 

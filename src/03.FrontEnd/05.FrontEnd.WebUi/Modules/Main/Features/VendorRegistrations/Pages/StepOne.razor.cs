@@ -85,6 +85,15 @@ public partial class StepOne
         try
         {
             var availability = await Sender.Send(new CheckSapAvailabilityQuery(sapVendorNumber, RegistrationState.RegistrationId));
+            if (availability.Runtime is not null)
+            {
+                await RegistrationState.SetRuntimeAsync(availability.Runtime);
+                _model = availability.Runtime.Profile;
+                _sapFound = true;
+                await InvokeAsync(StateHasChanged);
+                return true;
+            }
+
             if (!availability.IsAvailable)
             {
                 Snackbar.AddWarning(availability.Message ?? "This SAP vendor number is already used.");
@@ -106,6 +115,7 @@ public partial class StepOne
         }
 
         _sapFound = true;
+        await InvokeAsync(StateHasChanged);
         return true;
     }
 
