@@ -5,12 +5,12 @@
 </MudNavLink> *@
 <AuthorizeView Policy="@MainPermissions.MainPage">
     <Authorized>
-        <NavGroupDefault Title="Vendor Monitoring"
-                         Icon="@Icons.Material.TwoTone.Monitor">
-            <MudNavLink Href="@VendorMonitoringRegistrationVendorsRouteFor.Index"
+        <NavGroupDefault Title="Vendor"
+                          Icon="@Icons.Material.TwoTone.Monitor">
+            <MudNavLink Href="@VendorRequestRegistrationsRouteFor.Index"
                         Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.TwoTone.AppRegistration">
-                Registration Vendor
+                Request Registration
             </MudNavLink>
         </NavGroupDefault>
     </Authorized>

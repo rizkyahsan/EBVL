@@ -1,0 +1,34 @@
+<div class="review-field">
+    <div class="review-field__content">
+        <MudText Typo="Typo.caption" Class="review-field__label">@Label</MudText>
+        @if (IsLink)
+        {
+            <MudLink Href="@Value" Target="_blank" Class="review-field__value">@Value</MudLink>
+        }
+        else
+        {
+            <MudText Typo="Typo.body2" Class="review-field__value">@Value</MudText>
+        }
+    </div>
+    <div class="review-field__assessment">
+        <MudRadioGroup T="bool?" Value="@IsValid" ValueChanged="OnValidityChanged" Error="@(ShowValidationErrors && IsValid is null)" ErrorText="Pilih Valid atau Invalid.">
+            <MudRadio T="bool?" Value="@((bool?)true)" Color="Color.Success">Valid</MudRadio>
+            <MudRadio T="bool?" Value="@((bool?)false)" Color="Color.Error">Invalid</MudRadio>
+        </MudRadioGroup>
+        @if (IsValid is false)
+        {
+            <MudTextField T="string"
+                          Value="@Remark"
+                          ValueChanged="OnRemarkChanged"
+                          Label="Remark"
+                          Placeholder="Jelaskan alasan data dinyatakan invalid"
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Lines="2"
+                          Immediate="true"
+                          Required="true"
+                          Error="@(ShowValidationErrors && string.IsNullOrWhiteSpace(Remark))"
+                          ErrorText="Remark wajib diisi untuk nilai Invalid." />
+        }
+    </div>
+</div>

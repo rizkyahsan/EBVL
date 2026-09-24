@@ -1,0 +1,63 @@
+@page "/Vendor/RequestRegistrations"
+@using EBVL.Shared.Dto.Modules.Main.Vendor.RequestRegistrations
+@using EBVL.Shared.Dto.Modules.Main.Vendor.RequestRegistrations.GetRequestRegistrations
+@inherits PageBase
+@attribute [Authorize]
+
+<HtmlHead Title="@VendorRequestRegistrationsDisplayTextFor.RequestRegistration" />
+<Breadcrumbs Items="@_breadcrumbItems" />
+<PageHeader Title="@VendorRequestRegistrationsDisplayTextFor.RequestRegistration" />
+<ErrorViewer Exception="@_exception" />
+
+<section class="request-registration-content">
+
+    <TableDefault ServerData="ReloadTable"
+                  @ref="_table"
+                  Loading="@_isLoading"
+                  Hover="true"
+                  Breakpoint="Breakpoint.Sm"
+                  Class="request-registration-table">
+        <ToolBarContent>
+            <div class="status-filters" role="group" aria-label="Request registration status filter">
+                @foreach (var category in Enum.GetValues<RequestRegistrationCategory>())
+                {
+                    <MudBadge Content="@Count(category)"
+                            Color="@CategoryColor(category)"
+                            Overlap="true"
+                            Bordered="true"
+                            Class="status-filter">
+                        <MudButton Variant="@(_category == category ? Variant.Filled : Variant.Outlined)"
+                                Color="@CategoryColor(category)"
+                                DropShadow="false"
+                                OnClick="@(() => SelectCategory(category))">
+                            @category
+                        </MudButton>
+                    </MudBadge>
+                }
+            </div>
+            <MudSpacer />
+            <TextFieldSearch ValueChanged="OnSearch" Placeholder="Search vendor" Class="request-registration-search mt-0" />
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh Class="number-column">@VendorRequestRegistrationsDisplayTextFor.Number</MudTh>
+            <MudTh><MudTableSortLabel T="RequestRegistrationItem" SortLabel="@nameof(RequestRegistrationItem.VendorName)">@VendorRequestRegistrationsDisplayTextFor.VendorName</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel T="RequestRegistrationItem" SortLabel="@nameof(RequestRegistrationItem.Status)">@VendorRequestRegistrationsDisplayTextFor.Status</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel T="RequestRegistrationItem" SortLabel="@nameof(RequestRegistrationItem.SubmittedAt)" InitialDirection="SortDirection.Descending">@VendorRequestRegistrationsDisplayTextFor.SubmittedDatetime</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel T="RequestRegistrationItem" SortLabel="@nameof(RequestRegistrationItem.LastUpdatedAt)">@VendorRequestRegistrationsDisplayTextFor.LastUpdatedDate</MudTableSortLabel></MudTh>
+            <MudTh Class="action-column">@CommonDisplayTextFor.Action</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="@VendorRequestRegistrationsDisplayTextFor.Number" Class="number-column">@Number(context)</MudTd>
+            <MudTd DataLabel="@VendorRequestRegistrationsDisplayTextFor.VendorName"><MudHighlighter Text="@context.VendorName" HighlightedText="@_searchKeyword" /></MudTd>
+            <MudTd DataLabel="@VendorRequestRegistrationsDisplayTextFor.Status"><MudChip T="string" Size="Size.Small" Color="@CategoryColor(context.Category)">@context.StatusDisplay</MudChip></MudTd>
+            <MudTd DataLabel="@VendorRequestRegistrationsDisplayTextFor.SubmittedDatetime">@FormatWib(context.SubmittedAt)</MudTd>
+            <MudTd DataLabel="@VendorRequestRegistrationsDisplayTextFor.LastUpdatedDate">@FormatWib(context.LastUpdatedAt)</MudTd>
+            <MudTd DataLabel="@CommonDisplayTextFor.Action" Class="action-column">
+                <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Color="Color.Info" Href="@VendorRequestRegistrationsRouteFor.Details(context.Id)" title="View details" />
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent><MudText Class="pa-4">No request registrations found.</MudText></NoRecordsContent>
+        <LoadingContent><MudText Class="pa-4">Loading request registrations...</MudText></LoadingContent>
+        <PagerContent><MudTablePager PageSizeOptions="@(new[] { 10, 25, 50 })" /></PagerContent>
+    </TableDefault>
+</section>

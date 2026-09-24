@@ -1,0 +1,134 @@
+@page "/Vendor/RequestRegistrations/{RequestRegistrationId:guid}"
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.Vendor.RequestRegistrations.Components
+@using EBVL.Shared.Statics.VendorRegistrations
+@inherits PageBase
+@attribute [Authorize]
+
+<HtmlHead Title="@VendorRequestRegistrationsDisplayTextFor.DetailRequestRegistration" />
+<Breadcrumbs Items="@_breadcrumbItems" />
+<ErrorViewer Exception="@_exception" />
+<LoadingOverlay IsVisible="@_isLoading" />
+
+@if (_item is not null)
+{
+    <header class="page-header">
+        <div class="page-title">
+            <MudButton Variant="Variant.Text" Color="Color.Primary" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="GoBack">Back</MudButton>
+            <MudText Typo="Typo.h4" Class="detail-heading">@VendorRequestRegistrationsDisplayTextFor.DetailRequestRegistration</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">@_item.CompanyName</MudText>
+        </div>
+        <MudChip T="string" Color="Color.Warning" Variant="Variant.Filled">Waiting for Review</MudChip>
+    </header>
+
+    <MudExpansionPanels MultiExpansion="true" Elevation="0" Class="detail-panels">
+    <MudExpansionPanel Text="Company Profile" Expanded="true" Class="detail-panel">
+        <div class="section-intro">
+            <MudIcon Icon="@Icons.Material.Filled.Business" Color="Color.Primary" />
+            <MudText Typo="Typo.body2">Verify each item submitted by the vendor.</MudText>
+        </div>
+        @foreach (var field in _companyFields)
+        {
+            <ReviewableField Label="@field.Label" Value="@field.Value" IsLink="@field.IsLink"
+                             IsValid="@field.IsValid" IsValidChanged="value => SetValidity(field, value)"
+                             Remark="@field.Remark" RemarkChanged="value => SetRemark(field, value)"
+                             ShowValidationErrors="@_showValidationErrors" />
+        }
+    </MudExpansionPanel>
+
+    <MudExpansionPanel Text="Document Evidence" Class="detail-panel">
+        <div class="section-intro">
+            <MudIcon Icon="@Icons.Material.Filled.FolderCopy" Color="Color.Primary" />
+            <MudText Typo="Typo.body2">Review the supporting documents uploaded by the vendor.</MudText>
+        </div>
+        @foreach (var document in _documents)
+        {
+            <div class="document-review-row">
+                <div class="document-info">
+                    <MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" Color="Color.Error" />
+                    <div><MudText Typo="Typo.body2"><strong>@document.Name</strong></MudText><MudLink OnClick="@(() => PreviewDocument(document.FileName))">@document.FileName</MudLink></div>
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" aria-label="@($"View {document.Name}")" OnClick="@(() => PreviewDocument(document.FileName))" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" aria-label="@($"Download {document.Name}")" OnClick="@(() => DownloadDocument(document.FileName))" />
+                </div>
+                <ReviewableField Label="Document assessment" Value="Uploaded document"
+                                 IsValid="@document.IsValid" IsValidChanged="value => SetValidity(document, value)"
+                                 Remark="@document.Remark" RemarkChanged="value => SetRemark(document, value)"
+                                 ShowValidationErrors="@_showValidationErrors" />
+            </div>
+        }
+    </MudExpansionPanel>
+
+    <MudExpansionPanel Text="Questionnaire" Class="detail-panel">
+        <div class="section-intro">
+            <MudIcon Icon="@Icons.Material.Filled.FactCheck" Color="Color.Primary" />
+            <MudText Typo="Typo.body2">Review the vendor's answer and attached evidence.</MudText>
+        </div>
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Class="question-tabs">
+            @foreach (var section in _questionFields.GroupBy(question => question.Section))
+            {
+                <MudTabPanel Text="@section.Key">
+                    @foreach (var question in section)
+                    {
+                        @if (question.IsFileUpload)
+                        {
+                            <div class="document-review-row question-document-row">
+                                <div class="document-info">
+                                    <MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" Color="Color.Error" />
+                                    <div>
+                                        <MudText Typo="Typo.body2"><strong>@question.DisplayLabel</strong></MudText>
+                                        <MudLink OnClick="@(() => PreviewDocument(question.FileName))">@question.FileName</MudLink>
+                                    </div>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" aria-label="@($"View {question.Label}")" OnClick="@(() => PreviewDocument(question.FileName))" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" aria-label="@($"Download {question.Label}")" OnClick="@(() => DownloadDocument(question.FileName))" />
+                                </div>
+                                <ReviewableField Label="Document assessment" Value="Uploaded document"
+                                                 IsValid="@question.IsValid" IsValidChanged="value => SetValidity(question, value)"
+                                                 Remark="@question.Remark" RemarkChanged="value => SetRemark(question, value)"
+                                                 ShowValidationErrors="@_showValidationErrors" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="question-answer">
+                                <ReviewableField Label="@question.DisplayLabel" Value="@question.Value"
+                                                 IsValid="@question.IsValid" IsValidChanged="value => SetValidity(question, value)"
+                                                 Remark="@question.Remark" RemarkChanged="value => SetRemark(question, value)"
+                                                 ShowValidationErrors="@_showValidationErrors" />
+                            </div>
+                        }
+                    }
+                </MudTabPanel>
+            }
+        </MudTabs>
+    </MudExpansionPanel>
+
+    <MudExpansionPanel Text="Log" Class="detail-panel">
+        <div class="section-intro">
+            <MudIcon Icon="@Icons.Material.Filled.History" Color="Color.Primary" />
+            <MudText Typo="Typo.body2">Request registration activity history.</MudText>
+        </div>
+        <div class="activity-log">
+            @foreach (var activity in _activities)
+            {
+                <div class="activity-item"><span class="activity-dot"></span><div><MudText Typo="Typo.body2"><strong>@activity.Title</strong></MudText><MudText Typo="Typo.caption">@activity.Description</MudText><MudText Typo="Typo.caption" Color="Color.Secondary">@activity.OccurredAt</MudText></div></div>
+            }
+        </div>
+    </MudExpansionPanel>
+    </MudExpansionPanels>
+
+    <MudPaper Elevation="0" Class="approval-panel">
+        <div class="approval-heading">
+            <MudIcon Icon="@Icons.Material.Filled.RateReview" Color="Color.Primary" />
+            <div>
+                <MudText Typo="Typo.h6">Approval Notes</MudText>
+                <MudText Typo="Typo.caption">Add a note before making the final decision.</MudText>
+            </div>
+        </div>
+        <MudTextField T="string" Value="@_approvalNotes" ValueChanged="SetApprovalNotes" Label="Approval Notes" Placeholder="Write approval or rejection notes"
+                      Variant="Variant.Outlined" Lines="4" Immediate="true"
+                      Error="@_approvalNotesError" ErrorText="Approval Notes wajib diisi untuk Reject." />
+        <div class="approval-actions">
+            <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Close" OnClick="RejectRegistration">Reject</MudButton>
+            <MudButton Variant="Variant.Outlined" Color="Color.Success" StartIcon="@Icons.Material.Filled.Check" OnClick="ApproveRegistration">Approve</MudButton>
+        </div>
+    </MudPaper>
+}

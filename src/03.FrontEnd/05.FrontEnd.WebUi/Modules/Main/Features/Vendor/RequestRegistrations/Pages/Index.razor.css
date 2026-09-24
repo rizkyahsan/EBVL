@@ -1,0 +1,72 @@
+.request-registration-content {
+    margin-top: 28px;
+}
+
+.status-filters {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+}
+
+.status-filter {
+    min-width: 112px;
+}
+
+.status-filter ::deep .mud-button-root {
+    width: 100%;
+    border-radius: 8px;
+    text-transform: none;
+}
+
+.request-registration-content ::deep .request-registration-table .mud-table-head .mud-table-cell {
+    background: var(--mud-palette-primary);
+}
+
+.request-registration-content ::deep .request-registration-table .mud-table-head .mud-table-cell,
+.request-registration-content ::deep .request-registration-table .mud-table-head .mud-table-sort-label,
+.request-registration-content ::deep .request-registration-table .mud-table-head .mud-icon-root {
+    color: var(--mud-palette-primary-text);
+    font-weight: 600;
+}
+
+.request-registration-content ::deep .request-registration-table .mud-table-cell {
+    border-bottom: 1px solid var(--mud-palette-table-lines);
+    font-size: 14px;
+}
+
+.request-registration-content ::deep .number-column {
+    width: 64px;
+    text-align: center;
+}
+
+.request-registration-content ::deep .action-column {
+    width: 90px;
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+    .request-registration-content {
+        margin-top: 16px;
+    }
+
+    .status-filters {
+        gap: 8px;
+        overflow-x: auto;
+        padding: 2px 1px 8px;
+    }
+
+    .status-filter {
+        flex: 0 0 96px;
+        min-width: 96px;
+    }
+
+    .request-registration-content ::deep .request-registration-search {
+        width: 100%;
+    }
+
+    .request-registration-content ::deep .number-column,
+    .request-registration-content ::deep .action-column {
+        width: auto;
+        text-align: right;
+    }
+}

@@ -7,5 +7,15 @@ public enum QuestionnaireAnswerRule { Mandatory = 100, Optional = 200, AddedValu
 public enum QuestionnaireRuleOperator { Equals = 100, NotEquals = 200, Contains = 300, GreaterThan = 400, LessThan = 500 }
 public enum QuestionnaireRuleAction { Show = 100, Hide = 200, Require = 300 }
 public enum QuestionnaireStatus { Draft = 0, Publish = 1, Superseded = 2 }
-public enum VendorRegistrationStatus { Draft = 100, Submitted = 200, OnReview = 300, AdminMSAI = 400, ApprovedByAdminMSAI = 500, ApprovedBySeniorManagerMSAI = 600 }
+public enum VendorRegistrationStatus
+{
+    Draft = 100,
+    Submitted = 200,
+    OnReview = 300,
+    AdminMSAI = 400,
+    ApprovedByAdminMSAI = 500,
+    ReviewBySeniorManagerMSAI = 550,
+    ApprovedBySeniorManagerMSAI = 600,
+    Rejected = 700
+}
 #pragma warning restore CA1720

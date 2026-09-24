@@ -1,0 +1,9 @@
+.review-field { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .8fr); gap: 24px; padding: 18px 0; border-bottom: 1px solid var(--mud-palette-lines-default); }
+.review-field:last-child { border-bottom: 0; }
+.review-field__content { min-width: 0; }
+.review-field__label { display: block; margin-bottom: 5px; color: var(--mud-palette-text-secondary); }
+.review-field__value { overflow-wrap: anywhere; font-weight: 600; }
+.review-field__assessment { min-width: 0; }
+.review-field__assessment ::deep .mud-radio-group { display: flex; flex-wrap: wrap; gap: 16px; }
+.review-field__assessment ::deep .mud-input-control { margin-top: 8px; }
+@media (max-width: 720px) { .review-field { grid-template-columns: 1fr; gap: 10px; } }
