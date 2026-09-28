@@ -1,12 +1,13 @@
 using EBVL.FrontEnd.Logics.Modules.Main.Users.GetMyUser;
 using EBVL.FrontEnd.Logics.Modules.Main.Users.SendMyVerificationCode;
 using EBVL.FrontEnd.Logics.Modules.Main.Users.UpdateMyUser;
+using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.MyProfile.Components;
 using EBVL.Shared.Dto.Modules.Main.Users.GetMyUser;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.MyProfile.Pages;
 
-public partial class Index
+public partial class Index : PageBase
 {
     private IndexModel _model = default!;
 

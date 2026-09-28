@@ -41,6 +41,16 @@ div.mud-input-slot.mud-input-root-outlined
     padding: 14px 14px !important;
 }
 
+.mud-input-required .mud-input-label::after
+{
+    color: var(--mud-palette-error) !important;
+}
+
+.required-indicator
+{
+    color: var(--mud-palette-error) !important;
+}
+
 /* Keep all MudBlazor form controls visually consistent. */
 .mud-input,
 .mud-input-slot,

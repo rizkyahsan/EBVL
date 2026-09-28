@@ -64,11 +64,6 @@ public partial class QuestionnaireForm
 
     #region Private Methods
 
-    private string QuestionLabel(RuntimeQuestionItem question)
-    {
-        return question.Label + (question.IsRequired ? " *" : string.Empty);
-    }
-
     private string? GetText(Guid id)
     {
         return _texts.GetValueOrDefault(id);

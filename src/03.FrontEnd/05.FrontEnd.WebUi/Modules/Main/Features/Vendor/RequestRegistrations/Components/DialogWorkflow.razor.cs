@@ -1,6 +1,8 @@
+using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
+
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.Vendor.RequestRegistrations.Components;
 
-public partial class DialogWorkflow
+public partial class DialogWorkflow : DialogBase
 {
     [Parameter, EditorRequired]
     public required string Title { get; init; }

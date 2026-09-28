@@ -1,7 +1,7 @@
 .brand-register-content { display: grid; gap: 24px; }
 .filter-panel { padding: 20px 24px; border: 1px solid rgba(var(--mud-palette-primary-rgb), .18); border-radius: 14px; background: rgba(var(--mud-palette-primary-rgb), .08); }
-.filter-grid { align-items: center; }
-.search-column { display: flex; justify-content: flex-end; }
+.filter-grid-scope ::deep .filter-grid { align-items: center; }
+.filter-grid-scope ::deep .search-column { display: flex; align-content: center; align-items: center; justify-content: flex-end; }
 .search-column ::deep .mud-button-root { min-height: 40px; }
 .request-button { justify-self: start; }
 .table-shell { overflow: hidden; border: 1px solid var(--mud-palette-lines-default); border-radius: 10px; }

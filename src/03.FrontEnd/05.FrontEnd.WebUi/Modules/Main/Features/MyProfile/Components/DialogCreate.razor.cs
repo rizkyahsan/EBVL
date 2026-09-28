@@ -1,13 +1,14 @@
 using EBVL.FrontEnd.Logics.Modules.Main.Users.CreateMyUser;
+using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.MyProfile.Components;
 
-public partial class DialogCreate
+public partial class DialogCreate : DialogBase
 {
     private bool _confirm;
     private static readonly string _labelConfirm = $"I hereby declare that I agree to {CommonDisplayTextFor.Create.ToLower()} a {UsersDisplayTextFor.Profile} in this application.";
 
-    private async Task Submit()
+    protected async Task Submit()
     {
         try
         {

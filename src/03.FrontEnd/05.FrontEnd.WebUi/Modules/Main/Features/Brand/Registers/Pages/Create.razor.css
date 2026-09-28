@@ -1,0 +1,25 @@
+.create-header { display: grid; justify-items: start; gap: 2px; margin-bottom: 18px; }
+.create-header ::deep .mud-button-root { margin-left: -12px; }
+.create-panels-scope ::deep .create-panels { display: grid; gap: 10px; }
+.create-panels-scope ::deep .create-panel { overflow: hidden; border: 2px solid var(--mud-palette-lines-default) !important; border-radius: 14px !important; background: var(--mud-palette-surface); box-shadow: 0 5px 20px rgba(17, 42, 74, .06); }
+.create-panels-scope ::deep .create-panel::before { display: none; }
+.create-panels-scope ::deep .create-panel > .mud-expand-panel-header { min-height: 58px; padding: 0 28px; font-size: 18px; font-weight: 700; text-decoration: underline; }
+.create-panels-scope ::deep .create-panel > .mud-collapse-container .mud-expand-panel-content { padding: 10px 34px 30px; }
+.create-panels-scope ::deep .company-grid .mud-input-control { margin-bottom: 8px; }
+.document-evidence-scope ::deep .document-tabs .mud-tabs-tabbar { border-bottom: 1px solid var(--mud-palette-lines-default); }
+.document-evidence-scope ::deep .document-tabs .mud-tab { font-size: 16px; font-weight: 700; text-transform: none; }
+.document-evidence-scope ::deep .document-tabs .mud-tabs-panels { padding: 26px 0 0; }
+.document-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 44px;}
+.document-upload-row { display: grid; gap: 10px; }
+.document-evidence-scope ::deep .document-label { color: var(--mud-palette-text-secondary); }
+.upload-control { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 12px; }
+.document-evidence-scope ::deep .file-name-field { min-width: 0; }
+.document-evidence-scope ::deep .file-name-field .mud-input-slot { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.document-evidence-scope ::deep .file-name-field input { cursor: default; }
+.document-evidence-scope ::deep .evidence-file-input { display: none; }
+.upload-button { height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 15px; border: 1px solid #2196f3; border-radius: 4px; color: #2196f3; cursor: pointer; font-size: .8rem; text-transform: none; }
+.upload-button:hover { background: rgba(33, 150, 243, .08); }
+.document-evidence-scope ::deep .remove-file { margin-left: -4px; }
+.form-actions { display: flex; justify-content: center; gap: 38px; margin: 34px 0 12px; }
+@media (max-width: 900px) { .document-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) { .create-panels-scope ::deep .create-panel > .mud-expand-panel-header { padding: 0 16px; } .create-panels-scope ::deep .create-panel > .mud-collapse-container .mud-expand-panel-content { padding: 8px 16px 22px; } .upload-control { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; } .document-evidence-scope ::deep .remove-file { grid-column: 2; } .form-actions { align-items: stretch; flex-direction: column; gap: 10px; } }

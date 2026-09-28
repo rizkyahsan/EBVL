@@ -1,0 +1,14 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <div class="confirm-dialog-scope">
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="dialog-title">Save to Draft</MudText>
+            <MudText Align="Align.Center">Brand akan disimpan dengan status Draft. Lanjutkan?</MudText>
+            <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="dialog-actions">
+                <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick="Confirm">Save Draft</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="CloseDialog">Cancel</MudButton>
+            </MudStack>
+        </div>
+    </DialogContent>
+</MudDialog>

@@ -6,7 +6,7 @@
     <MudExpansionPanel Text="Check SAP Number" Expanded="_sapExpanded" ExpandedChanged="SetSapExpanded" Class="registration-panel">
         <MudForm @ref="_sapForm" Model="_sapModel" Validation="_sapValidator.ValidateValue">
             <MudStack Spacing="2" Class="sap-vendor-form">
-                <MudText Typo="Typo.body1" Align="Align.Center">SAP Vendor Number</MudText>
+                <MudText Typo="Typo.body1" Align="Align.Center">SAP Vendor Number <span class="required-indicator">*</span></MudText>
                 <MudStack Row="true" Justify="Justify.Center" AlignItems="AlignItems.Start" Spacing="2" Class="sap-find-row">
                     <MudTextField T="string" @bind-Value="_sapModel.SapVendorNumber" For="@(() => _sapModel.SapVendorNumber)" Required="true" RequiredError="Nomor SAP Vendor wajib diisi." Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" Immediate="true" Class="sap-input" />
                     <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Info" Size="Size.Medium" Class="find-button" Disabled="_isFindingSap" OnClick="FindSapVendor">Find</MudButton>
@@ -26,19 +26,19 @@
             <MudItem xs="12" lg="6">
                 <MudPaper Elevation="0" Class="form-panel form-column">
                     <MudGrid Class="align-center" Spacing="2">
-                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nama Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nama Perusahaan <span class="required-indicator">*</span></MudText></MudItem>
                         <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyName" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
-                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Email Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Email Perusahaan <span class="required-indicator">*</span></MudText></MudItem>
                         <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyEmail" InputType="InputType.Email" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
-                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Email PIC</MudText></MudItem>
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Email PIC <span class="required-indicator">*</span></MudText></MudItem>
                         <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.PicEmail" InputType="InputType.Email" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
-                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nomor Kontak Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nomor Kontak Perusahaan <span class="required-indicator">*</span></MudText></MudItem>
                         <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.CompanyPhoneNumber" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
-                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nomor Kontak PIC</MudText></MudItem>
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Nomor Kontak PIC <span class="required-indicator">*</span></MudText></MudItem>
                         <MudItem xs="12" sm="8"><MudTextField @bind-Value="Model.PicPhoneNumber" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
 
                         <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Website Perusahaan</MudText></MudItem>
@@ -50,7 +50,7 @@
             <MudItem xs="12" lg="6">
                 <MudPaper Elevation="0" Class="form-panel form-column">
                     <MudGrid Class="align-center" Spacing="2">
-                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Layanan Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Layanan Perusahaan <span class="required-indicator">*</span></MudText></MudItem>
                         <MudItem xs="12" sm="8">
                             <MudSelect T="VendorServiceType?" @bind-Value="Model.CompanyService" Placeholder="Pilih Layanan" Required="true" Variant="Variant.Text" ShrinkLabel="true" Margin="Margin.Dense">
                                 <MudSelectItem T="VendorServiceType?" Value="@((VendorServiceType?)VendorServiceType.Product)">@VendorServiceType.Product.GetDisplayText()</MudSelectItem>
@@ -59,7 +59,7 @@
                             </MudSelect>
                         </MudItem>
 
-                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Alamat Lokasi Pabrik</MudText></MudItem>
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Alamat Lokasi Pabrik <span class="required-indicator">*</span></MudText></MudItem>
                         <MudItem xs="12" sm="8">
                             <MudGrid Spacing="1">
                                 <MudItem xs="12" md="4">
@@ -72,7 +72,7 @@
                             </MudGrid>
                         </MudItem>
 
-                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Pemilik / Perwakilan Brand</MudText></MudItem>
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Pemilik / Perwakilan Brand <span class="required-indicator">*</span></MudText></MudItem>
                         <MudItem xs="12" sm="8">
                             <MudGrid Spacing="1" Class="align-center">
                                 <MudItem xs="12" md="7"><MudTextField @bind-Value="Model.BrandRepresentative" Required="true" Variant="Variant.Text" ShrinkLabel="true" MaxLines="10" AutoGrow="true" Margin="Margin.Dense" /></MudItem>
@@ -96,7 +96,7 @@
                             </MudItem>
                         }
 
-                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Status Perusahaan</MudText></MudItem>
+                        <MudItem xs="12" sm="4"><MudText Typo="Typo.body2">Status Perusahaan <span class="required-indicator">*</span></MudText></MudItem>
                         <MudItem xs="12" sm="8">
                             <MudSelect T="VendorCompanyStatusType?" @bind-Value="Model.CompanyStatus" Placeholder="Pilih Status Perusahaan" Required="true" Variant="Variant.Text" ShrinkLabel="true" Margin="Margin.Dense">
                                 <MudSelectItem T="VendorCompanyStatusType?" Value="@((VendorCompanyStatusType?)VendorCompanyStatusType.Manufacture)">@VendorCompanyStatusType.Manufacture.GetDisplayText()</MudSelectItem>

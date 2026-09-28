@@ -2,14 +2,15 @@ namespace EBVL.Shared.Dto.Modules.Main;
 
 public static class Permissions
 {
-    public const string ClaimsRead = "fino.cr";
-    public const string MainPage = "fino.mp";
-    public const string MainPageMyProfile = "fino.mp.po";
+    public const string ClaimsRead = "ebvl.cr";
+    public const string MainPage = "ebvl.mp";
+    public const string MainPageMyProfile = "ebvl.mp.po";
 
     public static readonly string[] All =
     [
+        ClaimsRead,
         MainPage,
         MainPageMyProfile,
-        .. EBVL.Shared.Dto.Modules.MasterData.Questionnaires.QuestionnairePermissions.All
+        .. MasterData.Questionnaires.QuestionnairePermissions.All
     ];
 }

@@ -1,8 +1,9 @@
 using EBVL.FrontEnd.Logics.Modules.Main.Users.ReloadMyUser;
+using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.MyProfile.Components;
 
-public partial class DialogReload
+public partial class DialogReload : DialogBase
 {
     private MudForm _form = default!;
     private ReloadMyUserCommand _model = default!;
@@ -18,7 +19,7 @@ public partial class DialogReload
         _validator = new();
     }
 
-    private async Task Submit()
+    protected async Task Submit()
     {
         try
         {

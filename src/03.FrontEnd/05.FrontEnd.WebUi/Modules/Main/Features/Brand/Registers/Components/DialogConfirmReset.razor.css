@@ -1,0 +1,3 @@
+.confirm-dialog-scope { display: grid; gap: 22px; padding: 12px 8px 6px; }
+.confirm-dialog-scope ::deep .dialog-title { font-weight: 700; }
+.confirm-dialog-scope ::deep .dialog-actions { margin-top: 4px; }

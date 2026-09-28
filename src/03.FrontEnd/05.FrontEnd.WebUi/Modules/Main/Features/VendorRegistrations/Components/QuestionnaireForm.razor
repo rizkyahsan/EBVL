@@ -12,11 +12,11 @@
                         <MudItem xs="12" md="6" Class="question-item">
                             @if (question.Type == QuestionnaireQuestionType.ShortText)
                             {
-                                <MudTextField T="string" Label="@QuestionLabel(question)" Value="@GetText(question.Id)" ValueChanged="value => SetText(question.Id, value)" Placeholder="@question.Placeholder" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudTextField T="string" Label="@question.Label" Value="@GetText(question.Id)" ValueChanged="value => SetText(question.Id, value)" Placeholder="@question.Placeholder" Required="@question.IsRequired" Variant="Variant.Outlined" Margin="Margin.Dense" />
                             }
                             else if (question.Type == QuestionnaireQuestionType.LongText)
                             {
-                                <MudTextField T="string" Label="@QuestionLabel(question)" Value="@GetText(question.Id)" ValueChanged="value => SetText(question.Id, value)" Placeholder="@question.Placeholder" Variant="Variant.Outlined" Margin="Margin.Dense" Lines="4" />
+                                <MudTextField T="string" Label="@question.Label" Value="@GetText(question.Id)" ValueChanged="value => SetText(question.Id, value)" Placeholder="@question.Placeholder" Required="@question.IsRequired" Variant="Variant.Outlined" Margin="Margin.Dense" Lines="4" />
                             }
                             else if (question.Type == QuestionnaireQuestionType.Address)
                             {
@@ -24,19 +24,19 @@
                             }
                             else if (question.Type == QuestionnaireQuestionType.Integer)
                             {
-                                <MudNumericField T="long?" Label="@QuestionLabel(question)" Value="@GetInteger(question.Id)" ValueChanged="value => SetInteger(question.Id, value)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudNumericField T="long?" Label="@question.Label" Value="@GetInteger(question.Id)" ValueChanged="value => SetInteger(question.Id, value)" Required="@question.IsRequired" Variant="Variant.Outlined" Margin="Margin.Dense" />
                             }
                             else if (question.Type == QuestionnaireQuestionType.Decimal)
                             {
-                                <MudNumericField T="decimal?" Label="@QuestionLabel(question)" Value="@GetDecimal(question.Id)" ValueChanged="value => SetDecimal(question.Id, value)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudNumericField T="decimal?" Label="@question.Label" Value="@GetDecimal(question.Id)" ValueChanged="value => SetDecimal(question.Id, value)" Required="@question.IsRequired" Variant="Variant.Outlined" Margin="Margin.Dense" />
                             }
                             else if (question.Type == QuestionnaireQuestionType.Date)
                             {
-                                <MudDatePicker Label="@QuestionLabel(question)" Date="@GetDate(question.Id)" DateChanged="value => SetDate(question.Id, value)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                <MudDatePicker Label="@question.Label" Date="@GetDate(question.Id)" DateChanged="value => SetDate(question.Id, value)" Required="@question.IsRequired" Variant="Variant.Outlined" Margin="Margin.Dense" />
                             }
                             else if (question.Type == QuestionnaireQuestionType.Boolean)
                             {
-                                <MudText Typo="Typo.body2">@QuestionLabel(question)</MudText>
+                                <MudText Typo="Typo.body2">@question.Label @if (question.IsRequired) { <span class="required-indicator">*</span> }</MudText>
                                 <MudRadioGroup T="bool?" Value="@GetBoolean(question.Id)" ValueChanged="value => SetBoolean(question.Id, value)">
                                     <MudRadio T="bool?" Value="@((bool?)true)">Yes</MudRadio>
                                     <MudRadio T="bool?" Value="@((bool?)false)">No</MudRadio>
@@ -44,7 +44,7 @@
                             }
                             else if (question.Type == QuestionnaireQuestionType.SingleChoice)
                             {
-                                <MudSelect T="Guid?" Label="@QuestionLabel(question)" Value="@GetSingleOption(question.Id)" ValueChanged="value => SetSingleOption(question.Id, value)" Variant="Variant.Outlined" Margin="Margin.Dense">
+                                <MudSelect T="Guid?" Label="@question.Label" Value="@GetSingleOption(question.Id)" ValueChanged="value => SetSingleOption(question.Id, value)" Required="@question.IsRequired" Variant="Variant.Outlined" Margin="Margin.Dense">
                                     @foreach (var option in question.Options.OrderBy(item => item.Order).ThenBy(item => item.Code))
                                     {
                                         <MudSelectItem T="Guid?" Value="@((Guid?)option.Id)">@option.Label</MudSelectItem>
@@ -53,7 +53,7 @@
                             }
                             else if (question.Type == QuestionnaireQuestionType.MultipleChoice)
                             {
-                                <MudText Typo="Typo.body2">@QuestionLabel(question)</MudText>
+                                <MudText Typo="Typo.body2">@question.Label @if (question.IsRequired) { <span class="required-indicator">*</span> }</MudText>
                                 @foreach (var option in question.Options.OrderBy(item => item.Order).ThenBy(item => item.Code))
                                 {
                                     <MudCheckBox T="bool" Label="@option.Label" Value="@IsOptionSelected(question.Id, option.Id)" ValueChanged="value => SetOptionSelected(question.Id, option.Id, value)" />
@@ -68,7 +68,8 @@
                                     <div class="upload-control">
                                         <MudTextField T="string"
                                                       Value="@(fileName ?? string.Empty)"
-                                                      Placeholder="@QuestionLabel(question)"
+                                                      Label="@question.Label"
+                                                      Required="@question.IsRequired"
                                                       Variant="Variant.Outlined"
                                                       Margin="Margin.Dense"
                                                       ReadOnly="true"

@@ -1,8 +1,9 @@
 using EBVL.FrontEnd.Logics.Modules.Main.Users.VerifyMyUser;
+using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.MyProfile.Components;
 
-public partial class DialogVerify
+public partial class DialogVerify : DialogBase
 {
     private MudForm _form = default!;
     private VerifyMyUserCommand _model = default!;
@@ -18,7 +19,7 @@ public partial class DialogVerify
         _validator = new();
     }
 
-    private async Task Submit()
+    protected async Task Submit()
     {
         try
         {

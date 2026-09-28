@@ -1,4 +1,5 @@
 using System.Text;
+using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.Vendor.RequestRegistrations.Components;
 using EBVL.Shared.Dto.Modules.Main.Vendor.RequestRegistrations.GetRequestRegistration;
 using EBVL.Shared.Statics.VendorRegistrations;
@@ -6,7 +7,7 @@ using Microsoft.JSInterop;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.Vendor.RequestRegistrations.Pages;
 
-public partial class Details
+public partial class Details : PageBase
 {
     [Parameter]
     public Guid RequestRegistrationId { get; set; }

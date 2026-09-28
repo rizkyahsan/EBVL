@@ -1,6 +1,6 @@
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.Vendor.RequestRegistrations.Components;
 
-public partial class ReviewableField
+public partial class ReviewableField : ComponentBase
 {
     [Parameter, EditorRequired]
     public required string Label { get; init; }

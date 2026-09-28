@@ -1,8 +1,9 @@
 using EBVL.FrontEnd.Logics.Modules.Main.Users.UpdateMyUser;
+using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.MyProfile.Components;
 
-public partial class DialogEdit
+public partial class DialogEdit : DialogBase
 {
     [Parameter]
     public required UpdateMyUserCommand Model { get; init; }
@@ -15,7 +16,7 @@ public partial class DialogEdit
         _validator = new();
     }
 
-    private async Task Submit()
+    protected async Task Submit()
     {
         try
         {

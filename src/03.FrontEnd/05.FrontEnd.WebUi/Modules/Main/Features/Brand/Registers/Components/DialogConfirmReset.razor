@@ -1,0 +1,14 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <div class="confirm-dialog-scope">
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="dialog-title">Reset Form</MudText>
+            <MudText Align="Align.Center">Semua data yang telah diisi dan file yang dipilih akan dikosongkan. Lanjutkan?</MudText>
+            <MudStack Row="true" Justify="Justify.Center" Spacing="2" Class="dialog-actions">
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Confirm">Reset</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="CloseDialog">Cancel</MudButton>
+            </MudStack>
+        </div>
+    </DialogContent>
+</MudDialog>

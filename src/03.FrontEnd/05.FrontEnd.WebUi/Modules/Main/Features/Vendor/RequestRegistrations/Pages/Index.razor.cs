@@ -1,14 +1,15 @@
 using EBVL.FrontEnd.Logics.Modules.Main.Vendor.RequestRegistrations.GetRequestRegistrations;
+using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
 using EBVL.Shared.Dto.Modules.Main.Vendor.RequestRegistrations;
 using EBVL.Shared.Dto.Modules.Main.Vendor.RequestRegistrations.GetRequestRegistrations;
 using Pertamina.Common.Dto.Enums;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.Vendor.RequestRegistrations.Pages;
 
-public partial class Index
+public partial class Index : PageBase
 {
     private static readonly TimeZoneInfo _wibTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Jakarta");
-    private MudTable<RequestRegistrationItem> _table = default!;
+    private MudTable<RequestRegistrationItem> Table { get; set; } = default!;
     private IReadOnlyList<RequestRegistrationItem> _currentRows = [];
     private RequestRegistrationCategory _category = RequestRegistrationCategory.Process;
     private string? _searchKeyword;
@@ -33,7 +34,7 @@ public partial class Index
         ];
     }
 
-    private async Task<TableData<RequestRegistrationItem>> ReloadTable(TableState state, CancellationToken cancellationToken)
+    protected async Task<TableData<RequestRegistrationItem>> ReloadTable(TableState state, CancellationToken cancellationToken)
     {
         _page = state.Page;
         _pageSize = state.PageSize;
@@ -72,7 +73,7 @@ public partial class Index
         }
     }
 
-    private async Task SelectCategory(RequestRegistrationCategory category)
+    protected async Task SelectCategory(RequestRegistrationCategory category)
     {
         if (_category == category)
         {
@@ -80,16 +81,16 @@ public partial class Index
         }
 
         _category = category;
-        await _table.ReloadServerData();
+        await Table.ReloadServerData();
     }
 
-    private async Task OnSearch(string value)
+    protected async Task OnSearch(string value)
     {
         _searchKeyword = value.Trim();
-        await _table.ReloadServerData();
+        await Table.ReloadServerData();
     }
 
-    private int Count(RequestRegistrationCategory category)
+    protected int Count(RequestRegistrationCategory category)
     {
         return category switch
         {
@@ -100,12 +101,12 @@ public partial class Index
         };
     }
 
-    private int Number(RequestRegistrationItem item)
+    protected int Number(RequestRegistrationItem item)
     {
         return (_page * _pageSize) + _currentRows.ToList().IndexOf(item) + 1;
     }
 
-    private static Color CategoryColor(RequestRegistrationCategory category)
+    protected static Color CategoryColor(RequestRegistrationCategory category)
     {
         return category switch
         {
@@ -116,7 +117,7 @@ public partial class Index
         };
     }
 
-    private static string FormatWib(DateTimeOffset value)
+    protected static string FormatWib(DateTimeOffset value)
     {
         return $"{TimeZoneInfo.ConvertTime(value, _wibTimeZone):dd MMM yyyy HH:mm} WIB";
     }

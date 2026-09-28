@@ -21,98 +21,98 @@
     </header>
 
     <MudExpansionPanels MultiExpansion="true" Elevation="0" Class="detail-panels">
-    <MudExpansionPanel Text="Company Profile" Expanded="true" Class="detail-panel">
-        <div class="section-intro">
-            <MudIcon Icon="@Icons.Material.Filled.Business" Color="Color.Primary" />
-            <MudText Typo="Typo.body2">Verify each item submitted by the vendor.</MudText>
-        </div>
-        @foreach (var field in _companyFields)
-        {
-            <ReviewableField Label="@field.Label" Value="@field.Value" IsLink="@field.IsLink"
-                             IsValid="@field.IsValid" IsValidChanged="value => SetValidity(field, value)"
-                             Remark="@field.Remark" RemarkChanged="value => SetRemark(field, value)"
-                             ShowValidationErrors="@_showValidationErrors" />
-        }
-    </MudExpansionPanel>
-
-    <MudExpansionPanel Text="Document Evidence" Class="detail-panel">
-        <div class="section-intro">
-            <MudIcon Icon="@Icons.Material.Filled.FolderCopy" Color="Color.Primary" />
-            <MudText Typo="Typo.body2">Review the supporting documents uploaded by the vendor.</MudText>
-        </div>
-        @foreach (var document in _documents)
-        {
-            <div class="document-review-row">
-                <div class="document-info">
-                    <MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" Color="Color.Error" />
-                    <div><MudText Typo="Typo.body2"><strong>@document.Name</strong></MudText><MudLink OnClick="@(() => PreviewDocument(document.FileName))">@document.FileName</MudLink></div>
-                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" aria-label="@($"View {document.Name}")" OnClick="@(() => PreviewDocument(document.FileName))" />
-                    <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" aria-label="@($"Download {document.Name}")" OnClick="@(() => DownloadDocument(document.FileName))" />
-                </div>
-                <ReviewableField Label="Document assessment" Value="Uploaded document"
-                                 IsValid="@document.IsValid" IsValidChanged="value => SetValidity(document, value)"
-                                 Remark="@document.Remark" RemarkChanged="value => SetRemark(document, value)"
-                                 ShowValidationErrors="@_showValidationErrors" />
+        <MudExpansionPanel Text="Company Profile" Expanded="true" Class="detail-panel">
+            <div class="section-intro">
+                <MudIcon Icon="@Icons.Material.Filled.Business" Color="Color.Primary" />
+                <MudText Typo="Typo.body2">Verify each item submitted by the vendor.</MudText>
             </div>
-        }
-    </MudExpansionPanel>
-
-    <MudExpansionPanel Text="Questionnaire" Class="detail-panel">
-        <div class="section-intro">
-            <MudIcon Icon="@Icons.Material.Filled.FactCheck" Color="Color.Primary" />
-            <MudText Typo="Typo.body2">Review the vendor's answer and attached evidence.</MudText>
-        </div>
-        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Class="question-tabs">
-            @foreach (var section in _questionFields.GroupBy(question => question.Section))
+            @foreach (var field in _companyFields)
             {
-                <MudTabPanel Text="@section.Key">
-                    @foreach (var question in section)
-                    {
-                        @if (question.IsFileUpload)
+                <ReviewableField Label="@field.Label" Value="@field.Value" IsLink="@field.IsLink"
+                                IsValid="@field.IsValid" IsValidChanged="value => SetValidity(field, value)"
+                                Remark="@field.Remark" RemarkChanged="value => SetRemark(field, value)"
+                                ShowValidationErrors="@_showValidationErrors" />
+            }
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Text="Document Evidence" Class="detail-panel">
+            <div class="section-intro">
+                <MudIcon Icon="@Icons.Material.Filled.FolderCopy" Color="Color.Primary" />
+                <MudText Typo="Typo.body2">Review the supporting documents uploaded by the vendor.</MudText>
+            </div>
+            @foreach (var document in _documents)
+            {
+                <div class="document-review-row">
+                    <div class="document-info">
+                        <MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" Color="Color.Error" />
+                        <div><MudText Typo="Typo.body2"><strong>@document.Name</strong></MudText><MudLink OnClick="@(() => PreviewDocument(document.FileName))">@document.FileName</MudLink></div>
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" aria-label="@($"View {document.Name}")" OnClick="@(() => PreviewDocument(document.FileName))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" aria-label="@($"Download {document.Name}")" OnClick="@(() => DownloadDocument(document.FileName))" />
+                    </div>
+                    <ReviewableField Label="Document assessment" Value="Uploaded document"
+                                    IsValid="@document.IsValid" IsValidChanged="value => SetValidity(document, value)"
+                                    Remark="@document.Remark" RemarkChanged="value => SetRemark(document, value)"
+                                    ShowValidationErrors="@_showValidationErrors" />
+                </div>
+            }
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Text="Questionnaire" Class="detail-panel">
+            <div class="section-intro">
+                <MudIcon Icon="@Icons.Material.Filled.FactCheck" Color="Color.Primary" />
+                <MudText Typo="Typo.body2">Review the vendor's answer and attached evidence.</MudText>
+            </div>
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Class="question-tabs">
+                @foreach (var section in _questionFields.GroupBy(question => question.Section))
+                {
+                    <MudTabPanel Text="@section.Key">
+                        @foreach (var question in section)
                         {
-                            <div class="document-review-row question-document-row">
-                                <div class="document-info">
-                                    <MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" Color="Color.Error" />
-                                    <div>
-                                        <MudText Typo="Typo.body2"><strong>@question.DisplayLabel</strong></MudText>
-                                        <MudLink OnClick="@(() => PreviewDocument(question.FileName))">@question.FileName</MudLink>
+                            @if (question.IsFileUpload)
+                            {
+                                <div class="document-review-row question-document-row">
+                                    <div class="document-info">
+                                        <MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" Color="Color.Error" />
+                                        <div>
+                                            <MudText Typo="Typo.body2"><strong>@question.DisplayLabel</strong></MudText>
+                                            <MudLink OnClick="@(() => PreviewDocument(question.FileName))">@question.FileName</MudLink>
+                                        </div>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" aria-label="@($"View {question.Label}")" OnClick="@(() => PreviewDocument(question.FileName))" />
+                                        <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" aria-label="@($"Download {question.Label}")" OnClick="@(() => DownloadDocument(question.FileName))" />
                                     </div>
-                                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" aria-label="@($"View {question.Label}")" OnClick="@(() => PreviewDocument(question.FileName))" />
-                                    <MudIconButton Icon="@Icons.Material.Filled.Download" Color="Color.Primary" aria-label="@($"Download {question.Label}")" OnClick="@(() => DownloadDocument(question.FileName))" />
+                                    <ReviewableField Label="Document assessment" Value="Uploaded document"
+                                                    IsValid="@question.IsValid" IsValidChanged="value => SetValidity(question, value)"
+                                                    Remark="@question.Remark" RemarkChanged="value => SetRemark(question, value)"
+                                                    ShowValidationErrors="@_showValidationErrors" />
                                 </div>
-                                <ReviewableField Label="Document assessment" Value="Uploaded document"
-                                                 IsValid="@question.IsValid" IsValidChanged="value => SetValidity(question, value)"
-                                                 Remark="@question.Remark" RemarkChanged="value => SetRemark(question, value)"
-                                                 ShowValidationErrors="@_showValidationErrors" />
-                            </div>
+                            }
+                            else
+                            {
+                                <div class="question-answer">
+                                    <ReviewableField Label="@question.DisplayLabel" Value="@question.Value"
+                                                    IsValid="@question.IsValid" IsValidChanged="value => SetValidity(question, value)"
+                                                    Remark="@question.Remark" RemarkChanged="value => SetRemark(question, value)"
+                                                    ShowValidationErrors="@_showValidationErrors" />
+                                </div>
+                            }
                         }
-                        else
-                        {
-                            <div class="question-answer">
-                                <ReviewableField Label="@question.DisplayLabel" Value="@question.Value"
-                                                 IsValid="@question.IsValid" IsValidChanged="value => SetValidity(question, value)"
-                                                 Remark="@question.Remark" RemarkChanged="value => SetRemark(question, value)"
-                                                 ShowValidationErrors="@_showValidationErrors" />
-                            </div>
-                        }
-                    }
-                </MudTabPanel>
-            }
-        </MudTabs>
-    </MudExpansionPanel>
+                    </MudTabPanel>
+                }
+            </MudTabs>
+        </MudExpansionPanel>
 
-    <MudExpansionPanel Text="Log" Class="detail-panel">
-        <div class="section-intro">
-            <MudIcon Icon="@Icons.Material.Filled.History" Color="Color.Primary" />
-            <MudText Typo="Typo.body2">Request registration activity history.</MudText>
-        </div>
-        <div class="activity-log">
-            @foreach (var activity in _activities)
-            {
-                <div class="activity-item"><span class="activity-dot"></span><div><MudText Typo="Typo.body2"><strong>@activity.Title</strong></MudText><MudText Typo="Typo.caption">@activity.Description</MudText><MudText Typo="Typo.caption" Color="Color.Secondary">@activity.OccurredAt</MudText></div></div>
-            }
-        </div>
-    </MudExpansionPanel>
+        <MudExpansionPanel Text="Log" Class="detail-panel">
+            <div class="section-intro">
+                <MudIcon Icon="@Icons.Material.Filled.History" Color="Color.Primary" />
+                <MudText Typo="Typo.body2">Request registration activity history.</MudText>
+            </div>
+            <div class="activity-log">
+                @foreach (var activity in _activities)
+                {
+                    <div class="activity-item"><span class="activity-dot"></span><div><MudText Typo="Typo.body2"><strong>@activity.Title</strong></MudText><MudText Typo="Typo.caption">@activity.Description</MudText><MudText Typo="Typo.caption" Color="Color.Secondary">@activity.OccurredAt</MudText></div></div>
+                }
+            </div>
+        </MudExpansionPanel>
     </MudExpansionPanels>
 
     <MudPaper Elevation="0" Class="approval-panel">

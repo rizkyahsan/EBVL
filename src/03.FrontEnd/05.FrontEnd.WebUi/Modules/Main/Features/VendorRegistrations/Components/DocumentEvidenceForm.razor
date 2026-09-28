@@ -9,11 +9,11 @@
                 var fileName = _fileNames.GetValueOrDefault(definition.DefinitionKey) ?? definition.FileName;
                 <MudItem xs="12" md="6">
                     <div class="document-upload-row">
-                        <MudText Typo="Typo.body1" Class="document-label">@definition.Name @(definition.IsMandatory ? "*" : null)</MudText>
+                        <MudText Typo="Typo.body1" Class="document-label">@definition.Name @if (definition.IsMandatory) { <span class="required-indicator">*</span> }</MudText>
                         <div class="upload-control">
                             <MudTextField T="string"
                                           Value="@(fileName ?? string.Empty)"
-                                          Placeholder="@($"{definition.Name}{(definition.IsMandatory ? " *" : string.Empty)}")"
+                                          Placeholder="@definition.Name"
                                           Variant="Variant.Outlined"
                                           Margin="Margin.Dense"
                                           ReadOnly="true"

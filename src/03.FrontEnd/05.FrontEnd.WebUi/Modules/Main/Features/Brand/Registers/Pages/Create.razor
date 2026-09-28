@@ -1,0 +1,112 @@
+@page "/Brand/Register/Create"
+@inherits PageBase
+@attribute [Authorize]
+
+<HtmlHead Title="@BrandRegistersDisplayTextFor.CreateNewBrand" />
+<Breadcrumbs Items="@_breadcrumbItems" />
+<div class="create-header">
+    <MudButton Variant="Variant.Text" Color="Color.Primary" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="GoBack">Back</MudButton>
+    <PageHeader Title="@BrandRegistersDisplayTextFor.CreateNewBrand" />
+</div>
+
+<MudForm @ref="Form">
+    <div class="create-panels-scope">
+    <MudExpansionPanels MultiExpansion="true" Elevation="0" Class="create-panels">
+        <MudExpansionPanel Text="1. Company Profile" Expanded="true" Class="create-panel">
+            <MudGrid Spacing="3" Class="company-grid">
+                <MudItem xs="12" md="6">
+                    <MudSelect T="string" Label="Brand" @bind-Value="Model.Brand" Required="true" RequiredError="Brand wajib dipilih." Variant="Variant.Outlined" Margin="Margin.Dense">
+                        @foreach (var brand in Brands)
+                        {
+                            <MudSelectItem T="string" Value="@brand">@brand</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" Label="Product Name" @bind-Value="Model.ProductName" Required="true" RequiredError="Product Name wajib diisi." Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudSelect T="string" Label="Group" @bind-Value="Model.Group" Required="true" RequiredError="Group wajib dipilih." Variant="Variant.Outlined" Margin="Margin.Dense">
+                        @foreach (var group in Groups)
+                        {
+                            <MudSelectItem T="string" Value="@group">@group</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudSelect T="string" Label="COO / Factory Location" @bind-Value="Model.Country" Required="true" RequiredError="COO / Factory Location wajib dipilih." Variant="Variant.Outlined" Margin="Margin.Dense">
+                        @foreach (var country in Countries)
+                        {
+                            <MudSelectItem T="string" Value="@country">@country</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudSelect T="string" Label="Category" @bind-Value="Model.Category" Required="true" RequiredError="Category wajib dipilih." Variant="Variant.Outlined" Margin="Margin.Dense">
+                        @foreach (var category in Categories)
+                        {
+                            <MudSelectItem T="string" Value="@category">@category</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string" Label="Product Description" @bind-Value="Model.ProductDescription" Required="true" RequiredError="Product Description wajib diisi." Variant="Variant.Outlined" Margin="Margin.Dense" Lines="3" Immediate="true" />
+                </MudItem>
+            </MudGrid>
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Text="2. Document Evidence" Expanded="true" Class="create-panel">
+            <div class="document-evidence-scope">
+            <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" Class="document-tabs">
+                <MudTabPanel Text="Administrative" >
+                    <div class="document-grid">
+                        @foreach (var document in AdministrativeDocuments)
+                        {
+                            <div class="document-upload-row">
+                                <MudText Typo="Typo.body1" Class="document-label">@document.Label @if (document.IsMandatory) { <span class="required-indicator">*</span> }</MudText>
+                                <div class="upload-control">
+                                    <MudTextField T="string" Value="@(document.FileName ?? string.Empty)" ReadOnly="true" Placeholder="@($"{document.Label}{(document.IsMandatory ? " *" : string.Empty)}")" Variant="Variant.Outlined" Margin="Margin.Dense" Class="file-name-field" title="@document.FileName"
+                                                  Error="@(_showValidation && document.IsMandatory && string.IsNullOrWhiteSpace(document.FileName))" ErrorText="Dokumen wajib diunggah." />
+                                    <InputFile @key="@($"{_fileInputVersion}-{document.Key}")" id="@document.Key" class="evidence-file-input" OnChange="args => SelectFile(document, args)" accept="application/pdf,.pdf" />
+                                    <label for="@document.Key" class="upload-button mud-button-root"><MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Small" /><span>Upload</span></label>
+                                    @if (!string.IsNullOrWhiteSpace(document.FileName))
+                                    {
+                                        <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" Size="Size.Small" Class="remove-file" OnClick="() => RemoveFile(document)" aria-label="@($"Remove {document.Label}")" />
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </MudTabPanel>
+                <MudTabPanel Text="Technical">
+                    <div class="document-grid">
+                        @foreach (var document in TechnicalDocuments)
+                        {
+                            <div class="document-upload-row">
+                                <MudText Typo="Typo.body1" Class="document-label">@document.Label @if (document.IsMandatory) { <span class="required-indicator">*</span> }</MudText>
+                                <div class="upload-control">
+                                    <MudTextField T="string" Value="@(document.FileName ?? string.Empty)" ReadOnly="true" Placeholder="@($"{document.Label}{(document.IsMandatory ? " *" : string.Empty)}")" Variant="Variant.Outlined" Margin="Margin.Dense" Class="file-name-field" title="@document.FileName"
+                                                  Error="@(_showValidation && document.IsMandatory && string.IsNullOrWhiteSpace(document.FileName))" ErrorText="Dokumen wajib diunggah." />
+                                    <InputFile @key="@($"{_fileInputVersion}-{document.Key}")" id="@document.Key" class="evidence-file-input" OnChange="args => SelectFile(document, args)" accept="application/pdf,.pdf" />
+                                    <label for="@document.Key" class="upload-button mud-button-root"><MudIcon Icon="@Icons.Material.Filled.UploadFile" Size="Size.Small" /><span>Upload</span></label>
+                                    @if (!string.IsNullOrWhiteSpace(document.FileName))
+                                    {
+                                        <MudIconButton Icon="@Icons.Material.Filled.DeleteOutline" Color="Color.Error" Size="Size.Small" Class="remove-file" OnClick="() => RemoveFile(document)" aria-label="@($"Remove {document.Label}")" />
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </MudTabPanel>
+            </MudTabs>
+            </div>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+    </div>
+
+    <div class="form-actions">
+        <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="Reset">Reset</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" OnClick="SaveDraft">Draft</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Success" StartIcon="@Icons.Material.Filled.CheckBox" OnClick="Submit">Submit</MudButton>
+    </div>
+</MudForm>
