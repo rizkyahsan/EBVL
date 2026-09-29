@@ -5,6 +5,8 @@
 .create-panels-scope ::deep .create-panel::before { display: none; }
 .create-panels-scope ::deep .create-panel > .mud-expand-panel-header { min-height: 58px; padding: 0 28px; font-size: 18px; font-weight: 700; text-decoration: underline; }
 .create-panels-scope ::deep .create-panel > .mud-collapse-container .mud-expand-panel-content { padding: 10px 34px 30px; }
+.create-panels-scope ::deep .company-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 48px; width: 100%; margin: 0; }
+.create-panels-scope ::deep .company-grid > .mud-grid-item { max-width: none; padding: 0; flex-basis: auto; }
 .create-panels-scope ::deep .company-grid .mud-input-control { margin-bottom: 8px; }
 .document-evidence-scope ::deep .document-tabs .mud-tabs-tabbar { border-bottom: 1px solid var(--mud-palette-lines-default); }
 .document-evidence-scope ::deep .document-tabs .mud-tab { font-size: 16px; font-weight: 700; text-transform: none; }
@@ -22,4 +24,4 @@
 .document-evidence-scope ::deep .remove-file { margin-left: -4px; }
 .form-actions { display: flex; justify-content: center; gap: 38px; margin: 34px 0 12px; }
 @media (max-width: 900px) { .document-grid { grid-template-columns: 1fr; } }
-@media (max-width: 600px) { .create-panels-scope ::deep .create-panel > .mud-expand-panel-header { padding: 0 16px; } .create-panels-scope ::deep .create-panel > .mud-collapse-container .mud-expand-panel-content { padding: 8px 16px 22px; } .upload-control { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; } .document-evidence-scope ::deep .remove-file { grid-column: 2; } .form-actions { align-items: stretch; flex-direction: column; gap: 10px; } }
+@media (max-width: 600px) { .create-panels-scope ::deep .create-panel > .mud-expand-panel-header { padding: 0 16px; } .create-panels-scope ::deep .create-panel > .mud-collapse-container .mud-expand-panel-content { padding: 8px 16px 22px; } .create-panels-scope ::deep .company-grid { grid-template-columns: 1fr; } .upload-control { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; } .document-evidence-scope ::deep .remove-file { grid-column: 2; } .form-actions { align-items: stretch; flex-direction: column; gap: 10px; } }

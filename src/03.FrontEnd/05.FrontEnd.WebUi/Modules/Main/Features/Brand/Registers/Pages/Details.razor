@@ -1,0 +1,116 @@
+@page "/Brand/Register/{RegistrationId:guid}"
+@using EBVL.FrontEnd.WebUi.Modules.Main.Features.Brand.Registers.Components
+@inherits PageBase
+@attribute [Authorize]
+
+<HtmlHead Title="@BrandRegistersDisplayTextFor.DetailBrand" />
+<Breadcrumbs Items="@_breadcrumbItems" />
+
+@if (Item is null)
+{
+    <MudAlert Severity="Severity.Warning">Brand registration tidak ditemukan.</MudAlert>
+}
+else
+{
+    <header class="page-header">
+        <div class="page-title">
+            <MudButton Variant="Variant.Text" Color="Color.Primary" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="GoBack">Back</MudButton>
+            <MudText Typo="Typo.h4" Class="detail-heading">@BrandRegistersDisplayTextFor.DetailBrand</MudText>
+            <MudText Typo="Typo.body1" Color="Color.Secondary">@Item.Brand - @Item.Product</MudText>
+        </div>
+        <MudChip T="string" Color="@StatusColor" Variant="Variant.Filled">@Item.Status</MudChip>
+    </header>
+
+    <MudExpansionPanels MultiExpansion="true" Elevation="0" Class="detail-panels">
+        <MudExpansionPanel Text="1. Company Profile" Expanded="true" Class="detail-panel">
+            <div class="section-intro"><MudIcon Icon="@Icons.Material.Filled.Business" Color="Color.Primary" /><MudText Typo="Typo.body2">Verify each item submitted for this brand.</MudText></div>
+            <div class="review-grid">
+                @foreach (var field in CompanyFields)
+                {
+                    <div class="company-item">
+                        <div class="company-value">
+                            <MudText Typo="Typo.body2" Class="review-label">@field.Label</MudText>
+                            <MudTextField T="string" Value="@field.Value" Disabled="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </div>
+                        <div class="item-assessment">
+                            <MudRadioGroup T="bool?" Value="@field.IsValid" ValueChanged="value => field.IsValid = value">
+                                <MudRadio T="bool?" Value="@((bool?)true)" Color="Color.Success">Valid</MudRadio>
+                                <MudRadio T="bool?" Value="@((bool?)false)" Color="Color.Error">Invalid</MudRadio>
+                            </MudRadioGroup>
+                            <MudTextField T="string" Value="@field.Remark" ValueChanged="value => field.Remark = value" Label="Remark" Placeholder="Masukkan remark" Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" Disabled="@(field.IsValid is true)" Required="@(field.IsValid is false)" Error="@(ShowValidationErrors && field.IsValid is false && string.IsNullOrWhiteSpace(field.Remark))" ErrorText="Remark wajib diisi untuk nilai Invalid." Class="remark-field" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Text="2. Document Evidence" Expanded="true" Class="detail-panel">
+            <div class="section-intro"><MudIcon Icon="@Icons.Material.Filled.FolderCopy" Color="Color.Primary" /><MudText Typo="Typo.body2">Review administrative and technical documents.</MudText></div>
+            <MudTabs Elevation="0" Class="document-tabs">
+                @foreach (var group in Documents.GroupBy(document => document.Category))
+                {
+                    <MudTabPanel Text="@group.Key">
+                        <div class="document-grid">
+                            @foreach (var document in group)
+                            {
+                                <div class="document-item">
+                                    <div class="document-file">
+                                        <MudText Typo="Typo.body2" Class="document-label">@document.Name @if (document.IsMandatory) { <span class="required-indicator">*</span> }</MudText>
+                                        <div class="document-file-control">
+                                            <MudTextField T="string" Value="@document.FileName" Disabled="true" Variant="Variant.Outlined" Margin="Margin.Dense" />
+                                            <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" Variant="Variant.Outlined" OnClick="() => Preview(document.FileName)" aria-label="@($"View {document.Name}")" />
+                                        </div>
+                                    </div>
+                                    <div class="document-assessment item-assessment">
+                                        <MudRadioGroup T="bool?" Value="@document.IsValid" ValueChanged="value => document.IsValid = value" Error="@(ShowValidationErrors && document.IsValid is null)" ErrorText="Pilih Valid atau Invalid.">
+                                            <MudRadio T="bool?" Value="@((bool?)true)" Color="Color.Success">Valid</MudRadio>
+                                            <MudRadio T="bool?" Value="@((bool?)false)" Color="Color.Error">Invalid</MudRadio>
+                                        </MudRadioGroup>
+                                        <MudTextField T="string" Value="@document.Remark" ValueChanged="value => document.Remark = value" Label="Remark" Placeholder="Masukkan remark" Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" Disabled="@(document.IsValid is true)" Required="@(document.IsValid is false)" Error="@(ShowValidationErrors && document.IsValid is false && string.IsNullOrWhiteSpace(document.Remark))" ErrorText="Remark wajib diisi untuk nilai Invalid." Class="remark-field" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </MudTabPanel>
+                }
+            </MudTabs>
+        </MudExpansionPanel>
+
+        <MudExpansionPanel Text="3. Invitation" Disabled="true" Class="detail-panel disabled-panel" />
+        <MudExpansionPanel Text="4. Evaluation" Disabled="true" Class="detail-panel disabled-panel" />
+
+        <MudExpansionPanel Text="5. Log" Class="detail-panel">
+            <div class="activity-log">
+                @foreach (var activity in Activities)
+                {
+                    <div class="activity-item"><span class="activity-dot"></span><div><MudText Typo="Typo.body2"><strong>@activity.Title</strong></MudText><MudText Typo="Typo.caption">@activity.Description</MudText><MudText Typo="Typo.caption" Color="Color.Secondary">@activity.OccurredAt</MudText></div></div>
+                }
+            </div>
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+
+    @if (IsDispositionStatus)
+    {
+        <div class="disposition-action"><MudButton Variant="Variant.Outlined" Color="Color.Success" StartIcon="@Icons.Material.Filled.AccountCircle" OnClick="OpenDisposition">Disposition</MudButton></div>
+    }
+
+    @if (IsReviewStatus)
+    {
+        <MudPaper Elevation="0" Class="approval-panel">
+            <div class="approval-role"><MudIcon Icon="@Icons.Material.Filled.RateReview" Color="Color.Primary" /><div><MudText Typo="Typo.h6">Document Review</MudText><MudText Typo="Typo.caption">@ReviewRole - @Item.Status</MudText></div></div>
+            <div class="section-field">
+                <MudSelect T="string" Placeholder="Select Section" @bind-Value="SelectedSection" Required="true" RequiredError="Section wajib dipilih." Variant="Variant.Outlined">
+                    <MudSelectItem Value="@("HSSE")">HSSE - Health, Safety, Security and Environment</MudSelectItem>
+                    <MudSelectItem Value="@("PF")">PF - Procurement Function</MudSelectItem>
+                    <MudSelectItem Value="@("ES")">ES - Engineering System</MudSelectItem>
+                </MudSelect>
+            </div>
+            <MudTextField T="string" Label="Approval Notes" @bind-Value="ApprovalNotes" Placeholder="Remark" Variant="Variant.Outlined" Lines="3" />
+            <div class="approval-actions">
+                <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Close" OnClick="@(() => Decide("Rejected"))">Reject</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Edit" OnClick="@(() => Decide("Need Revision"))">Need Revise</MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Check" OnClick="@(() => Decide("Approved"))">Approve</MudButton>
+            </div>
+        </MudPaper>
+    }
+}

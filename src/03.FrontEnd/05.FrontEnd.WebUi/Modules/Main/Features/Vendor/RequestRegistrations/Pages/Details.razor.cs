@@ -1,9 +1,7 @@
-using System.Text;
 using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.Vendor.RequestRegistrations.Components;
 using EBVL.Shared.Dto.Modules.Main.Vendor.RequestRegistrations.GetRequestRegistration;
 using EBVL.Shared.Statics.VendorRegistrations;
-using Microsoft.JSInterop;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.Vendor.RequestRegistrations.Pages;
 
@@ -11,9 +9,6 @@ public partial class Details : PageBase
 {
     [Parameter]
     public Guid RequestRegistrationId { get; set; }
-
-    [Inject]
-    public required IJSRuntime JSRuntime { get; init; }
 
     private RequestRegistrationDetail? _item;
     private string? _approvalNotes;
@@ -70,7 +65,7 @@ public partial class Details : PageBase
             new("PIC Email", _item.PicEmail),
             new("Company Phone Number", _item.CompanyPhoneNumber),
             new("PIC Phone Number", _item.PicPhoneNumber),
-            new("Company Website", _item.Website, true),
+            new("Company Website", _item.Website),
             new("Company Service", _item.CompanyService),
             new("Factory Address", _item.FactoryAddress),
             new("Brand Owner / Representative", _item.BrandRepresentative),
@@ -95,12 +90,6 @@ public partial class Details : PageBase
     {
         var parameters = new DialogParameters<DialogDocumentPreview> { { dialog => dialog.FileName, fileName } };
         _ = await DialogService.ShowAsync<DialogDocumentPreview>("Preview Evidence", parameters, new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true });
-    }
-
-    private async Task DownloadDocument(string fileName)
-    {
-        var content = Convert.ToBase64String(Encoding.UTF8.GetBytes($"Mock evidence document: {fileName}"));
-        await JSRuntime.InvokeVoidAsync(JavaScriptIdentifierFor.DownloadFile, fileName, "text/plain", content);
     }
 
     private void GoBack()
@@ -184,12 +173,11 @@ public partial class Details : PageBase
         item.Remark = value;
     }
 
-    private class ReviewItem(string label, string value, bool isLink = false)
+    private class ReviewItem(string label, string value)
     {
         public string Label { get; } = label;
         public string Value { get; } = value;
-        public bool IsLink { get; } = isLink;
-        public bool? IsValid { get; set; }
+        public bool? IsValid { get; set; } = true;
         public string? Remark { get; set; }
     }
 

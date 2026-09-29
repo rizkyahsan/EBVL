@@ -10,7 +10,7 @@ public partial class Index : PageBase
     [Inject]
     public required BrandRegistrationState RegistrationState { get; init; }
 
-    protected IReadOnlyList<string> Statuses { get; } = [All, "Draft", "New", "Submitted", "Request Approval Analyst", "Review by Admin Analyst", "Review by Admin Sr. Man MSAir", "Approved", "Reject by Admin MSAir"];
+    protected IReadOnlyList<string> Statuses { get; } = [All, "Draft", "New", "Submitted", "Document Need Disposition", "Review Document I", "Review Document II", "Review Document III", "Approved", "Reject by Admin MSAir"];
     protected IReadOnlyList<BrandRegisterItem> FilteredItems { get; set; } = [];
     protected IReadOnlyList<string> Brands { get; set; } = [];
     protected IReadOnlyList<string> Groups { get; set; } = [];
@@ -72,7 +72,7 @@ public partial class Index : PageBase
 
     protected void ViewBrand(BrandRegisterItem item)
     {
-        _ = Snackbar.Add($"Detail brand {item.Brand} akan ditambahkan pada tahap berikutnya.", MudBlazor.Severity.Info);
+        NavigationManager.NavigateTo(BrandRegistersRouteFor.Detail(item.Id));
     }
 
     protected int Number(BrandRegisterItem item)

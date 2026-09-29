@@ -1,0 +1,26 @@
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <div class="disposition-dialog">
+            <MudText Typo="Typo.h6" Class="dialog-title">Dispose to?</MudText>
+            <TableDefault Items="@Employees" Hover="true" Breakpoint="Breakpoint.Sm" RowsPerPage="5">
+                <HeaderContent>
+                    <MudTh>No</MudTh>
+                    <MudTh>Employee Name</MudTh>
+                    <MudTh>Email</MudTh>
+                    <MudTh>Position</MudTh>
+                    <MudTh>Action</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="No">@(Employees.IndexOf(context) + 1)</MudTd>
+                    <MudTd DataLabel="Employee Name">@context.Name</MudTd>
+                    <MudTd DataLabel="Email">@context.Email</MudTd>
+                    <MudTd DataLabel="Position">@context.Position</MudTd>
+                    <MudTd DataLabel="Action"><MudIconButton Icon="@Icons.Material.Filled.Send" Color="Color.Primary" OnClick="() => Select(context)" aria-label="@($"Dispose to {context.Name}")" /></MudTd>
+                </RowTemplate>
+                <PagerContent><MudTablePager PageSizeOptions="@(new[] { 5, 10 })" /></PagerContent>
+            </TableDefault>
+        </div>
+    </DialogContent>
+</MudDialog>

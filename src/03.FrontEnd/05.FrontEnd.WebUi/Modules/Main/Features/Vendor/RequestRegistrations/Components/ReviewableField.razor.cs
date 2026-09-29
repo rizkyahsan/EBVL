@@ -9,10 +9,16 @@ public partial class ReviewableField : ComponentBase
     public required string Value { get; init; }
 
     [Parameter]
-    public bool IsLink { get; init; }
+    public bool IsFile { get; init; }
 
     [Parameter]
-    public bool? IsValid { get; set; }
+    public bool IsRequired { get; init; }
+
+    [Parameter]
+    public EventCallback OnView { get; init; }
+
+    [Parameter]
+    public bool? IsValid { get; set; } = true;
 
     [Parameter]
     public EventCallback<bool?> IsValidChanged { get; set; }

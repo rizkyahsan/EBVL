@@ -8,6 +8,7 @@
 .detail-panels ::deep .detail-panel > .mud-expand-panel-header { min-height: 64px; padding: 0 24px; border-left: 4px solid var(--mud-palette-primary); font-size: 18px; font-weight: 700; }
 .detail-panels ::deep .detail-panel > .mud-collapse-container .mud-expand-panel-content { padding: 0 28px 28px; }
 .section-intro { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; padding: 16px 0; border-bottom: 1px solid var(--mud-palette-lines-default); color: var(--mud-palette-text-secondary); }
+.review-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 48px; }
 .document-review-row { display: grid; grid-template-columns: minmax(300px, .75fr) minmax(0, 1.25fr); gap: 24px; border-bottom: 1px solid var(--mud-palette-lines-default); }
 .document-review-row:last-child { border-bottom: 0; }
 .document-review-row ::deep .review-field { border-bottom: 0; grid-template-columns: 1fr; gap: 8px; }
@@ -27,5 +28,5 @@
 .approval-heading { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 18px; }
 .approval-heading h6 { font-weight: 700; }
 .approval-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 18px; }
-@media (max-width: 900px) { .document-review-row { grid-template-columns: 1fr; gap: 0; } .document-info { padding-bottom: 0; } }
+@media (max-width: 900px) { .review-grid, .document-review-row { grid-template-columns: 1fr; gap: 0; } .document-info { padding-bottom: 0; } }
 @media (max-width: 600px) { .page-header { align-items: flex-start; flex-direction: column; } .detail-panels ::deep .detail-panel > .mud-expand-panel-header { min-height: 58px; padding: 0 16px; } .detail-panels ::deep .detail-panel > .mud-collapse-container .mud-expand-panel-content { padding: 0 16px 20px; } .question-tabs ::deep .mud-tabs-panels { padding: 12px !important; } .question-answer, .question-document-row { padding: 0; } .document-info { grid-template-columns: auto minmax(0, 1fr) auto; } .document-info ::deep button:last-child { grid-column: 3; } .approval-panel { padding: 20px 16px; } .approval-actions { align-items: stretch; flex-direction: column-reverse; } }

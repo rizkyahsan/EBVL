@@ -110,3 +110,12 @@ div.mud-input-slot.mud-input-root-outlined
     padding-top: 10px !important;
     padding-bottom: 10px !important;
 }
+
+@media (max-width: 600px)
+{
+    .mud-expand-panel .mud-expand-panel-content.mud-expand-panel-gutters
+    {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
