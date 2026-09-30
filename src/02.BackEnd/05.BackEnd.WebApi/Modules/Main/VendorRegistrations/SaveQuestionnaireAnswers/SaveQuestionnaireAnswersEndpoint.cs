@@ -7,7 +7,7 @@ public sealed class SaveQuestionnaireAnswersEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPut(QuestionnaireRuntimeRoutes.Answers, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.SaveAnswers");
+        return app.MapPut(SaveQuestionnaireAnswersRoute.Pattern, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.SaveAnswers");
     }
 
     private static async Task<IResult> Handle(Guid registrationId, SaveAnswersRequest body, ISender sender, CancellationToken cancellationToken)

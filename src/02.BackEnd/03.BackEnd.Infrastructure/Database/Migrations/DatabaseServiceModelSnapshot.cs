@@ -121,6 +121,141 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.ToTable("Audits", "EBVL");
                 });
 
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.BrandInvitation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("BrandRegistrationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Cc")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Recipient")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTimeOffset?>("RespondedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("RespondedBy")
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("Response")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTimeOffset>("SentAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("SentBy")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BrandRegistrationId", "SentAt");
+
+                    b.ToTable("BrandInvitations", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.BrandRegistration", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BrandName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("FactoryCountry")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Group")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("OwnerUsername")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("ProductDescription")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTimeOffset?>("SubmittedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("WorkflowCaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkflowCaseId")
+                        .IsUnique();
+
+                    b.ToTable("BrandRegistrations", "EBVL");
+                });
+
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.Configuration", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1430,6 +1565,194 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.ToTable("VendorRegistrationDocuments", "EBVL");
                 });
 
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.WorkflowAssignment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AssignedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("AssignedBy")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("AssigneeUsername")
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("EndReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTimeOffset?>("EndedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("WorkflowCaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkflowCaseId")
+                        .IsUnique()
+                        .HasFilter("[EndedAt] IS NULL");
+
+                    b.ToTable("WorkflowAssignments", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.WorkflowCase", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<DateTimeOffset?>("DueAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("Modified")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("ProcessType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<DateTimeOffset>("StartedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DueAt");
+
+                    b.HasIndex("ProcessType", "Status");
+
+                    b.ToTable("WorkflowCases", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.WorkflowTransition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ActorRole")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ActorUsername")
+                        .IsRequired()
+                        .HasMaxLength(320)
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(320)");
+
+                    b.Property<string>("FromStatus")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTimeOffset>("OccurredAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ToStatus")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid>("WorkflowCaseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkflowCaseId", "OccurredAt");
+
+                    b.ToTable("WorkflowTransitions", "EBVL");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.BrandInvitation", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.BrandRegistration", "BrandRegistration")
+                        .WithMany("Invitations")
+                        .HasForeignKey("BrandRegistrationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BrandRegistration");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.BrandRegistration", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.WorkflowCase", "WorkflowCase")
+                        .WithOne()
+                        .HasForeignKey("EBVL.BackEnd.Domain.Entities.BrandRegistration", "WorkflowCaseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("WorkflowCase");
+                });
+
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.DocumentDefinition", b =>
                 {
                     b.HasOne("EBVL.BackEnd.Domain.Entities.DocumentRequirementSet", "DocumentRequirementSet")
@@ -1580,7 +1903,8 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.HasOne("EBVL.BackEnd.Domain.Entities.DocumentRequirementSet", "DocumentRequirementSet")
                         .WithMany()
                         .HasForeignKey("DocumentRequirementSetId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("EBVL.BackEnd.Domain.Entities.Questionnaire", "Questionnaire")
                         .WithMany()
@@ -1622,6 +1946,33 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Navigation("FileStorage");
 
                     b.Navigation("VendorRegistration");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.WorkflowAssignment", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.WorkflowCase", "WorkflowCase")
+                        .WithMany("Assignments")
+                        .HasForeignKey("WorkflowCaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkflowCase");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.WorkflowTransition", b =>
+                {
+                    b.HasOne("EBVL.BackEnd.Domain.Entities.WorkflowCase", "WorkflowCase")
+                        .WithMany("Transitions")
+                        .HasForeignKey("WorkflowCaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("WorkflowCase");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.BrandRegistration", b =>
+                {
+                    b.Navigation("Invitations");
                 });
 
             modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.Country", b =>
@@ -1671,6 +2022,13 @@ namespace EBVL.BackEnd.Infrastructure.Database.Migrations
                     b.Navigation("Answers");
 
                     b.Navigation("Documents");
+                });
+
+            modelBuilder.Entity("EBVL.BackEnd.Domain.Entities.WorkflowCase", b =>
+                {
+                    b.Navigation("Assignments");
+
+                    b.Navigation("Transitions");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,8 +7,8 @@ public sealed class CreateDocumentDraftEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPost(DocumentRoutes.Draft, Handle)
-            .RequireAuthorization()
+        return app.MapPost(CreateDocumentDraftRoute.Pattern, Handle)
+            .RequireAuthorization(DocumentPermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Documents.Draft")
             .Produces<GetDocumentResponse>();

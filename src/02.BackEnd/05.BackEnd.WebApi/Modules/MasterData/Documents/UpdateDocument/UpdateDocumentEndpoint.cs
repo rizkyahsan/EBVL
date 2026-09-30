@@ -7,8 +7,8 @@ public sealed class UpdateDocumentEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPut(DocumentRoutes.Requirement, Handle)
-            .RequireAuthorization()
+        return app.MapPut(UpdateDocumentRoute.Pattern, Handle)
+            .RequireAuthorization(DocumentPermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Documents.Update")
             .Produces<GetDocumentResponse>();

@@ -8,8 +8,8 @@ public sealed class PublishQuestionnaireEndpoint : IEndpoint
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
         return app
-            .MapPost(QuestionnaireRoutes.Publish, Handle)
-            .RequireAuthorization()
+            .MapPost(PublishQuestionnaireRoute.Pattern, Handle)
+            .RequireAuthorization(QuestionnairePermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Questionnaires.Publish")
             .Produces<GetQuestionnaireResponse>();

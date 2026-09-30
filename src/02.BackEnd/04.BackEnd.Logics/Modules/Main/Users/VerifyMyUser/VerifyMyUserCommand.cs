@@ -1,6 +1,6 @@
+using EBVL.Shared.Dto.Modules.Main.Users.VerifyMyUser;
 using Pertamina.Services.CurrentUser;
 using Pertamina.Services.Otp;
-using EBVL.Shared.Dto.Modules.Main.Users.VerifyMyUser;
 
 namespace EBVL.BackEnd.Logics.Modules.Main.Users.VerifyMyUser;
 

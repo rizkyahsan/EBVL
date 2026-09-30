@@ -3,21 +3,8 @@ using EBVL.Shared.Enums;
 
 namespace EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires;
 
-public static class RouteConfig { public const string Tag = "Vendor Registration Questionnaire"; public const string BasePath = "/api/main/vendor-registrations/questionnaires"; }
-public static class QuestionnaireRuntimeRoutes
-{
-    public const string Start = RouteConfig.BasePath + "/start";
-    public const string SapAvailability = RouteConfig.BasePath + "/sap-availability";
-    public const string Get = RouteConfig.BasePath + "/{registrationId:guid}";
-    public const string Answers = Get + "/answers";
-    public const string Profile = Get + "/profile";
-    public const string Documents = Get + "/documents/{definitionKey}";
-    public const string Document = Get + "/documents/files/{documentId:guid}";
-    public const string Files = Get + "/questions/{questionId:guid}/files";
-    public const string File = Get + "/files/{fileId:guid}";
-    public const string Submit = Get + "/submit";
-}
-public sealed record SapAvailabilityResponse(bool IsAvailable, string? Message, QuestionnaireRuntimeResponse? Runtime = null);
+public sealed record SapAvailabilityRequest(string SapVendorNumber);
+public sealed record SapAvailabilityResponse(bool IsAvailable, bool IsSapVerified, string SapVendorNumber, string? Message);
 public sealed record RegistrationAuthorizationRequest(Guid RegistrationId, string ResumeToken);
 public sealed record ResumeQuestionnaireRequest(Guid RegistrationId, string ResumeToken);
 public sealed record QuestionnaireRuntimeResponse(Guid RegistrationId, string? ResumeToken, string RowVersion, VendorRegistrationStatus Status, PreRegistrationRequest Profile, IReadOnlyList<VendorRegistrationDocumentItem> Documents, bool IsDocumentEvidenceComplete, Guid QuestionnaireId, IReadOnlyList<RuntimeSectionItem> Sections);

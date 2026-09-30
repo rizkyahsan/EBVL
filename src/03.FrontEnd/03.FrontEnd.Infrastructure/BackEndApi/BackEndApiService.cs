@@ -1,11 +1,10 @@
 using System.Globalization;
 using System.Text.Json;
+using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
+using EBVL.FrontEnd.Services.BackEndApi;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
-using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
-using EBVL.FrontEnd.Services.BackEndApi;
-using Pertamina.Common.Statics;
 using Pertamina.Extensions.Identity;
 using RestSharp;
 
@@ -105,7 +104,7 @@ public sealed class BackEndApiService(
 
         if (!string.IsNullOrWhiteSpace(positionId))
         {
-            _ = restRequest.AddHeader(HttpHeaderNameFor.PositionId, positionId);
+            _ = restRequest.AddHeader("PositionId", positionId);
         }
     }
 

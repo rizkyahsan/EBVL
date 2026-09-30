@@ -25,6 +25,17 @@
 .item-assessment ::deep .mud-radio-group { display: flex; gap: 8px; }
 .item-assessment ::deep .mud-radio .mud-icon-button { padding: 8px; }
 .item-assessment ::deep .remark-field .mud-input.mud-disabled { background-color: #f3f3f3; }
+.invitation-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 48px; padding-top: 20px; }
+.invitation-fields { display: grid; align-content: start; gap: 20px; }
+.invitation-body { align-self: stretch; }
+.invitation-body ::deep .mud-input-control, .invitation-body ::deep .mud-input-control-input-container, .invitation-body ::deep .mud-input { height: 100%; }
+.invitation-actions { display: flex; justify-content: flex-end; gap: 28px; margin-top: 28px; }
+.invitation-view-title { margin-top: 20px; margin-bottom: 18px; }
+.invitation-view { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 48px; }
+.invitation-message { min-height: 320px; padding: 20px 24px; }
+.invitation-message-body { margin-top: 20px; white-space: pre-wrap; }
+.invitation-response-actions { display: flex; gap: 20px; }
+.invitation-response { margin-top: 18px; }
 .activity-log { padding-top: 18px; }
 .activity-item { position: relative; display: grid; grid-template-columns: 18px 1fr; gap: 12px; padding-bottom: 22px; }
 .activity-item:not(:last-child)::before { content: ""; position: absolute; top: 12px; bottom: -3px; left: 5px; width: 2px; background: var(--mud-palette-lines-default); }
@@ -34,6 +45,6 @@
 .approval-role { display: flex; grid-column: 1 / -1; align-items: flex-start; gap: 12px; }
 .section-field { display: grid; align-content: start; gap: 8px; }
 .approval-actions { display: flex; grid-column: 1 / -1; justify-content: flex-end; gap: 12px; }
-@media (max-width: 900px) { .review-grid, .document-grid, .approval-panel { grid-template-columns: 1fr; } .approval-actions { grid-column: 1; } }
+@media (max-width: 900px) { .review-grid, .document-grid, .approval-panel, .invitation-form, .invitation-view { grid-template-columns: 1fr; } .approval-actions { grid-column: 1; } }
 @media (max-width: 700px) { .company-item, .document-item { grid-template-columns: 1fr; gap: 14px; } }
-@media (max-width: 600px) { .page-header { align-items: flex-start; flex-direction: column; } .detail-panels ::deep .detail-panel > .mud-expand-panel-header { padding: 0 16px; } .detail-panels ::deep .detail-panel > .mud-collapse-container .mud-expand-panel-content { padding: 0 16px 20px; } .approval-panel { padding: 20px 16px; } .approval-actions { align-items: stretch; flex-direction: column; } }
+@media (max-width: 600px) { .page-header { align-items: flex-start; flex-direction: column; } .detail-panels ::deep .detail-panel > .mud-expand-panel-header { padding: 0 16px; } .detail-panels ::deep .detail-panel > .mud-collapse-container .mud-expand-panel-content { padding: 0 16px 20px; } .invitation-actions, .invitation-response-actions { align-items: stretch; flex-direction: column; gap: 10px; } .approval-panel { padding: 20px 16px; } .approval-actions { align-items: stretch; flex-direction: column; } }

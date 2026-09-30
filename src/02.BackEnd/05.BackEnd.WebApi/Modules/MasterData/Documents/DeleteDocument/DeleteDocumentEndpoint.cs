@@ -7,8 +7,8 @@ public sealed class DeleteDocumentEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapDelete(DocumentRoutes.Requirement, Handle)
-            .RequireAuthorization()
+        return app.MapDelete(DeleteDocumentRoute.Pattern, Handle)
+            .RequireAuthorization(DocumentPermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Documents.Delete")
             .Produces<GetDocumentResponse>();

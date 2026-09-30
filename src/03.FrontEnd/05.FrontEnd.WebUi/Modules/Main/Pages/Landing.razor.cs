@@ -11,7 +11,6 @@ public partial class Landing
     public Task<AuthenticationState> AuthenticationStateTask { get; set; } = default!;
 
     #endregion
-
     #region State and Content
 
     private int _activeSlide;
@@ -56,7 +55,6 @@ public partial class Landing
     }
 
     #endregion
-
     #region Event Handlers
 
     private void PreviousSlide()

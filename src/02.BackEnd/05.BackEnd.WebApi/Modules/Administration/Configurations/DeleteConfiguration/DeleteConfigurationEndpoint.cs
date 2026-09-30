@@ -10,7 +10,7 @@ public sealed class DeleteConfigurationEndpoint : IEndpoint
     {
         return app
             .MapDelete(DeleteConfigurationRoute.Pattern, Handle)
-            .RequireAuthorization()
+            .RequireAuthorization(Shared.Dto.Modules.Administration.Permissions.AdministrationConfigurationsWrite)
             .WithTags(RouteConfig.Tag)
             .WithName(DeleteConfigurationRoute.Name)
             .WithDescription(DeleteConfigurationRoute.Description)

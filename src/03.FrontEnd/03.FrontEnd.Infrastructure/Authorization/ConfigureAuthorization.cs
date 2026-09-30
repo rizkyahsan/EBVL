@@ -1,7 +1,7 @@
-using Pertamina.Extensions.Identity.Statics;
-using EBVL.Shared.Dto.Modules.MasterData.Documents;
 using System.Security.Claims;
+using EBVL.Shared.Dto.Modules.MasterData.Documents;
 using Microsoft.AspNetCore.Authorization;
+using Pertamina.Extensions.Identity.Statics;
 
 namespace EBVL.FrontEnd.Infrastructure.Authorization;
 

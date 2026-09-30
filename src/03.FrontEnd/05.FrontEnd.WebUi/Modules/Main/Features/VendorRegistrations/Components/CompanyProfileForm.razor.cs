@@ -57,7 +57,6 @@ public partial class CompanyProfileForm
     }
 
     #endregion
-
     #region Private Methods
 
     private async Task FindSapVendor()

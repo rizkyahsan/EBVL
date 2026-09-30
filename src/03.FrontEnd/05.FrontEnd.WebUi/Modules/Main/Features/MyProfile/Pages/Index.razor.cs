@@ -63,10 +63,8 @@ public partial class Index : PageBase
     private async Task ShowDialogCreate()
     {
         ClearException();
-
         var dialog = await DialogService.ShowAsync<DialogCreate>($"{CommonDisplayTextFor.Create} {UsersDisplayTextFor.MyProfile}");
         var result = await dialog.Result;
-
         if (result is not null && !result.Canceled)
         {
             await LoadModel();
@@ -76,7 +74,6 @@ public partial class Index : PageBase
     private async Task ShowDialogViewQrCode()
     {
         ClearException();
-
         if (_model.User is null)
         {
             return;
@@ -86,7 +83,6 @@ public partial class Index : PageBase
         {
             { x => x.DataUri, _model.User.QrCodeDataUri }
         };
-
         _ = await DialogService.ShowAsync<DialogViewQrCode>($"{UsersDisplayTextFor.MyProfile} QR Code", parameters);
     }
 
@@ -95,12 +91,9 @@ public partial class Index : PageBase
         try
         {
             _isLoading = true;
-
             ClearException();
-
             var command = new SendMyVerificationCodeCommand();
             var response = await Sender.Send(command);
-
             Snackbar.AddSuccess(response.Item.Message);
         }
         catch (Exception exception)
@@ -116,10 +109,8 @@ public partial class Index : PageBase
     private async Task ShowDialogVerify()
     {
         ClearException();
-
         var dialog = await DialogService.ShowAsync<DialogVerify>($"{CommonDisplayTextFor.Verify} {UsersDisplayTextFor.MyProfile}");
         var result = await dialog.Result;
-
         if (result is not null && !result.Canceled)
         {
             await LoadModel();
@@ -129,7 +120,6 @@ public partial class Index : PageBase
     private async Task ShowDialogEdit()
     {
         ClearException();
-
         if (_model.User is null)
         {
             return;
@@ -142,15 +132,12 @@ public partial class Index : PageBase
             PhoneNumber = _model.User.PhoneNumber,
             VerificationCode = string.Empty
         };
-
         var parameters = new DialogParameters<DialogEdit>
         {
             { x => x.Model, model }
         };
-
         var dialog = await DialogService.ShowAsync<DialogEdit>($"{CommonDisplayTextFor.Edit} {UsersDisplayTextFor.Profile}", parameters);
         var result = await dialog.Result;
-
         if (result is not null && !result.Canceled)
         {
             await LoadModel();
@@ -160,10 +147,8 @@ public partial class Index : PageBase
     private async Task ShowDialogReload()
     {
         ClearException();
-
         var dialog = await DialogService.ShowAsync<DialogReload>($"{CommonDisplayTextFor.Reload} {UsersDisplayTextFor.MyProfile}");
         var result = await dialog.Result;
-
         if (result is not null && !result.Canceled)
         {
             await LoadModel();

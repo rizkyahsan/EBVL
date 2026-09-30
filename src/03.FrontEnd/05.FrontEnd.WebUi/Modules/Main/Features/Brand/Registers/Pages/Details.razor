@@ -76,7 +76,43 @@ else
             </MudTabs>
         </MudExpansionPanel>
 
-        <MudExpansionPanel Text="3. Invitation" Disabled="true" Class="detail-panel disabled-panel" />
+        <MudExpansionPanel Text="3. Invitation" Disabled="@(!IsInvitationAvailable)" Expanded="@IsInvitationAvailable" Class="@InvitationPanelClass">
+            @if (Invitation is null)
+            {
+                <MudForm @ref="InvitationForm">
+                    <div class="invitation-form">
+                        <div class="invitation-fields">
+                            <MudTextField T="string" Label="Subject" @bind-Value="InvitationModel.Subject" Required="true" RequiredError="Subject wajib diisi." Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudTextField T="string" Label="Recipient" @bind-Value="InvitationModel.Recipient" Required="true" RequiredError="Recipient wajib diisi." Variant="Variant.Outlined" Margin="Margin.Dense" />
+                            <MudTextField T="string" Label="CC" @bind-Value="InvitationModel.Cc" Required="true" RequiredError="CC wajib diisi." Variant="Variant.Outlined" Margin="Margin.Dense" />
+                        </div>
+                        <MudTextField T="string" Label="Body" @bind-Value="InvitationModel.Body" Required="true" RequiredError="Body wajib diisi." Variant="Variant.Outlined" Margin="Margin.Dense" Lines="10" Class="invitation-body" />
+                    </div>
+                    <div class="invitation-actions">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.DeleteForever" OnClick="ResetInvitation">Reset Form</MudButton>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" EndIcon="@Icons.Material.Filled.ChevronRight" OnClick="SendInvitation">Send</MudButton>
+                    </div>
+                </MudForm>
+            }
+            else
+            {
+                <MudText Typo="Typo.body1" Class="invitation-view-title">Presentation</MudText>
+                <div class="invitation-view">
+                    <MudPaper Elevation="0" Outlined="true" Class="invitation-message">
+                        <MudText Typo="Typo.body1"><strong>Subject: @Invitation.Subject</strong></MudText>
+                        <MudText Typo="Typo.body1" Class="invitation-message-body">@Invitation.Body</MudText>
+                    </MudPaper>
+                    <div class="invitation-response-actions">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Success" StartIcon="@Icons.Material.Filled.Check" Disabled="@(Invitation.Response is not null)" OnClick="@(() => RespondInvitation("Confirmed"))">Confirm</MudButton>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Close" Disabled="@(Invitation.Response is not null)" OnClick="@(() => RespondInvitation("Rejected"))">Reject</MudButton>
+                    </div>
+                </div>
+                @if (Invitation.Response is not null)
+                {
+                    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="invitation-response">Invitation response: @Invitation.Response</MudAlert>
+                }
+            }
+        </MudExpansionPanel>
         <MudExpansionPanel Text="4. Evaluation" Disabled="true" Class="detail-panel disabled-panel" />
 
         <MudExpansionPanel Text="5. Log" Class="detail-panel">

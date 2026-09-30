@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore.Storage;
 using EBVL.BackEnd.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EBVL.BackEnd.Services.Database;
 
@@ -14,4 +14,5 @@ public partial interface IDatabaseService
     public void SetVendorRegistrationOriginalRowVersion(VendorRegistration registration, byte[] rowVersion);
     public void SetVendorRegistrationUnchanged(VendorRegistration registration);
     public void SetQuestionnaireRuntimeGraphUnchanged();
+    public void SetWorkflowCaseOriginalRowVersion(WorkflowCase workflowCase, byte[] rowVersion);
 }

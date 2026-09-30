@@ -8,7 +8,7 @@ public sealed class StartQuestionnaireEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPost(QuestionnaireRuntimeRoutes.Start, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.Start");
+        return app.MapPost(StartQuestionnaireRoute.Pattern, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.Start");
     }
 
     private static async Task<IResult> Handle(PreRegistrationRequest body, ISender sender, CancellationToken cancellationToken)

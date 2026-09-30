@@ -93,4 +93,8 @@ public partial class DatabaseService(
             entry.State = EntityState.Unchanged;
         }
     }
+    public void SetWorkflowCaseOriginalRowVersion(WorkflowCase workflowCase, byte[] rowVersion)
+    {
+        Entry(workflowCase).Property(x => x.RowVersion).OriginalValue = rowVersion;
+    }
 }

@@ -25,8 +25,8 @@ public sealed class QuestionnaireRequestValidator : AbstractValidatorBase<Questi
         _ = RuleFor(x => x.SapVendorNumber).NotEmpty();
         _ = RuleFor(x => x.Answers).Must((request, answers) =>
         {
-            var mandatoryNumbers = EBVL.Shared.Statics.VendorRegistrations.QuestionnaireFor.All
-                .Where(question => question.IsRequired && (!request.IsNotSoleAgent || question.Section != EBVL.Shared.Statics.VendorRegistrations.QuestionnaireFor.SoleAgent))
+            var mandatoryNumbers = Statics.VendorRegistrations.QuestionnaireFor.All
+                .Where(question => question.IsRequired && (!request.IsNotSoleAgent || question.Section != Statics.VendorRegistrations.QuestionnaireFor.SoleAgent))
                 .Select(question => question.Number)
                 .ToHashSet();
 

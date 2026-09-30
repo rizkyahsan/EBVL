@@ -8,8 +8,8 @@ public sealed class GetQuestionnaireVersionHistoryEndpoint : IEndpoint
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
         return app
-            .MapGet(QuestionnaireRoutes.History, Handle)
-            .RequireAuthorization()
+            .MapGet(GetQuestionnaireVersionHistoryRoute.Pattern, Handle)
+            .RequireAuthorization(QuestionnairePermissions.View)
             .WithTags(RouteConfig.Tag)
             .WithName("Questionnaires.History")
             .Produces<GetQuestionnaireVersionHistoryResponse>();

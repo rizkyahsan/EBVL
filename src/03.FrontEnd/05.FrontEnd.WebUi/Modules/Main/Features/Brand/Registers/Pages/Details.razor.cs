@@ -24,9 +24,14 @@ public partial class Details : PageBase
     protected bool ShowValidationErrors { get; set; }
     protected string? SelectedSection { get; set; }
     protected string? ApprovalNotes { get; set; }
+    protected MudForm InvitationForm { get; set; } = default!;
+    protected InvitationFormModel InvitationModel { get; set; } = new();
+    protected BrandInvitation? Invitation { get; set; }
 
     protected bool IsDispositionStatus => Item?.Status == "Document Need Disposition";
     protected bool IsReviewStatus => Item?.Status is "Review Document I" or "Review Document II" or "Review Document III";
+    protected bool IsInvitationAvailable => Item?.Status == nameof(BrandRegistrationStatus.InviteToPresent);
+    protected string InvitationPanelClass => IsInvitationAvailable ? "detail-panel" : "detail-panel disabled-panel";
     protected string ReviewRole => Item?.Status switch
     {
         "Review Document I" => "Role Analis",
@@ -36,20 +41,30 @@ public partial class Details : PageBase
     };
     protected Color StatusColor => IsDispositionStatus || IsReviewStatus ? Color.Warning : Item?.Status == "Approved" ? Color.Success : Color.Info;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Item = RegistrationState.Find(RegistrationId);
         LoadBreadcrumbs();
+        try
+        {
+            Item = await RegistrationState.FindAsync(RegistrationId);
+        }
+        catch (Exception exception)
+        {
+            _ = Snackbar.Add(exception.Message, MudBlazor.Severity.Error);
+            return;
+        }
+
         if (Item is not null)
         {
+            Invitation = Item.Invitation;
             CompanyFields =
             [
                 new("Brand", Item.Brand),
                 new("Product Name", Item.Product),
                 new("Group", Item.Group),
-                new("COO / Factory Location", "Indonesia"),
-                new("Category", "Goods"),
-                new("Product Description", $"{Item.Product} product registration")
+                new("COO / Factory Location", Item.Country),
+                new("Category", Item.Category),
+                new("Product Description", Item.ProductDescription)
             ];
         }
     }
@@ -79,10 +94,56 @@ public partial class Details : PageBase
         }
     }
 
+    protected async Task ResetInvitation()
+    {
+        InvitationModel = new InvitationFormModel();
+        await InvitationForm.ResetAsync();
+    }
+
+    protected async Task SendInvitation()
+    {
+        await InvitationForm.Validate();
+        if (!InvitationForm.IsValid || Item is null)
+        {
+            return;
+        }
+
+        try
+        {
+            Item = await RegistrationState.SaveInvitationAsync(Item.Id, InvitationModel.Subject!, InvitationModel.Recipient!, InvitationModel.Cc!, InvitationModel.Body!, Item.RowVersion);
+            Invitation = Item.Invitation;
+            _ = Snackbar.Add("Invitation berhasil disimpan dan dikirim ke vendor.", MudBlazor.Severity.Success);
+        }
+        catch (Exception exception)
+        {
+            _ = Snackbar.Add(exception.Message, MudBlazor.Severity.Error);
+        }
+    }
+
+    protected async Task RespondInvitation(string response)
+    {
+        if (Item is null || Invitation is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var invitationResponse = Enum.Parse<BrandInvitationResponse>(response);
+            Item = await RegistrationState.SetInvitationResponseAsync(Item.Id, Invitation.Id, invitationResponse, Item.RowVersion);
+            Invitation = Item.Invitation;
+            _ = Snackbar.Add($"Invitation {response}.", MudBlazor.Severity.Success);
+        }
+        catch (Exception exception)
+        {
+            _ = Snackbar.Add(exception.Message, MudBlazor.Severity.Error);
+        }
+    }
+
     protected void Decide(string decision)
     {
         ShowValidationErrors = true;
-        if (string.IsNullOrWhiteSpace(SelectedSection) || CompanyFields.Concat<ReviewItem>(Documents).Any(item => item.IsValid is null || (item.IsValid is false && string.IsNullOrWhiteSpace(item.Remark))))
+        if (string.IsNullOrWhiteSpace(SelectedSection) || CompanyFields.Concat(Documents).Any(item => item.IsValid is null || (item.IsValid is false && string.IsNullOrWhiteSpace(item.Remark))))
         {
             _ = Snackbar.Add("Lengkapi penilaian dokumen dan section sebelum melanjutkan.", MudBlazor.Severity.Error);
             return;
@@ -113,4 +174,12 @@ public partial class Details : PageBase
     }
 
     protected sealed record ActivityItem(string Title, string Description, string OccurredAt);
+
+    protected sealed class InvitationFormModel
+    {
+        public string? Subject { get; set; }
+        public string? Recipient { get; set; }
+        public string? Cc { get; set; }
+        public string? Body { get; set; }
+    }
 }

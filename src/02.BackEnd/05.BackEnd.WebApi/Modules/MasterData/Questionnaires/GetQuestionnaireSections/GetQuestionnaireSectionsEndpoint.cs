@@ -8,8 +8,8 @@ public sealed class GetQuestionnaireSectionsEndpoint : IEndpoint
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
         return app
-            .MapGet(QuestionnaireRoutes.Sections, Handle)
-            .RequireAuthorization()
+            .MapGet(GetQuestionnaireSectionsRoute.Pattern, Handle)
+            .RequireAuthorization(QuestionnairePermissions.View)
             .WithTags(RouteConfig.Tag)
             .WithName("Questionnaires.Sections")
             .Produces<GetQuestionnaireSectionsResponse>();

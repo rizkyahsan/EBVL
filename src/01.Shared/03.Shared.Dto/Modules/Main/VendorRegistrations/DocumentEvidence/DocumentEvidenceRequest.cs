@@ -5,7 +5,7 @@ public record DocumentEvidenceRequest
     public string SapVendorNumber { get; set; } = string.Empty;
     public List<DocumentEvidenceItemRequest> Documents { get; set; } =
     [
-        .. EBVL.Shared.Statics.VendorRegistrations.DocumentEvidenceFor.All.Select(document => new DocumentEvidenceItemRequest
+        .. Statics.VendorRegistrations.DocumentEvidenceFor.All.Select(document => new DocumentEvidenceItemRequest
         {
             Key = document.Key
         })

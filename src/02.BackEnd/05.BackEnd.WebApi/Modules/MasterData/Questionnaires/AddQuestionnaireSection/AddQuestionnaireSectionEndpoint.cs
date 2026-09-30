@@ -8,8 +8,8 @@ public sealed class AddQuestionnaireSectionEndpoint : IEndpoint
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
         return app
-            .MapPost(QuestionnaireRoutes.Sections, Handle)
-            .RequireAuthorization()
+            .MapPost(AddQuestionnaireSectionRoute.Pattern, Handle)
+            .RequireAuthorization(QuestionnairePermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Questionnaires.AddSection")
             .Produces<GetQuestionnaireResponse>();
@@ -19,6 +19,6 @@ public sealed class AddQuestionnaireSectionEndpoint : IEndpoint
         Guid questionnaireId, AddQuestionnaireSectionRequest body, ISender sender,
         CancellationToken cancellationToken)
     {
-        return Results.Created(QuestionnaireRoutes.Detail, (object?)await sender.Send(new AddQuestionnaireSectionCommand(questionnaireId, body), cancellationToken));
+        return Results.Created(GetQuestionnaireRoute.ResourceUri(questionnaireId), (object?)await sender.Send(new AddQuestionnaireSectionCommand(questionnaireId, body), cancellationToken));
     }
 }

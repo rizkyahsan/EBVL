@@ -18,5 +18,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/02.BackEnd/04.BackEnd.Logics/04.BackEnd.Logics.csproj" />
+    <ProjectReference Include="../../src/02.BackEnd/03.BackEnd.Infrastructure/03.BackEnd.Infrastructure.csproj" />
   </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@ public sealed class DeleteVendorRegistrationDocumentEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapDelete(QuestionnaireRuntimeRoutes.Document, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.DeleteDocument");
+        return app.MapDelete(DeleteVendorRegistrationDocumentRoute.Pattern, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.DeleteDocument");
     }
 
     private static async Task<IResult> Handle(Guid registrationId, Guid documentId, [FromQuery] string resumeToken, ISender sender, CancellationToken cancellationToken)

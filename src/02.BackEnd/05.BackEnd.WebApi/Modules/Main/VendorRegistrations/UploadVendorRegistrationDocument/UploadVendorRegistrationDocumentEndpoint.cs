@@ -8,7 +8,7 @@ public sealed class UploadVendorRegistrationDocumentEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPost(QuestionnaireRuntimeRoutes.Documents, Handle).AllowAnonymous().DisableAntiforgery().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.UploadDocument");
+        return app.MapPost(UploadVendorRegistrationDocumentRoute.Pattern, Handle).AllowAnonymous().DisableAntiforgery().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.UploadDocument");
     }
 
     [RequestSizeLimit((100L * 1024 * 1024) + (1024 * 1024))]

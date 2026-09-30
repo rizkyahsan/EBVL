@@ -84,20 +84,17 @@ public partial class StepOne
     {
         try
         {
-            var availability = await Sender.Send(new CheckSapAvailabilityQuery(sapVendorNumber, RegistrationState.RegistrationId));
-            if (availability.Runtime is not null)
-            {
-                await RegistrationState.SetRuntimeAsync(availability.Runtime);
-                _model = availability.Runtime.Profile;
-                _sapFound = true;
-                await InvokeAsync(StateHasChanged);
-                return true;
-            }
-
+            var availability = await Sender.Send(new CheckSapAvailabilityQuery(sapVendorNumber));
             if (!availability.IsAvailable)
             {
                 Snackbar.AddWarning(availability.Message ?? "This SAP vendor number is already used.");
                 return false;
+            }
+
+            sapVendorNumber = availability.SapVendorNumber;
+            if (!availability.IsSapVerified && !string.IsNullOrWhiteSpace(availability.Message))
+            {
+                Snackbar.AddWarning(availability.Message);
             }
         }
         catch (Exception exception)

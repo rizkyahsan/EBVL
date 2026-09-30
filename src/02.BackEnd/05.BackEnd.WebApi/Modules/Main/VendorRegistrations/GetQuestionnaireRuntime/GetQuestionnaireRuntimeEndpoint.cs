@@ -7,7 +7,7 @@ public sealed class GetQuestionnaireRuntimeEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPost(QuestionnaireRuntimeRoutes.Get, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.Get");
+        return app.MapPost(GetQuestionnaireRuntimeRoute.Pattern, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.Get");
     }
 
     private static async Task<IResult> Handle(Guid registrationId, ResumeQuestionnaireRequest body, ISender sender, CancellationToken cancellationToken)

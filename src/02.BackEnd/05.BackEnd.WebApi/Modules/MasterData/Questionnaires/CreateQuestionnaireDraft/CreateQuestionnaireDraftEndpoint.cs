@@ -8,8 +8,8 @@ public sealed class CreateQuestionnaireDraftEndpoint : IEndpoint
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
         return app
-            .MapPost(QuestionnaireRoutes.Draft, Handle)
-            .RequireAuthorization()
+            .MapPost(CreateQuestionnaireDraftRoute.Pattern, Handle)
+            .RequireAuthorization(QuestionnairePermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Questionnaires.CreateDraft")
             .Produces<GetQuestionnaireResponse>();

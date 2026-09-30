@@ -19,9 +19,18 @@ public partial class Index : PageBase
     private string _status = All;
     private string? _product;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         LoadBreadcrumbs();
+        try
+        {
+            await RegistrationState.LoadAsync();
+        }
+        catch (Exception exception)
+        {
+            _ = Snackbar.Add(exception.Message, MudBlazor.Severity.Error);
+        }
+
         Brands = [All, .. RegistrationState.Items.Select(item => item.Brand).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(value => value)];
         Groups = [All, .. RegistrationState.Items.Select(item => item.Group).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(value => value)];
         FilteredItems = RegistrationState.Items;

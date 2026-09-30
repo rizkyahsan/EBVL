@@ -7,7 +7,7 @@ public sealed class SubmitQuestionnaireEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPost(QuestionnaireRuntimeRoutes.Submit, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.Submit");
+        return app.MapPost(SubmitQuestionnaireRoute.Pattern, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.Submit");
     }
 
     private static async Task<IResult> Handle(Guid registrationId, SubmitQuestionnaireRequest body, ISender sender, CancellationToken cancellationToken)

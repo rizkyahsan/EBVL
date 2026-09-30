@@ -1,36 +1,36 @@
-using System.Security.Cryptography;
-using System.Text;
-using EBVL.BackEnd.Logics.Modules.Main.VendorRegistrations.Common;
+using EBVL.BackEnd.Services.SapVendor;
 using EBVL.Shared.Dto.Modules.Main.VendorRegistrations.Questionnaires;
+using VendorRegistrationMaximumLengthFor = EBVL.Shared.Statics.VendorRegistrations.MaximumLengthFor;
 
 namespace EBVL.BackEnd.Logics.Modules.Main.VendorRegistrations.CheckSapAvailability;
 
-public sealed record CheckSapAvailabilityQuery(string SapVendorNumber, Guid? RegistrationId) : IRequest<SapAvailabilityResponse>;
+public sealed record CheckSapAvailabilityQuery(string SapVendorNumber) : IRequest<SapAvailabilityResponse>;
 
-public sealed class CheckSapAvailabilityHandler(IDatabaseService databaseService) : IRequestHandler<CheckSapAvailabilityQuery, SapAvailabilityResponse>
+public sealed class CheckSapAvailabilityQueryValidator : AbstractValidator<CheckSapAvailabilityQuery>
+{
+    public CheckSapAvailabilityQueryValidator()
+    {
+        _ = RuleFor(x => x.SapVendorNumber).NotEmpty().MaximumLength(VendorRegistrationMaximumLengthFor.SapVendorNumber);
+    }
+}
+
+public sealed class CheckSapAvailabilityHandler(IDatabaseService databaseService, ISapVendorService sapVendorService) : IRequestHandler<CheckSapAvailabilityQuery, SapAvailabilityResponse>
 {
     public async Task<SapAvailabilityResponse> Handle(CheckSapAvailabilityQuery request, CancellationToken cancellationToken)
     {
         var sapVendorNumber = request.SapVendorNumber.Trim();
         var normalizedSap = sapVendorNumber.ToUpperInvariant();
-        var registration = await databaseService.VendorRegistrations.SingleOrDefaultAsync(x => !x.IsDeleted
-            && x.Id != request.RegistrationId
+        var isRegistered = await databaseService.VendorRegistrations.AnyAsync(x => !x.IsDeleted
             && (x.NormalizedSapVendorNumber == normalizedSap
                 || (x.SapVendorNumber != null && x.SapVendorNumber.Trim() == sapVendorNumber)), cancellationToken);
-
-        if (registration is null)
+        if (isRegistered)
         {
-            return new(true, null);
+            return new(false, false, sapVendorNumber, "This SAP vendor number already has an active registration.");
         }
 
-        var tokenBytes = RandomNumberGenerator.GetBytes(32);
-        var token = Convert.ToBase64String(tokenBytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
-        registration.NormalizedSapVendorNumber = normalizedSap;
-        registration.ResumeTokenHash = SHA256.HashData(Encoding.UTF8.GetBytes(token));
-        registration.ResumeTokenExpiresAt = DateTimeOffset.UtcNow.AddDays(30);
-        _ = await databaseService.SaveAsync(nameof(CheckSapAvailabilityQuery), cancellationToken);
-
-        var runtime = await QuestionnaireRuntime.LoadResponse(databaseService, registration.Id, token, token, cancellationToken);
-        return new(false, "An existing registration was found.", runtime);
+        var lookup = await sapVendorService.LookupAsync(sapVendorNumber, cancellationToken);
+        return lookup.Status == SapVendorLookupStatus.Found
+            ? new(true, true, lookup.SapVendorNumber!, null)
+            : new(true, false, sapVendorNumber, lookup.Message);
     }
 }

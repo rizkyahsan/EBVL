@@ -7,7 +7,7 @@ public sealed class DownloadQuestionnaireFileEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPost(QuestionnaireRuntimeRoutes.File + "/download", Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.DownloadFile");
+        return app.MapPost(DownloadQuestionnaireFileRoute.Pattern, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.DownloadFile");
     }
 
     private static async Task<IResult> Handle(Guid registrationId, Guid fileId, FileAuthorizationRequest body, ISender sender, CancellationToken cancellationToken)

@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using EBVL.BackEnd.Infrastructure.Authentication;
+using EBVL.BackEnd.Infrastructure.Authorization;
 using EBVL.BackEnd.Infrastructure.BackgroundJob;
 using EBVL.BackEnd.Infrastructure.Cryptography;
 using EBVL.BackEnd.Infrastructure.CurrentUser;
@@ -16,10 +16,13 @@ using EBVL.BackEnd.Infrastructure.Logging;
 using EBVL.BackEnd.Infrastructure.Monitoring;
 using EBVL.BackEnd.Infrastructure.Otp;
 using EBVL.BackEnd.Infrastructure.PublicHolidays;
+using EBVL.BackEnd.Infrastructure.SapVendor;
 using EBVL.BackEnd.Infrastructure.Secret;
 using EBVL.BackEnd.Services.AppConfigBackEnd;
 using EBVL.Shared.Dto.Modules.MasterData.Documents;
 using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
+using Microsoft.AspNetCore.Authorization;
+using AdministrationPermissions = EBVL.Shared.Dto.Modules.Administration.Permissions;
 
 namespace EBVL.BackEnd.Infrastructure;
 
@@ -72,10 +75,49 @@ public static class ConfigureInfrastructure
         _ = builder.Services.AddOtpService(builder.Configuration);
         _ = builder.Services.AddAuthorization(options =>
         {
-            options.AddPolicy(QuestionnairePermissions.View, policy => policy.RequireAssertion(context =>
-                HasScope(context.User, QuestionnairePermissions.View, QuestionnairePermissions.Manage)));
-            options.AddPolicy(DocumentPermissions.View, policy => policy.RequireAssertion(context =>
-                HasScope(context.User, DocumentPermissions.View, DocumentPermissions.Manage)));
+            AddScopePolicy(options, AdministrationPermissions.AdministrationAuditsRead);
+            AddScopePolicy(options, AdministrationPermissions.AdministrationAuditsView);
+            AddScopePolicy(options, AdministrationPermissions.AdministrationApiCallsRead);
+            AddScopePolicy(options, AdministrationPermissions.AdministrationConfigurationsRead,
+                AdministrationPermissions.AdministrationConfigurationsWrite);
+            AddScopePolicy(options, AdministrationPermissions.AdministrationConfigurationsWrite);
+            AddScopePolicy(options, QuestionnairePermissions.View, QuestionnairePermissions.Manage);
+            AddScopePolicy(options, QuestionnairePermissions.Manage);
+            AddScopePolicy(options, DocumentPermissions.View, DocumentPermissions.Manage);
+            AddScopePolicy(options, DocumentPermissions.Manage);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationCreate);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationSelf);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationSubmit);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationIndex);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationView);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationReview);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationDisposition);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationApprove);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationReject);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationRevise);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationObject);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationInvite);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationRespondInvitation);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationEvaluate);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationPresentationReview);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationClose);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationListPolicy,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationIndex,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationSelf);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationViewPolicy,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationView,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationSelf);
+            AddScopePolicy(options, Shared.Dto.Modules.Main.Permissions.BrandRegistrationTransition,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationSubmit,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationReview,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationDisposition,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationApprove,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationReject,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationRevise,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationObject,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationEvaluate,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationPresentationReview,
+                Shared.Dto.Modules.Main.Permissions.BrandRegistrationClose);
         });
         _ = builder.Services.AddOpenApi(options => _ = options.AddSchemaTransformer(new CustomSchemaTransformer()));
 
@@ -93,6 +135,10 @@ public static class ConfigureInfrastructure
 
         _ = builder.Services.AddPublicHolidaysService(builder.Configuration);
 
+        _ = secrets.TryGetValue(SecretKeyFor.SapVendorUsername, out var sapVendorUsername);
+        _ = secrets.TryGetValue(SecretKeyFor.SapVendorPassword, out var sapVendorPassword);
+        _ = builder.Services.AddSapVendorService(builder.Configuration, sapVendorUsername ?? string.Empty, sapVendorPassword ?? string.Empty);
+
         var localIdentityDatabaseConnectionString = secrets[localIdentityDatabaseKey];
         _ = builder.Services.Configure<LocalIdentityOptions>(options =>
         {
@@ -103,14 +149,13 @@ public static class ConfigureInfrastructure
         _ = builder.Services.AddLocalIdentityService(localIdentityDatabaseConnectionString);
     }
 
-    private static bool HasScope(ClaimsPrincipal user, params string[] acceptedScopes)
+    private static void AddScopePolicy(
+        AuthorizationOptions options,
+        string policyName,
+        params string[] additionalScopes)
     {
-        return user.Claims
-            .Where(claim => claim.Type.Equals("permission", StringComparison.OrdinalIgnoreCase)
-                || claim.Type.Equals("scope", StringComparison.OrdinalIgnoreCase)
-                || claim.Type.Equals("scp", StringComparison.OrdinalIgnoreCase))
-            .SelectMany(claim => claim.Value.Split([' ', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-            .Select(value => value.Trim('[', ']', '"'))
-            .Any(scope => acceptedScopes.Contains(scope, StringComparer.Ordinal));
+        var acceptedScopes = new[] { policyName }.Concat(additionalScopes).ToArray();
+        options.AddPolicy(policyName, policy =>
+            policy.RequireAssertion(context => ScopeClaims.ContainsAny(context.User, acceptedScopes)));
     }
 }

@@ -1,6 +1,7 @@
 using EBVL.FrontEnd.WebUi.Common.Components.Abstracts;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.Brand.Registers.Components;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.Brand.Registers.Services;
+using EBVL.Shared.Dto.Modules.Main.BrandRegistrations.CreateBrandRegistration;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Features.Brand.Registers.Pages;
 
@@ -18,6 +19,7 @@ public partial class Create : PageBase
     protected IReadOnlyList<DocumentUploadItem> AdministrativeDocuments { get; private set; } = CreateDocuments("administrative");
     protected IReadOnlyList<DocumentUploadItem> TechnicalDocuments { get; private set; } = CreateDocuments("technical");
     protected bool _showValidation;
+    protected bool _isSubmitting;
     protected int _fileInputVersion;
 
     protected override void OnInitialized()
@@ -73,31 +75,58 @@ public partial class Create : PageBase
             return;
         }
 
-        RegistrationState.Add(Model.ProductName, Model.Brand, Model.Group, "Draft");
-        _ = Snackbar.Add("Brand berhasil disimpan sebagai Draft.", MudBlazor.Severity.Success);
-        NavigationManager.NavigateTo(BrandRegistersRouteFor.Index);
+        try
+        {
+            _ = await RegistrationState.AddAsync(CreateRequest(), false);
+            _ = Snackbar.Add("Brand berhasil disimpan sebagai Draft.", MudBlazor.Severity.Success);
+            NavigationManager.NavigateTo(BrandRegistersRouteFor.Index);
+        }
+        catch (Exception exception)
+        {
+            _ = Snackbar.Add(exception.Message, MudBlazor.Severity.Error);
+        }
     }
 
     protected async Task Submit()
     {
-        _showValidation = true;
-        await Form.Validate();
-        if (!Form.IsValid || AdministrativeDocuments.Concat(TechnicalDocuments).Any(document => document.IsMandatory && string.IsNullOrWhiteSpace(document.FileName)))
-        {
-            _ = Snackbar.Add("Lengkapi seluruh field dan dokumen wajib sebelum submit.", MudBlazor.Severity.Error);
-            return;
-        }
-
-        var dialog = await DialogService.ShowAsync<DialogConfirmSubmit>(string.Empty, ConfirmationDialogOptions);
-        var result = await dialog.Result;
-        if (result is null || result.Canceled)
+        if (_isSubmitting)
         {
             return;
         }
 
-        RegistrationState.Add(Model.ProductName, Model.Brand, Model.Group, "Submitted");
-        _ = Snackbar.Add("Brand berhasil disubmit.", MudBlazor.Severity.Success);
-        NavigationManager.NavigateTo(BrandRegistersRouteFor.Index);
+        try
+        {
+            _showValidation = true;
+            await Form.Validate();
+            var hasMissingDocuments = AdministrativeDocuments.Concat(TechnicalDocuments)
+                .Any(document => document.IsMandatory && string.IsNullOrWhiteSpace(document.FileName));
+            if (!Form.IsValid || hasMissingDocuments)
+            {
+                _ = Snackbar.Add("Lengkapi seluruh field dan dokumen wajib sebelum submit.", MudBlazor.Severity.Error);
+                return;
+            }
+
+            var dialog = await DialogService.ShowAsync<DialogConfirmSubmit>(string.Empty, ConfirmationDialogOptions);
+            var result = await dialog.Result;
+            if (result is null || result.Canceled)
+            {
+                return;
+            }
+
+            _isSubmitting = true;
+            await InvokeAsync(StateHasChanged);
+            _ = await RegistrationState.AddAsync(CreateRequest(), true);
+            _ = Snackbar.Add("Brand berhasil disubmit.", MudBlazor.Severity.Success);
+            NavigationManager.NavigateTo(BrandRegistersRouteFor.Index);
+        }
+        catch (Exception exception)
+        {
+            _ = Snackbar.Add(exception.Message, MudBlazor.Severity.Error);
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
     }
 
     protected void GoBack()
@@ -111,6 +140,12 @@ public partial class Create : PageBase
         FullWidth = true,
         CloseButton = true
     };
+
+    private CreateBrandRegistrationRequest CreateRequest()
+    {
+        return new(Model.Brand ?? string.Empty, Model.ProductName ?? string.Empty, Model.Group ?? string.Empty,
+            Model.Country ?? string.Empty, Model.Category ?? string.Empty, Model.ProductDescription ?? string.Empty);
+    }
 
     private static IReadOnlyList<DocumentUploadItem> CreateDocuments(string prefix)
     {

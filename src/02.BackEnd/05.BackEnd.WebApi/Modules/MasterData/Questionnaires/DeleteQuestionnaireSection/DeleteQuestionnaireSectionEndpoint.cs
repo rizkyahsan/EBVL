@@ -8,8 +8,8 @@ public sealed class DeleteQuestionnaireSectionEndpoint : IEndpoint
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
         return app
-            .MapDelete(QuestionnaireRoutes.UpdateSection, Handle)
-            .RequireAuthorization()
+            .MapDelete(DeleteQuestionnaireSectionRoute.Pattern, Handle)
+            .RequireAuthorization(QuestionnairePermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Questionnaires.DeleteSection")
             .Produces<GetQuestionnaireResponse>();

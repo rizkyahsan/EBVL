@@ -1,6 +1,6 @@
 using EBVL.BackEnd.Logics.Modules.Authentication.ExternalUsers.SendOtpExternalUser;
-using EBVL.Shared.Dto.Modules.Authentication.ExternalUsers.SendOtpExternalUser;
 using EBVL.Shared.Dto.Modules.Authentication.ExternalUsers;
+using EBVL.Shared.Dto.Modules.Authentication.ExternalUsers.SendOtpExternalUser;
 
 namespace EBVL.BackEnd.WebApi.Modules.Authentication.ExternalUsers.SendOtpExternalUser;
 

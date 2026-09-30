@@ -54,6 +54,7 @@ public static class ConfigureAuthentication
             options.Authority = idAManOptions.Authentication.AuthorityUrl;
             options.Audience = $"api://{idAManOptions.ObjectId}";
             options.MapInboundClaims = false;
+            options.EventsType = typeof(CustomJwtBearerEvents);
 
             options.TokenValidationParameters = new()
             {

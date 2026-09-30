@@ -28,7 +28,6 @@ public partial class Login
     protected bool _isLoading;
     protected Exception? _exception;
     private bool _showPassword;
-
     private LoginExternalUserCommand _model = default!;
 
     #endregion
@@ -50,7 +49,6 @@ public partial class Login
     }
 
     #endregion
-
     #region Event Handlers
 
     private void TogglePasswordVisibility()

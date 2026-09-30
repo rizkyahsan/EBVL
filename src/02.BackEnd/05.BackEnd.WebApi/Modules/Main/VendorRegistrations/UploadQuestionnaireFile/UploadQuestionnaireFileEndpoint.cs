@@ -8,7 +8,7 @@ public sealed class UploadQuestionnaireFileEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPost(QuestionnaireRuntimeRoutes.Files, Handle).AllowAnonymous().DisableAntiforgery().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.UploadFile");
+        return app.MapPost(UploadQuestionnaireFileRoute.Pattern, Handle).AllowAnonymous().DisableAntiforgery().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.UploadFile");
     }
 
     [RequestSizeLimit((50L * 1024 * 1024) + (1024 * 1024))]

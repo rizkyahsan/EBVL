@@ -1,3 +1,4 @@
+using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,6 @@ using Pertamina.Services.IdAMan;
 using Pertamina.Services.PersonalRoles;
 using Pertamina.Services.PositionRoles;
 using Pertamina.Services.UserPositions;
-using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
 
 namespace EBVL.FrontEnd.Infrastructure.Authentication;
 

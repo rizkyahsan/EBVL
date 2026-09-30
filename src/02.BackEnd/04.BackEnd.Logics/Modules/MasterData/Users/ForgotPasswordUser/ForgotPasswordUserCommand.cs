@@ -8,8 +8,8 @@ using EBVL.BackEnd.Services.LocalIdentity;
 using EBVL.Shared.Dto.Modules.MasterData.Users.ForgotPasswordUser;
 using EBVL.Shared.Statics.Common;
 using EBVL.Shared.Statics.Configurations;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace EBVL.BackEnd.Logics.Modules.MasterData.Users.ForgotPasswordUser;
 

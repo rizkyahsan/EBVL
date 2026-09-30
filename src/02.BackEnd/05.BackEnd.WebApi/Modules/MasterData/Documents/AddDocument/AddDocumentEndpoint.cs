@@ -7,8 +7,8 @@ public sealed class AddDocumentEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPost(DocumentRoutes.Add, Handle)
-            .RequireAuthorization()
+        return app.MapPost(AddDocumentRoute.Pattern, Handle)
+            .RequireAuthorization(DocumentPermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Documents.Add")
             .Produces<GetDocumentResponse>(StatusCodes.Status201Created);
@@ -16,6 +16,6 @@ public sealed class AddDocumentEndpoint : IEndpoint
 
     private static async Task<IResult> Handle(Guid documentRequirementSetId, AddDocumentRequest body, ISender sender, CancellationToken ct)
     {
-        return Results.Created(DocumentRoutes.Detail, (object?)await sender.Send(new AddDocumentCommand(documentRequirementSetId, body), ct));
+        return Results.Created(GetDocumentRoute.ResourceUri(documentRequirementSetId), (object?)await sender.Send(new AddDocumentCommand(documentRequirementSetId, body), ct));
     }
 }

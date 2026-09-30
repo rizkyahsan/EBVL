@@ -11,7 +11,7 @@ public sealed class AddConfigurationEndpoint : IEndpoint
     {
         return app
             .MapPost(AddConfigurationRoute.Pattern, Handle)
-            .RequireAuthorization()
+            .RequireAuthorization(Shared.Dto.Modules.Administration.Permissions.AdministrationConfigurationsWrite)
             .WithTags(RouteConfig.Tag)
             .WithName(AddConfigurationRoute.Name)
             .WithDescription(AddConfigurationRoute.Description)

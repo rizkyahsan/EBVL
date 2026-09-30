@@ -73,7 +73,7 @@ public sealed class GetRequestRegistrationsQueryHandler(IDatabaseService databas
                 LastUpdatedAt = x.Modified ?? x.Created
             })
             .ToListAsync(cancellationToken);
-        items = items.Select(item => item with { StatusDisplay = DisplayStatus(item.Status) }).ToList();
+        items = [.. items.Select(item => item with { StatusDisplay = DisplayStatus(item.Status) })];
 
         return new GetRequestRegistrationsResponse
         {

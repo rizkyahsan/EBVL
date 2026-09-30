@@ -1,3 +1,4 @@
+global using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.Extensions.Configuration;
@@ -8,4 +9,3 @@ global using Microsoft.Extensions.Options;
 global using Pertamina.Common.Exceptions;
 global using AdministrationPermissions = EBVL.Shared.Dto.Modules.Administration.Permissions;
 global using MainPermissions = EBVL.Shared.Dto.Modules.Main.Permissions;
-global using EBVL.Shared.Dto.Modules.MasterData.Questionnaires;

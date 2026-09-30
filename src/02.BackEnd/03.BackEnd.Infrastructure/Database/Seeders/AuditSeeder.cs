@@ -1,6 +1,6 @@
 using System.Text.Json;
-using Pertamina.Services.DateAndTime;
 using EBVL.Shared.Enums;
+using Pertamina.Services.DateAndTime;
 
 namespace EBVL.BackEnd.Infrastructure.Database.Seeders;
 

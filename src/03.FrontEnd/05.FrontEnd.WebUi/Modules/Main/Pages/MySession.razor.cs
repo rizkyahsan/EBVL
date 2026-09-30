@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
 using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
 using EBVL.FrontEnd.WebUi.Common.Services.Clipboard;
+using Microsoft.AspNetCore.Authentication;
 
 namespace EBVL.FrontEnd.WebUi.Modules.Main.Pages;
 

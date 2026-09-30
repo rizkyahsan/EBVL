@@ -7,8 +7,8 @@ public sealed class GetDocumentHistoryEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapGet(DocumentRoutes.History, Handle)
-            .RequireAuthorization()
+        return app.MapGet(GetDocumentHistoryRoute.Pattern, Handle)
+            .RequireAuthorization(DocumentPermissions.View)
             .WithTags(RouteConfig.Tag)
             .WithName("Documents.History")
             .Produces<GetDocumentHistoryResponse>();

@@ -10,7 +10,7 @@ public sealed class GetConfigurationEndpoint : IEndpoint
     {
         return app
             .MapGet(GetConfigurationRoute.Pattern, Handle)
-            .RequireAuthorization()
+            .RequireAuthorization(Shared.Dto.Modules.Administration.Permissions.AdministrationConfigurationsRead)
             .WithTags(RouteConfig.Tag)
             .WithName(GetConfigurationRoute.Name)
             .WithDescription(GetConfigurationRoute.Description)

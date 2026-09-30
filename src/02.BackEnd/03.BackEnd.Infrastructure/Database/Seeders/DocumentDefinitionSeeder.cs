@@ -1,5 +1,5 @@
-using EBVL.Shared.Statics.VendorRegistrations;
 using EBVL.Shared.Enums;
+using EBVL.Shared.Statics.VendorRegistrations;
 
 namespace EBVL.BackEnd.Infrastructure.Database.Seeders;
 

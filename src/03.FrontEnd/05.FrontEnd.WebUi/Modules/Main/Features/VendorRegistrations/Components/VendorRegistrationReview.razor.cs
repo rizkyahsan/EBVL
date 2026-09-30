@@ -26,13 +26,11 @@ public partial class VendorRegistrationReview
     public required EventCallback OnPrevious { get; init; }
 
     #endregion
-
     #region Fields
 
     private bool _isConfirmed;
 
     #endregion
-
     #region Private Methods
 
     private string GetBrands()

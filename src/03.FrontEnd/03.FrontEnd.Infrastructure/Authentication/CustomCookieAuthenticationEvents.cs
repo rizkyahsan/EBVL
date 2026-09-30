@@ -1,8 +1,8 @@
 using System.Globalization;
+using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Pertamina.Services.IdAMan;
-using EBVL.FrontEnd.Infrastructure.Authentication.Statics;
 
 namespace EBVL.FrontEnd.Infrastructure.Authentication;
 

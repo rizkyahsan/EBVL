@@ -1,5 +1,5 @@
-using Pertamina.Services.Secret.PertaminaVault;
 using Pertamina.Services.Secret.JsonFile;
+using Pertamina.Services.Secret.PertaminaVault;
 
 namespace EBVL.FrontEnd.Infrastructure.Secret;
 

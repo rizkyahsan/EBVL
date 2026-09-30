@@ -1,6 +1,6 @@
 using EBVL.BackEnd.Logics.Modules.MasterData.Countries.GetCountries;
-using EBVL.Shared.Dto.Modules.MasterData.Countries.GetCountries;
 using EBVL.Shared.Dto.Modules.MasterData.Countries;
+using EBVL.Shared.Dto.Modules.MasterData.Countries.GetCountries;
 
 namespace EBVL.BackEnd.WebApi.Modules.MasterData.Countries.GetCountries;
 

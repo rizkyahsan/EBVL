@@ -7,8 +7,8 @@ public sealed class PublishDocumentRequirementSetEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapPost(DocumentRoutes.Publish, Handle)
-            .RequireAuthorization()
+        return app.MapPost(PublishDocumentRequirementSetRoute.Pattern, Handle)
+            .RequireAuthorization(DocumentPermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Documents.Publish")
             .Produces<GetDocumentResponse>();

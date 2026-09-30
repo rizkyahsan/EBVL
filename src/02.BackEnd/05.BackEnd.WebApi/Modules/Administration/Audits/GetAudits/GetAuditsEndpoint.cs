@@ -10,7 +10,7 @@ public sealed class GetAuditsEndpoint : IEndpoint
     {
         return app
             .MapGet(GetAuditsRoute.Pattern, Handle)
-            .RequireAuthorization()
+            .RequireAuthorization(Shared.Dto.Modules.Administration.Permissions.AdministrationAuditsRead)
             .WithTags(RouteConfig.Tag)
             .WithName(GetAuditsRoute.Name)
             .WithDescription(GetAuditsRoute.Description)

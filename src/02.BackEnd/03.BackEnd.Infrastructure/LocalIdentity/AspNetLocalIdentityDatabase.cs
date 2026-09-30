@@ -1,7 +1,7 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using EBVL.BackEnd.Infrastructure.LocalIdentity.Models;
 using EBVL.BackEnd.Infrastructure.LocalIdentity.Statics;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace EBVL.BackEnd.Infrastructure.LocalIdentity;
 

@@ -24,4 +24,6 @@ public static class SecretKeyFor
     public const string LocalIdentitySecret = "LocalIdentity_Secret";
     public const string LocalIdentityKey = "LocalIdentity_Key";
     public const string LocalIdentityIssuer = "LocalIdentity_Issuer";
+    public const string SapVendorUsername = "SapVendor_Username";
+    public const string SapVendorPassword = "SapVendor_Password";
 }

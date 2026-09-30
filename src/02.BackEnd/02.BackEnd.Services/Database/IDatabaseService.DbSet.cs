@@ -28,4 +28,9 @@ public partial interface IDatabaseService
     public DbSet<QuestionnaireAnswer> QuestionnaireAnswers { get; }
     public DbSet<QuestionnaireAnswerFile> QuestionnaireAnswerFiles { get; }
     public DbSet<User> Users { get; }
+    public DbSet<BrandRegistration> BrandRegistrations { get; }
+    public DbSet<BrandInvitation> BrandInvitations { get; }
+    public DbSet<WorkflowCase> WorkflowCases { get; }
+    public DbSet<WorkflowAssignment> WorkflowAssignments { get; }
+    public DbSet<WorkflowTransition> WorkflowTransitions { get; }
 }

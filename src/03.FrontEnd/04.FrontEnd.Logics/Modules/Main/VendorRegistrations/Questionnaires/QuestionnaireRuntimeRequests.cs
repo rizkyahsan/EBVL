@@ -6,7 +6,7 @@ namespace EBVL.FrontEnd.Logics.Modules.Main.VendorRegistrations.Questionnaires;
 #region Requests
 
 public sealed record StartQuestionnaireCommand(PreRegistrationRequest Request) : IRequest<QuestionnaireRuntimeResponse>;
-public sealed record CheckSapAvailabilityQuery(string SapVendorNumber, Guid? RegistrationId) : IRequest<SapAvailabilityResponse>;
+public sealed record CheckSapAvailabilityQuery(string SapVendorNumber) : IRequest<SapAvailabilityResponse>;
 public sealed record GetQuestionnaireRuntimeQuery(Guid RegistrationId, string ResumeToken) : IRequest<QuestionnaireRuntimeResponse>;
 public sealed record UpdateVendorRegistrationProfileCommand(Guid RegistrationId, UpdateVendorRegistrationProfileRequest Request) : IRequest<QuestionnaireRuntimeResponse>;
 public sealed record SaveQuestionnaireAnswersCommand(Guid RegistrationId, SaveAnswersRequest Request) : IRequest<QuestionnaireRuntimeResponse>;
@@ -39,13 +39,8 @@ public sealed class CheckSapAvailabilityHandler(IBackEndApiService api) : IReque
 {
     public Task<SapAvailabilityResponse> Handle(CheckSapAvailabilityQuery query, CancellationToken cancellationToken)
     {
-        var request = new RestRequest(QuestionnaireRuntimeRoutes.SapAvailability)
-            .AddQueryParameter("sapVendorNumber", query.SapVendorNumber);
-        if (query.RegistrationId is not null)
-        {
-            _ = request.AddQueryParameter("registrationId", query.RegistrationId.Value);
-        }
-
+        var request = new RestRequest(CheckSapAvailabilityRoute.Pattern, Method.Post)
+            .AddJsonBody(new SapAvailabilityRequest(query.SapVendorNumber));
         return api.SendRequestAsync<SapAvailabilityResponse>(request, cancellationToken);
     }
 }
@@ -54,35 +49,35 @@ public sealed class StartQuestionnaireHandler(IBackEndApiService api) : IRequest
 {
     public Task<QuestionnaireRuntimeResponse> Handle(StartQuestionnaireCommand c, CancellationToken cancellationToken)
     {
-        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(QuestionnaireRuntimeRoutes.Start, Method.Post).AddJsonBody(c.Request), cancellationToken);
+        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(StartQuestionnaireRoute.Pattern, Method.Post).AddJsonBody(c.Request), cancellationToken);
     }
 }
 public sealed class GetQuestionnaireRuntimeHandler(IBackEndApiService api) : IRequestHandler<GetQuestionnaireRuntimeQuery, QuestionnaireRuntimeResponse>
 {
     public Task<QuestionnaireRuntimeResponse> Handle(GetQuestionnaireRuntimeQuery q, CancellationToken cancellationToken)
     {
-        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(RuntimeUri.For(QuestionnaireRuntimeRoutes.Get, q.RegistrationId), Method.Post).AddJsonBody(new ResumeQuestionnaireRequest(q.RegistrationId, q.ResumeToken)), cancellationToken);
+        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(GetQuestionnaireRuntimeRoute.ResourceUri(q.RegistrationId), Method.Post).AddJsonBody(new ResumeQuestionnaireRequest(q.RegistrationId, q.ResumeToken)), cancellationToken);
     }
 }
 public sealed class SaveQuestionnaireAnswersHandler(IBackEndApiService api) : IRequestHandler<SaveQuestionnaireAnswersCommand, QuestionnaireRuntimeResponse>
 {
     public Task<QuestionnaireRuntimeResponse> Handle(SaveQuestionnaireAnswersCommand c, CancellationToken cancellationToken)
     {
-        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(RuntimeUri.For(QuestionnaireRuntimeRoutes.Answers, c.RegistrationId), Method.Put).AddJsonBody(c.Request), cancellationToken);
+        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(SaveQuestionnaireAnswersRoute.ResourceUri(c.RegistrationId), Method.Put).AddJsonBody(c.Request), cancellationToken);
     }
 }
 public sealed class UpdateVendorRegistrationProfileHandler(IBackEndApiService api) : IRequestHandler<UpdateVendorRegistrationProfileCommand, QuestionnaireRuntimeResponse>
 {
     public Task<QuestionnaireRuntimeResponse> Handle(UpdateVendorRegistrationProfileCommand command, CancellationToken cancellationToken)
     {
-        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(RuntimeUri.For(QuestionnaireRuntimeRoutes.Profile, command.RegistrationId), Method.Put).AddJsonBody(command.Request), cancellationToken);
+        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(UpdateVendorRegistrationProfileRoute.ResourceUri(command.RegistrationId), Method.Put).AddJsonBody(command.Request), cancellationToken);
     }
 }
 public sealed class SubmitQuestionnaireHandler(IBackEndApiService api) : IRequestHandler<SubmitQuestionnaireCommand, QuestionnaireRuntimeResponse>
 {
     public Task<QuestionnaireRuntimeResponse> Handle(SubmitQuestionnaireCommand c, CancellationToken cancellationToken)
     {
-        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(RuntimeUri.For(QuestionnaireRuntimeRoutes.Submit, c.RegistrationId), Method.Post).AddJsonBody(c.Request), cancellationToken);
+        return api.SendRequestAsync<QuestionnaireRuntimeResponse>(new RestRequest(SubmitQuestionnaireRoute.ResourceUri(c.RegistrationId), Method.Post).AddJsonBody(c.Request), cancellationToken);
     }
 }
 
@@ -94,14 +89,14 @@ public sealed class UploadQuestionnaireFileHandler(IBackEndApiService api) : IRe
 {
     public Task<UploadQuestionnaireFileResponse> Handle(UploadQuestionnaireFileCommand c, CancellationToken cancellationToken)
     {
-        return api.SendRequestAsync<UploadQuestionnaireFileResponse>(new RestRequest(RuntimeUri.For(QuestionnaireRuntimeRoutes.Files, c.RegistrationId, c.QuestionId), Method.Post).AddParameter("resumeToken", c.ResumeToken).AddFile("file", c.Content, c.FileName, "application/pdf"), cancellationToken);
+        return api.SendRequestAsync<UploadQuestionnaireFileResponse>(new RestRequest(UploadQuestionnaireFileRoute.ResourceUri(c.RegistrationId, c.QuestionId), Method.Post).AddParameter("resumeToken", c.ResumeToken).AddFile("file", c.Content, c.FileName, "application/pdf"), cancellationToken);
     }
 }
 public sealed class DeleteQuestionnaireFileHandler(IBackEndApiService api) : IRequestHandler<DeleteQuestionnaireFileCommand>
 {
     public Task Handle(DeleteQuestionnaireFileCommand c, CancellationToken cancellationToken)
     {
-        return api.SendRequestAsync(new RestRequest(RuntimeUri.For(QuestionnaireRuntimeRoutes.File, c.RegistrationId, c.FileId), Method.Delete).AddQueryParameter("resumeToken", c.ResumeToken), cancellationToken);
+        return api.SendRequestAsync(new RestRequest(DeleteQuestionnaireFileRoute.ResourceUri(c.RegistrationId, c.FileId), Method.Delete).AddQueryParameter("resumeToken", c.ResumeToken), cancellationToken);
     }
 }
 
@@ -113,7 +108,7 @@ public sealed class UploadVendorRegistrationDocumentHandler(IBackEndApiService a
 {
     public Task<UploadVendorRegistrationDocumentResponse> Handle(UploadVendorRegistrationDocumentCommand command, CancellationToken cancellationToken)
     {
-        var route = QuestionnaireRuntimeRoutes.Documents.Replace("{registrationId:guid}", command.RegistrationId.ToString()).Replace("{definitionKey}", Uri.EscapeDataString(command.DefinitionKey));
+        var route = UploadVendorRegistrationDocumentRoute.ResourceUri(command.RegistrationId, command.DefinitionKey);
         return api.SendRequestAsync<UploadVendorRegistrationDocumentResponse>(new RestRequest(route, Method.Post).AddParameter("resumeToken", command.ResumeToken).AddFile("file", command.Content, command.FileName, "application/pdf"), cancellationToken);
     }
 }
@@ -121,14 +116,14 @@ public sealed class DeleteVendorRegistrationDocumentHandler(IBackEndApiService a
 {
     public Task Handle(DeleteVendorRegistrationDocumentCommand command, CancellationToken cancellationToken)
     {
-        return api.SendRequestAsync(new RestRequest(QuestionnaireRuntimeRoutes.Document.Replace("{registrationId:guid}", command.RegistrationId.ToString()).Replace("{documentId:guid}", command.DocumentId.ToString()), Method.Delete).AddQueryParameter("resumeToken", command.ResumeToken), cancellationToken);
+        return api.SendRequestAsync(new RestRequest(DeleteVendorRegistrationDocumentRoute.ResourceUri(command.RegistrationId, command.DocumentId), Method.Delete).AddQueryParameter("resumeToken", command.ResumeToken), cancellationToken);
     }
 }
 public sealed class DownloadVendorRegistrationDocumentHandler(IBackEndApiService api) : IRequestHandler<DownloadVendorRegistrationDocumentQuery, QuestionnaireFileContent>
 {
     public Task<QuestionnaireFileContent> Handle(DownloadVendorRegistrationDocumentQuery query, CancellationToken cancellationToken)
     {
-        var route = QuestionnaireRuntimeRoutes.Document.Replace("{registrationId:guid}", query.RegistrationId.ToString()).Replace("{documentId:guid}", query.DocumentId.ToString()) + "/download";
+        var route = DownloadVendorRegistrationDocumentRoute.ResourceUri(query.RegistrationId, query.DocumentId);
         return api.SendRequestAsync<QuestionnaireFileContent>(new RestRequest(route, Method.Post).AddJsonBody(new FileAuthorizationRequest(query.ResumeToken)), cancellationToken);
     }
 }
@@ -141,7 +136,7 @@ public sealed class DownloadQuestionnaireFileHandler(IBackEndApiService api) : I
 {
     public Task<QuestionnaireFileContent> Handle(DownloadQuestionnaireFileQuery query, CancellationToken cancellationToken)
     {
-        var route = QuestionnaireRuntimeRoutes.File.Replace("{registrationId:guid}", query.RegistrationId.ToString()).Replace("{fileId:guid}", query.FileId.ToString()) + "/download";
+        var route = DownloadQuestionnaireFileRoute.ResourceUri(query.RegistrationId, query.FileId);
         return api.SendRequestAsync<QuestionnaireFileContent>(new RestRequest(route, Method.Post).AddJsonBody(new FileAuthorizationRequest(query.ResumeToken)), cancellationToken);
     }
 }

@@ -8,8 +8,8 @@ public sealed class UpdateQuestionnaireSectionEndpoint : IEndpoint
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
         return app
-            .MapPut(QuestionnaireRoutes.UpdateSection, Handle)
-            .RequireAuthorization()
+            .MapPut(UpdateQuestionnaireSectionRoute.Pattern, Handle)
+            .RequireAuthorization(QuestionnairePermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Questionnaires.UpdateSection")
             .Produces<GetQuestionnaireResponse>();

@@ -7,8 +7,8 @@ public sealed class GetDocumentsEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapGet(DocumentRoutes.List, Handle)
-            .RequireAuthorization()
+        return app.MapGet(GetDocumentsRoute.Pattern, Handle)
+            .RequireAuthorization(DocumentPermissions.View)
             .WithTags(RouteConfig.Tag)
             .WithName("Documents.List")
             .Produces<GetDocumentsResponse>();

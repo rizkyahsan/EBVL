@@ -7,7 +7,7 @@ public sealed class DeleteQuestionnaireFileEndpoint : IEndpoint
 {
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
-        return app.MapDelete(QuestionnaireRuntimeRoutes.File, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.DeleteFile");
+        return app.MapDelete(DeleteQuestionnaireFileRoute.Pattern, Handle).AllowAnonymous().WithTags(RouteConfig.Tag).WithName("VendorQuestionnaire.DeleteFile");
     }
 
     private static async Task<IResult> Handle(Guid registrationId, Guid fileId, [FromQuery] string resumeToken, ISender sender, CancellationToken cancellationToken)

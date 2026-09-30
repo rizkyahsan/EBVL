@@ -8,8 +8,8 @@ public sealed class AddQuestionnaireEndpoint : IEndpoint
     public RouteHandlerBuilder RegisterTo(WebApplication app)
     {
         return app
-            .MapPost(QuestionnaireRoutes.Add, Handle)
-            .RequireAuthorization()
+            .MapPost(AddQuestionnaireRoute.Pattern, Handle)
+            .RequireAuthorization(QuestionnairePermissions.Manage)
             .WithTags(RouteConfig.Tag)
             .WithName("Questionnaires.Add")
             .Produces<GetQuestionnaireResponse>();
@@ -19,6 +19,6 @@ public sealed class AddQuestionnaireEndpoint : IEndpoint
         AddQuestionnaireRequest body, ISender sender,
         CancellationToken cancellationToken)
     {
-        return Results.Created(QuestionnaireRoutes.List, (object?)await sender.Send(new AddQuestionnaireCommand { Code = body.Code, BusinessProcess = body.BusinessProcess, IsActive = body.IsActive }, cancellationToken));
+        return Results.Created(GetQuestionnairesRoute.Pattern, (object?)await sender.Send(new AddQuestionnaireCommand { Code = body.Code, BusinessProcess = body.BusinessProcess, IsActive = body.IsActive }, cancellationToken));
     }
 }

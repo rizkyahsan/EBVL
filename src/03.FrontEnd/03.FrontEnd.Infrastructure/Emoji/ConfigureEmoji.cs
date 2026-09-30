@@ -1,7 +1,7 @@
-using Pertamina.Extensions.Polly;
 using EBVL.FrontEnd.Infrastructure.Emoji.EmojiHub;
 using EBVL.FrontEnd.Infrastructure.Emoji.EmojisWorld;
 using EBVL.FrontEnd.Services.Emoji;
+using Pertamina.Extensions.Polly;
 
 namespace EBVL.FrontEnd.Infrastructure.Emoji;
 

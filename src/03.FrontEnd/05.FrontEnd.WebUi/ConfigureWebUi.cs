@@ -1,15 +1,15 @@
 using System.Globalization;
 using System.Reflection;
 using ApexCharts;
-using Microsoft.AspNetCore.Localization;
-using MudBlazor.Services;
 using EBVL.FrontEnd.WebUi.Common.Helpers;
 using EBVL.FrontEnd.WebUi.Common.Services.Clipboard;
+using EBVL.FrontEnd.WebUi.Common.Services.Clock;
 using EBVL.FrontEnd.WebUi.Common.Services.Preferences;
 using EBVL.FrontEnd.WebUi.Layouts.Models;
-using EBVL.FrontEnd.WebUi.Common.Services.Clock;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.Brand.Registers.Services;
 using EBVL.FrontEnd.WebUi.Modules.Main.Features.VendorRegistrations.Services;
+using Microsoft.AspNetCore.Localization;
+using MudBlazor.Services;
 
 namespace EBVL.FrontEnd.WebUi;
 

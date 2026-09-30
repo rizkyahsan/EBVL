@@ -1,7 +1,7 @@
+using EBVL.Shared.Dto.Modules.Main.Users.GetMyUser;
 using Pertamina.Common.Statics;
 using Pertamina.Services.CurrentUser;
 using Pertamina.Services.Otp;
-using EBVL.Shared.Dto.Modules.Main.Users.GetMyUser;
 
 namespace EBVL.BackEnd.Logics.Modules.Main.Users.GetMyUser;
 

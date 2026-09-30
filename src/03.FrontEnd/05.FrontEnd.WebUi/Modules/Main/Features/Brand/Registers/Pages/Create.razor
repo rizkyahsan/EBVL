@@ -105,8 +105,18 @@
     </div>
 
     <div class="form-actions">
-        <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="Reset">Reset</MudButton>
-        <MudButton Variant="Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" OnClick="SaveDraft">Draft</MudButton>
-        <MudButton Variant="Variant.Outlined" Color="Color.Success" StartIcon="@Icons.Material.Filled.CheckBox" OnClick="Submit">Submit</MudButton>
+        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Delete" OnClick="Reset" Disabled="@_isSubmitting">Reset</MudButton>
+        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Warning" StartIcon="@Icons.Material.Filled.Save" OnClick="SaveDraft" Disabled="@_isSubmitting">Draft</MudButton>
+        <MudButton ButtonType="ButtonType.Button" Variant="Variant.Outlined" Color="Color.Success" StartIcon="@Icons.Material.Filled.CheckBox" OnClick="Submit" Disabled="@_isSubmitting">
+            @if (_isSubmitting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                <span>Submitting...</span>
+            }
+            else
+            {
+                <span>Submit</span>
+            }
+        </MudButton>
     </div>
 </MudForm>

@@ -10,7 +10,7 @@ public sealed class UpdateConfigurationEndpoint : IEndpoint
     {
         return app
             .MapPatch(UpdateConfigurationRoute.Pattern, Handle)
-            .RequireAuthorization()
+            .RequireAuthorization(Shared.Dto.Modules.Administration.Permissions.AdministrationConfigurationsWrite)
             .WithTags(RouteConfig.Tag)
             .WithName(UpdateConfigurationRoute.Name)
             .WithDescription(UpdateConfigurationRoute.Description)

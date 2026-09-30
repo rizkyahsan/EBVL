@@ -10,7 +10,7 @@ public sealed class GetApiCallsEndpoint : IEndpoint
     {
         return app
             .MapGet(GetApiCallsRoute.Pattern, Handle)
-            .RequireAuthorization()
+            .RequireAuthorization(Shared.Dto.Modules.Administration.Permissions.AdministrationApiCallsRead)
             .WithTags(RouteConfig.Tag)
             .WithName(GetApiCallsRoute.Name)
             .WithDescription(GetApiCallsRoute.Description)

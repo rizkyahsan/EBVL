@@ -25,4 +25,9 @@ public partial class DatabaseService : IDatabaseService
     public DbSet<QuestionnaireAnswer> QuestionnaireAnswers => Set<QuestionnaireAnswer>();
     public DbSet<QuestionnaireAnswerFile> QuestionnaireAnswerFiles => Set<QuestionnaireAnswerFile>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<BrandRegistration> BrandRegistrations => Set<BrandRegistration>();
+    public DbSet<BrandInvitation> BrandInvitations => Set<BrandInvitation>();
+    public DbSet<WorkflowCase> WorkflowCases => Set<WorkflowCase>();
+    public DbSet<WorkflowAssignment> WorkflowAssignments => Set<WorkflowAssignment>();
+    public DbSet<WorkflowTransition> WorkflowTransitions => Set<WorkflowTransition>();
 }

@@ -62,22 +62,6 @@ public sealed record DeleteQuestionnaireChildRequest { public required string Ro
 public sealed record PublishQuestionnaireRequest { public required string RowVersion { get; init; } }
 public sealed record UpdateQuestionnaireRequest { public required string BusinessProcess { get; init; } public bool IsActive { get; init; } public required string RowVersion { get; init; } public required List<QuestionnaireSectionItem> Sections { get; init; } public required List<QuestionnaireRuleItem> Rules { get; init; } }
 
-public static class QuestionnaireRoutes
-{
-    public const string List = RouteConfig.BasePath;
-    public const string Add = RouteConfig.BasePath;
-    public const string Detail = RouteConfig.BasePath + "/{questionnaireId:guid}";
-    public const string Update = Detail;
-    public const string AddQuestion = Detail + "/sections/{sectionId:guid}/questions";
-    public const string Sections = Detail + "/sections";
-    public const string UpdateSection = Detail + "/sections/{sectionId:guid}";
-    public const string Questions = UpdateSection + "/questions";
-    public const string QuestionDetail = Questions + "/{questionId:guid}";
-    public const string Draft = Detail + "/draft";
-    public const string Publish = Detail + "/publish";
-    public const string History = RouteConfig.BasePath + "/series/{seriesId:guid}/versions";
-}
-
 public sealed class AddQuestionnaireRequestValidator : AbstractValidator<AddQuestionnaireRequest>
 {
     public AddQuestionnaireRequestValidator()

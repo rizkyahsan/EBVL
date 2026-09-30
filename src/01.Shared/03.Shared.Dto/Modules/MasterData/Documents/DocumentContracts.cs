@@ -18,17 +18,6 @@ public record AddDocumentRequest { public required string BusinessProcess { get;
 public sealed record UpdateDocumentRequest : AddDocumentRequest;
 public sealed record PublishDocumentRequirementSetRequest { public required string RowVersion { get; init; } }
 
-public static class DocumentRoutes
-{
-    public const string List = RouteConfig.BasePath;
-    public const string Add = Detail + "/requirements";
-    public const string Detail = RouteConfig.BasePath + "/{documentRequirementSetId:guid}";
-    public const string Requirement = Detail + "/requirements/{documentId:guid}";
-    public const string Draft = Detail + "/draft";
-    public const string Publish = Detail + "/publish";
-    public const string History = RouteConfig.BasePath + "/series/{seriesId:guid}/versions";
-}
-
 public sealed class AddDocumentRequestValidator : AbstractValidator<AddDocumentRequest>
 {
     public AddDocumentRequestValidator()
